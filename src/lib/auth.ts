@@ -29,13 +29,17 @@ export async function createSession(userId: string) {
   const expiresAt = new Date(Date.now() + SESSION_DAYS * 864e5);
   const ua = (await headers()).get("user-agent")?.slice(0, 200) ?? null;
   await db.session.create({ data: { userId, tokenHash: hashToken(token), expiresAt, userAgent: ua } });
-  (await cookies()).set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    expires: expiresAt,
-  });
+  (await cookies()).set(SESSION_COOKIE, token, { ...sessionCookieOptions(), expires: expiresAt });
+}
+
+/**
+ * Session cookie flags. The demo is also shown inside the portfolio's phone frame (a cross-site iframe),
+ * so demo cookies are SameSite=None + Partitioned (CHIPS); the real app keeps SameSite=Lax.
+ */
+export function sessionCookieOptions() {
+  return isDemo()
+    ? ({ httpOnly: true, secure: true, sameSite: "none", partitioned: true, path: "/" } as const)
+    : ({ httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/" } as const);
 }
 
 export async function destroySession() {

@@ -20,9 +20,23 @@ export function middleware(req: NextRequest) {
     return demoStart(req, req.nextUrl.searchParams.get("next") ?? "");
   }
   if (PUBLIC.some((p) => pathname.startsWith(p))) return NextResponse.next();
-  if (req.cookies.has("pad_session")) return NextResponse.next();
+  if (req.cookies.has("pad_session")) {
+    if (!req.nextUrl.searchParams.has("_d")) return NextResponse.next();
+    const clean = req.nextUrl.clone(); // drop the demo sign-in marker from the address bar
+    clean.searchParams.delete("_d");
+    return NextResponse.redirect(clean);
+  }
   if (pathname.startsWith("/api/")) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
-  if (demo) return demoStart(req, pathname);
+  if (demo) {
+    // Arrived straight from /api/demo/start but without the cookie: the browser blocked it, so don't loop.
+    if (req.nextUrl.searchParams.has("_d")) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/api/demo/start";
+      url.search = `?blocked=1&next=${encodeURIComponent(pathname)}`;
+      return NextResponse.redirect(url);
+    }
+    return demoStart(req, pathname);
+  }
   const url = req.nextUrl.clone();
   url.pathname = "/login";
   url.search = pathname === "/" ? "" : `?next=${encodeURIComponent(pathname)}`;
