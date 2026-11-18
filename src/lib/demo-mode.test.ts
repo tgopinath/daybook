@@ -68,6 +68,25 @@ describe("demo mode", () => {
     expect(await m.db.task.count({ where: { userId: b.id } })).toBe(tasksA); // both sample accounts start with the same tasks
   });
 
+  it("rebuilds a visitor's account on a server instance that hasn't seen it", async () => {
+    const tokenHash = "t".repeat(64);
+    const cookie = m.account.demoCookieValue("0123456789ab", "Asia/Kolkata");
+    expect(m.account.parseDemoCookie(cookie)).toEqual({ key: "0123456789ab", tz: "Asia/Kolkata" });
+    expect(m.account.parseDemoCookie("nope")).toBeNull();
+    expect(m.account.parseDemoCookie("0123456789ab.Not/AZone")).toBeNull();
+    const exp = new Date(Date.now() + 864e5);
+    // Two parallel requests share one rebuild.
+    const [id1, id2] = await Promise.all([m.account.restoreDemoAccount(cookie, tokenHash, exp), m.account.restoreDemoAccount(cookie, tokenHash, exp)]);
+    expect(id1).toBeTruthy();
+    expect(id2).toBe(id1);
+    expect(await m.db.user.count({ where: { email: { contains: "0123456789ab" } } })).toBe(1);
+    expect(await m.db.session.count({ where: { tokenHash } })).toBe(1);
+    expect(await m.db.task.count({ where: { userId: id1! } })).toBeGreaterThan(10);
+    // A later request finds the same account.
+    expect(await m.account.restoreDemoAccount(cookie, tokenHash, exp)).toBe(id1);
+    expect(await m.account.restoreDemoAccount("bad", tokenHash, exp)).toBeNull();
+  });
+
   it("encrypts vault items with a per-process demo key", async () => {
     const u = await m.db.user.findFirstOrThrow({ where: { email: { endsWith: `@${m.mode.DEMO_EMAIL_DOMAIN}` } } });
     const item = await m.db.vaultItem.findFirstOrThrow({ where: { userId: u.id } });

@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSession, throttle } from "@/lib/auth";
-import { createDemoAccount, pruneDemoAccounts } from "@/lib/demo-account";
-import { isDemo } from "@/lib/demo-mode";
+import { cookies } from "next/headers";
+import { createDemoAccount, demoCookieValue, newDemoKey, pruneDemoAccounts } from "@/lib/demo-account";
+import { DEMO_COOKIE, isDemo } from "@/lib/demo-mode";
 import { isValidTz } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
@@ -19,14 +20,23 @@ function nextPath(req: NextRequest) {
 export async function GET(req: NextRequest) {
   if (!isDemo()) return NextResponse.json({ error: "Not found" }, { status: 404 });
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
-  if (req.nextUrl.searchParams.has("tz") && !throttle(`demo:${ip}`, 30, 60 * 60_000)) return NextResponse.json({ error: "Too many demo sessions. Try again later." }, { status: 429 });
+  if (req.nextUrl.searchParams.has("tz") && !throttle(`demo:${ip}`, 60, 60 * 60_000)) return NextResponse.json({ error: "Too many demo sessions. Try again later." }, { status: 429 });
 
   const tzParam = req.nextUrl.searchParams.get("tz");
   if (tzParam === null) return tzProbe(nextPath(req));
   const tz = tzParam && isValidTz(tzParam) ? tzParam : "UTC";
   await pruneDemoAccounts();
-  const user = await createDemoAccount(tz);
+  const key = newDemoKey();
+  const user = await createDemoAccount(tz, key);
   await createSession(user.id);
+  // Lets every server instance rebuild this account (each one has its own in-memory database).
+  (await cookies()).set(DEMO_COOKIE, demoCookieValue(key, tz), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 30 * 86400,
+  });
   return NextResponse.redirect(new URL(nextPath(req), req.url), 303);
 }
 

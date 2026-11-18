@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { cache } from "react";
 import { db } from "./db";
 import { secret as envSecret } from "./secrets";
+import { DEMO_COOKIE, isDemo } from "./demo-mode";
 
 export const SESSION_COOKIE = "pad_session";
 const SESSION_DAYS = 30;
@@ -46,12 +47,20 @@ export async function destroySession() {
 
 /** Current user for this request, or null. Cached per request. */
 export const getCurrentUser = cache(async () => {
-  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  const jar = await cookies();
+  const token = jar.get(SESSION_COOKIE)?.value;
   if (!token) return null;
-  const session = await db.session.findUnique({
-    where: { tokenHash: hashToken(token) },
-    include: { user: { select: { id: true, email: true, name: true, avatarUrl: true, createdAt: true } } },
-  });
+  const find = () =>
+    db.session.findUnique({
+      where: { tokenHash: hashToken(token) },
+      include: { user: { select: { id: true, email: true, name: true, avatarUrl: true, createdAt: true } } },
+    });
+  let session = await find();
+  if (!session && isDemo()) {
+    // Demo mode: this server instance may not have this browser's sample account yet.
+    const { restoreDemoAccount } = await import("./demo-account");
+    if (await restoreDemoAccount(jar.get(DEMO_COOKIE)?.value, hashToken(token), new Date(Date.now() + SESSION_DAYS * 864e5))) session = await find();
+  }
   if (!session || session.expiresAt < new Date()) return null;
   return session.user;
 });

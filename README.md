@@ -52,7 +52,7 @@ npm run vapid                                                                   
 Without `DATABASE_URL` Daybook runs as a public demo (this is how the public portfolio deployment runs):
 
 - The data lives in an in-memory Postgres ([PGlite](https://pglite.dev), schema from `prisma/migrations`) inside the server process.
-- Every browser gets its own fictional sample account (Alex Rivera, from `seedDemoData`), so visitors never see each other's changes. Accounts are removed after 6 hours, and everything resets when the server restarts.
+- Every browser gets its own fictional sample account (Alex Rivera, from `seedDemoData`), so visitors never see each other's changes. Accounts are removed after 6 hours, and everything resets when the server restarts. Serverless hosts run several instances, each with its own database, so a `pad_demo` cookie names the account and any instance rebuilds it with fresh sample data when it first sees the browser (changes made on one instance may not show on another).
 - A "Demo" banner is shown on every screen. Sign-up and sign-in redirect to the demo.
 - AI stays off unless `ANTHROPIC_API_KEY` (or `OPENAI_API_KEY`) is set; the per-user and per-server rate limits still apply.
 - No Web Push, no scheduled dispatcher, no cron, no file attachments.
