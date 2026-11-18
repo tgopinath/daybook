@@ -6,13 +6,13 @@
 
 **Tags:** AI product, Next.js, Productivity, Dashboard, Postgres, Privacy, Web app
 
-**Live:** not deployed yet. Planned: https://daybook.vercel.app (update `prototype/mobile.html` once the real URL is known)
-**APK:** not built yet (needs the live URL; Android shell via build-remote.sh)
-**iOS repo:** not created yet (planned tgopinath/Daybook-iOS via new-shell.sh)
-**Repo:** planned tgopinath/daybook (local git repo ready on main)
-**Stack:** Next.js 15, React 19, TypeScript, Tailwind v4, Prisma 6 + PostgreSQL, Anthropic SDK, Web Push
-**Status:** built and verified locally; blocked before publishing (public repo creation was not permitted in this run, and the app needs a Postgres database)
+**Live:** https://daybook-livid-one.vercel.app (demo mode: no database, each browser gets a private sample account for the fictional user Alex Rivera in an in-memory Postgres, reset after a while; AI off)
+**APK:** https://github.com/tgopinath/daybook/releases/latest/download/daybook.apk (4,076,532 bytes, release v1.0.0; Capacitor shell, Material 3 via the Kolam M3 kit)
+**iOS repo:** https://github.com/tgopinath/Daybook-iOS (SwiftUI WKWebView shell, Apple HIG via the Kolam iOS kit)
+**Repo:** https://github.com/tgopinath/daybook (Vercel project daybook, git-connected: a push to main deploys)
+**Stack:** Next.js 15, React 19, TypeScript, Tailwind v4, Prisma 6 + PostgreSQL (PGlite in demo mode), Anthropic SDK, Web Push
+**Status:** published 2026-11-18 in demo mode
 
-**Env vars for Vercel:** DATABASE_URL, DIRECT_URL, AUTH_SECRET, VAULT_ENCRYPTION_KEY, ANTHROPIC_API_KEY (optional; without it AI stays off), NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT (optional, push), CRON_SECRET (optional), AI_RATE_LIMIT_PER_HOUR / AI_DAILY_LIMIT (optional).
+**Env vars for Vercel (none needed for the demo; set these for the full app):** DATABASE_URL, DIRECT_URL, AUTH_SECRET, VAULT_ENCRYPTION_KEY, ANTHROPIC_API_KEY (optional; without it AI stays off), NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT (optional, push), CRON_SECRET (optional), AI_RATE_LIMIT_PER_HOUR / AI_DAILY_LIMIT (optional).
 
 **Shots:** `prototype/shots/overview.jpg`, `tasks.jpg`, `habits.jpg`, `calendar.jpg` (600 wide, fictional seed account "Alex Rivera"), `web.jpg` (1440x900).
