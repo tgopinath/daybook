@@ -1,0 +1,9 @@
+{
+  "name": "Daybook — Personal AI Dashboard",
+  "short_name": "Daybook",
+  "start_url": "/overview",
+  "display": "standalone",
+  "background_color": "#F8F9FB",
+  "theme_color": "#635BFF",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
