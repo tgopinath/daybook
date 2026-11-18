@@ -23,12 +23,19 @@ const themeScript = `try{var t=localStorage.getItem('pad-theme')||'system';var d
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-m3-primary="#635BFF" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {/* Native looks only inside the phone apps (Material 3 on Android, Apple HIG on iPhone); inert in browsers. */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="https://tgopinath.github.io/kolam-design-system/m3/kolam-m3.js" />
+        <link rel="stylesheet" href="https://tgopinath.github.io/kolam-design-system/m3/kolam-m3.css" />
+        <link rel="stylesheet" href="https://tgopinath.github.io/kolam-design-system/ios/kolam-ios.css" />
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="https://tgopinath.github.io/kolam-design-system/ios/kolam-ios.js" />
       </head>
       <body>{children}</body>
     </html>

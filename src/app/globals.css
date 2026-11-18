@@ -146,3 +146,11 @@ body {
 @media (max-width: 639px) {
   @keyframes dialogIn { from { transform: translateY(24px); opacity: .6 } to { transform: none; opacity: 1 } }
 }
+
+/* Phone apps: the Kolam M3 / iOS kits draw the native bars, so hide the web header and tab bar
+   and let the page scroll as a whole (the kits' bars and large titles follow the document scroll). */
+html:is(.k-android, .k-ios) .site-header,
+html:is(.k-android, .k-ios) .site-tabbar { display: none !important; }
+html.native-app .app-root { height: auto; min-height: 100%; overflow: visible; }
+html.native-app .app-root main { overflow: visible; padding-bottom: 0; }
+html.native-app .app-root main .pb-28 { padding-bottom: 1.5rem; }

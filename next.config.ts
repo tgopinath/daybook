@@ -11,7 +11,9 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   // Lets a production build run alongside the dev server (NEXT_DIST_DIR=.next-build).
   distDir: process.env.NEXT_DIST_DIR || ".next",
-  serverExternalPackages: ["web-push", "bcryptjs"],
+  serverExternalPackages: ["web-push", "bcryptjs", "@electric-sql/pglite", "pglite-prisma-adapter"],
+  // Demo mode (no DATABASE_URL) builds its in-memory database from the migrations at run time.
+  outputFileTracingIncludes: { "/**": ["./prisma/migrations/**/*.sql", "./node_modules/@electric-sql/pglite/dist/**"] },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },

@@ -4,12 +4,13 @@ import { createHmac, randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
 import { cache } from "react";
 import { db } from "./db";
+import { secret as envSecret } from "./secrets";
 
 export const SESSION_COOKIE = "pad_session";
 const SESSION_DAYS = 30;
 
 function hashToken(token: string) {
-  const secret = process.env.AUTH_SECRET;
+  const secret = envSecret("AUTH_SECRET");
   if (!secret) throw new Error("AUTH_SECRET is not set");
   return createHmac("sha256", secret).update(token).digest("hex");
 }

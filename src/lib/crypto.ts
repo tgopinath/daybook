@@ -1,9 +1,10 @@
 import "server-only";
 import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
+import { secret } from "./secrets";
 
 // AES-256-GCM for vault fields. Output format: v1.<iv>.<tag>.<ciphertext> (base64url).
 function key(): Buffer {
-  const raw = process.env.VAULT_ENCRYPTION_KEY;
+  const raw = secret("VAULT_ENCRYPTION_KEY");
   if (!raw) throw new Error("VAULT_ENCRYPTION_KEY is not set");
   const buf = Buffer.from(raw, "base64");
   if (buf.length !== 32) throw new Error("VAULT_ENCRYPTION_KEY must be 32 bytes (base64)");

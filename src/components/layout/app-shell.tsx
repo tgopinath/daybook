@@ -16,6 +16,7 @@ import { SearchPalette } from "@/components/search/search-palette";
 import { ReminderRunner } from "@/components/notifications/reminder-runner";
 import { TaskDialogHost, openTaskDialog } from "@/components/tasks/task-dialog";
 import { EventDialogHost } from "@/components/calendar/event-dialog";
+import { NativeLooks } from "./native-looks";
 
 function isTyping(e: KeyboardEvent) {
   const el = e.target as HTMLElement | null;
@@ -71,11 +72,29 @@ function useAppearance() {
   }, [s?.theme, s?.accentColor, s?.density, s?.timezone]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+/** Shown on every screen in demo mode (no database configured). */
+function DemoBanner() {
+  return (
+    <div role="note" className="demo-banner flex items-center gap-2 border-b border-line bg-primary-soft px-4 py-1.5 text-[13px] text-fg">
+      <span className="rounded bg-primary px-1.5 py-px text-[11px] font-semibold uppercase tracking-wide text-white">Demo</span>
+      <span className="min-w-0 sm:hidden">Sample data. Changes are private to you and reset.</span>
+      <span className="hidden min-w-0 sm:inline">
+        Sample data for a fictional user. Your changes are private to this browser and reset after a while, so don&apos;t enter real personal details.
+      </span>
+    </div>
+  );
+}
+
+export function AppShell({ children, demo = false }: { children: React.ReactNode; demo?: boolean }) {
   const pathname = usePathname();
   useShortcuts();
   useAppearance();
   const { aiPanelOpen } = ui.use();
+
+  useEffect(() => {
+    if (demo) document.documentElement.dataset.demo = "1";
+    else delete document.documentElement.dataset.demo;
+  }, [demo]);
 
   useEffect(() => {
     try {
@@ -94,11 +113,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <SWRConfig value={{ errorRetryCount: 2 }}>
-      <div className="flex h-dvh overflow-hidden">
+      <NativeLooks />
+      <div className="app-root flex h-dvh overflow-hidden">
         <div className="hidden lg:block">
           <Sidebar />
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
+          {demo && <DemoBanner />}
           <Topbar />
           <main id="main" className="min-h-0 flex-1 overflow-y-auto scroll-thin">
             <AnimatePresence mode="wait" initial={false}>

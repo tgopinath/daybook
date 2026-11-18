@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { runDispatcher } from "@/lib/dispatcher";
+import { isDemo } from "@/lib/demo-mode";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ function isLoopbackAddr(a: string) {
  * Without a secret, only requests addressed to and forwarded from localhost are accepted.
  */
 function authorised(req: NextRequest) {
+  if (isDemo()) return false; // no scheduled jobs in demo mode
   const secret = process.env.CRON_SECRET;
   if (secret) {
     const got = req.headers.get("authorization") ?? "";

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { body, route } from "@/lib/api";
+import { ApiError, body, route } from "@/lib/api";
+import { isDemo } from "@/lib/demo-mode";
 
 const schema = z.object({
   endpoint: z.string().url().max(2000),
@@ -9,6 +10,7 @@ const schema = z.object({
 
 /** Stores the browser's PushSubscription (from PushSubscription.toJSON()). */
 export const POST = route(async ({ req, user }) => {
+  if (isDemo()) throw new ApiError(403, "Push notifications are off in the demo");
   const sub = await body(req, schema);
   if (!sub.endpoint.startsWith("https://")) return Response.json({ error: "Push endpoint must use HTTPS" }, { status: 400 });
   await db.pushSubscription.upsert({
@@ -23,5 +25,5 @@ export const POST = route(async ({ req, user }) => {
 /** Number of devices currently subscribed for this user. */
 export const GET = route(async ({ user }) => {
   const devices = await db.pushSubscription.count({ where: { userId: user.id } });
-  return { devices, configured: !!(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) };
+  return { devices, configured: !isDemo() && !!(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) };
 });

@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
 import { ApiError, query, route } from "@/lib/api";
 import { storagePath } from "@/lib/tasks";
+import { isDemo } from "@/lib/demo-mode";
 
 export const runtime = "nodejs";
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -21,6 +22,7 @@ export const GET = route(async ({ req, user }) => {
 
 /** POST multipart/form-data: file, taskId? → { item } */
 export const POST = route(async ({ req, user }) => {
+  if (isDemo()) throw new ApiError(403, "Attachments are off in the demo");
   const declared = Number(req.headers.get("content-length") || 0);
   if (declared > MAX_BYTES + 64 * 1024) throw new ApiError(413, "File is larger than 10 MB");
   let form: FormData;

@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 export function Topbar() {
   const { aiPanelOpen } = ui.use();
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-line bg-bg/85 px-4 backdrop-blur-md md:px-6">
+    <header className="site-header sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-line bg-bg/85 px-4 backdrop-blur-md md:px-6">
       <button className="-ml-1 rounded-lg p-2 text-fg-2 hover:bg-surface-2 lg:hidden" onClick={() => ui.set({ mobileNavOpen: true })} aria-label="Open navigation">
         <MenuIcon className="h-5 w-5" />
       </button>

@@ -47,6 +47,23 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"     
 npm run vapid                                                                     # VAPID keys
 ```
 
+## Demo mode (no database)
+
+Without `DATABASE_URL` Daybook runs as a public demo (this is how the public portfolio deployment runs):
+
+- The data lives in an in-memory Postgres ([PGlite](https://pglite.dev), schema from `prisma/migrations`) inside the server process.
+- Every browser gets its own fictional sample account (Alex Rivera, from `seedDemoData`), so visitors never see each other's changes. Accounts are removed after 6 hours, and everything resets when the server restarts.
+- A "Demo" banner is shown on every screen. Sign-up and sign-in redirect to the demo.
+- AI stays off unless `ANTHROPIC_API_KEY` (or `OPENAI_API_KEY`) is set; the per-user and per-server rate limits still apply.
+- No Web Push, no scheduled dispatcher, no cron, no file attachments.
+- `AUTH_SECRET` and `VAULT_ENCRYPTION_KEY` fall back to random per-process values.
+
+Run it locally with `DATABASE_URL= npm run dev`. Set `DATABASE_URL` (and the other variables above) for the full app.
+
+## Phone apps
+
+Inside the Android app (Capacitor shell) the page uses Material Design 3 and inside the iPhone app (Daybook-iOS) Apple's HIG, via the Kolam M3 and iOS kits loaded in `src/app/layout.tsx` (`src/components/layout/native-looks.tsx`). Browsers keep the web look; preview with `?app=android` or `?app=ios`.
+
 ## Scripts
 
 | Script | What it does |
