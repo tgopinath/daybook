@@ -23,6 +23,8 @@ export const GET = route(async ({ req, user }) => {
 /** POST multipart/form-data: file, taskId? → { item } */
 export const POST = route(async ({ req, user }) => {
   if (isDemo()) throw new ApiError(403, "Attachments are off in the demo");
+  // Serverless hosts (Vercel) have a read-only, throwaway file system: refuse clearly instead of failing.
+  if (process.env.VERCEL && !process.env.STORAGE_DIR) throw new ApiError(503, "File attachments need persistent storage, which isn't set up on this server yet.");
   const declared = Number(req.headers.get("content-length") || 0);
   if (declared > MAX_BYTES + 64 * 1024) throw new ApiError(413, "File is larger than 10 MB");
   let form: FormData;
