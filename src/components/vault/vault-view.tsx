@@ -70,7 +70,7 @@ export function VaultView() {
 
   const exportVault = async () => {
     try {
-      await downloadFromApi("/api/vault/export", "daybook-vault.json");
+      await downloadFromApi("/api/vault/export", "mydiary-vault.json");
       toast.success("Vault exported — the file contains your decrypted data, keep it safe");
     } catch (err) {
       toastError(err);

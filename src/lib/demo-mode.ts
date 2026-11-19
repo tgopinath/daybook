@@ -10,7 +10,9 @@ export function isDemo() {
 export const DEMO_NAME = "Alex Rivera";
 /** Cookie naming this browser's demo account ("<key>.<timezone>"), so any server instance can rebuild it. */
 export const DEMO_COOKIE = "pad_demo";
-export const DEMO_EMAIL_DOMAIN = "demo.daybook.invalid";
+export const DEMO_EMAIL_DOMAIN = "demo.mydiary.invalid";
+/** Sample accounts created by "Explore demo" (any deployment) use this domain. */
+export const isDemoEmail = (email: string) => email.endsWith(`@${DEMO_EMAIL_DOMAIN}`) || email.endsWith("@demo.daybook.invalid");
 /** Demo accounts older than this are removed when a new visitor starts. */
 export const DEMO_TTL_MS = 6 * 3600_000;
 /** At most this many demo accounts are kept in memory at once (oldest removed first). */

@@ -21,6 +21,8 @@ export async function hashPassword(password: string) {
 }
 
 export async function verifyPassword(password: string, hash: string) {
+  // Google-only and demo accounts store a non-bcrypt marker: no password can match it.
+  if (!hash.startsWith("$2")) return false;
   return bcrypt.compare(password, hash);
 }
 
@@ -46,7 +48,15 @@ export async function destroySession() {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE)?.value;
   if (token) await db.session.deleteMany({ where: { tokenHash: hashToken(token) } });
-  jar.delete(SESSION_COOKIE);
+  clearCookie(jar, SESSION_COOKIE);
+}
+
+/**
+ * Expires a cookie set with sessionCookieOptions(). A plain delete wouldn't match the Partitioned
+ * demo cookies, which would then keep the visitor signed in.
+ */
+export function clearCookie(jar: Awaited<ReturnType<typeof cookies>>, name: string) {
+  jar.set(name, "", { ...sessionCookieOptions(), maxAge: 0 });
 }
 
 /** Current user for this request, or null. Cached per request. */

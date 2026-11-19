@@ -1,4 +1,4 @@
-# Daybook — Personal AI Dashboard
+# MyDiary — Personal AI Dashboard
 
 One workspace for tasks, goals, reminders, calendar, habits, notes and personal information, with an AI assistant that understands all of it.
 
@@ -17,13 +17,34 @@ npm install
 cp .env.example .env          # then fill in the secrets (see below)
 npm run db:local              # starts a local Postgres (Prisma dev server); leave it running
 npm run db:migrate            # applies migrations in prisma/migrations
-npm run db:seed               # optional: creates a demo account with sample data
+npm run db:seed               # optional: creates a local account with sample data
 npm run dev                   # http://localhost:3300
 ```
 
 `npm run db:local` runs Prisma's embedded local Postgres, so you don't need to install anything. It prints a `postgres://` URL. Use it for both `DATABASE_URL` (keep `&connection_limit=1&pgbouncer=true` on the end) and `DIRECT_URL`. Any regular PostgreSQL 14+ works too. Just point both URLs at it and drop the `pgbouncer` parameter unless you use a pooler.
 
-The seed creates a local-only demo account. Its credentials are in [`prisma/seed.ts`](prisma/seed.ts). You can also sign up from the UI, and new accounts can start with sample data or empty.
+The seed creates a local-only demo account. Its credentials are in [`prisma/seed.ts`](prisma/seed.ts). You can also sign up from the UI (new accounts start empty unless you tick "Add sample data"), sign in with Google once it's configured, or choose **Explore the demo** on the sign-in screen.
+
+## Google sign-in
+
+MyDiary uses Google's OAuth 2.0 authorization-code flow on the server, with PKCE, `state` and `nonce` (`src/lib/google.ts`, `src/app/api/auth/google/`). The browser never handles tokens or the client secret: the callback exchanges the code, verifies the ID token's signature (Google's published keys), issuer, audience, expiry, nonce and verified email, then signs the person in with the same session cookie as email sign-in.
+
+Accounts:
+- **First Google sign-in** creates an account (no password; one can be added later in Settings → Profile).
+- **Returning Google users** are matched by their Google account ID, even if their Gmail address changed.
+- **Existing email/password accounts** with the same verified email get Google linked to them, and their password keeps working.
+
+Setup:
+1. In [Google Cloud Console](https://console.cloud.google.com/apis/credentials), create (or pick) a project and configure the **OAuth consent screen**: app name *MyDiary*, support email, scopes `openid`, `email` and `profile`. While it's in *Testing*, add your Google accounts as test users.
+2. Create credentials → **OAuth client ID** → *Web application*.
+3. Add the **authorised redirect URIs**, one per environment:
+   - `http://localhost:3300/api/auth/google/callback`
+   - `https://<your-domain>/api/auth/google/callback`
+4. Put the client ID and secret in `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`, set `APP_URL` in production, and restart the server.
+
+## Explore the demo
+
+The sign-in screen has a secondary **Explore the demo** link. The demo never starts by itself. Choosing it creates a throwaway sample account (Alex Rivera, from `seedDemoData`) under a reserved email domain, with no password. It's kept apart from every real account, so nothing done in the demo touches real data. A banner with **Exit demo** shows on every screen; exiting (or signing out) deletes the sample account, and any left behind are removed after 6 hours.
 
 ### Environment variables
 
@@ -38,6 +59,8 @@ The seed creates a local-only demo account. Its credentials are in [`prisma/seed
 | `AI_MODEL` | no | Model override (defaults: `claude-sonnet-5` / `gpt-4.1`) |
 | `STORAGE_DIR` | no | Private folder for task attachments (default `./storage`) |
 | `CRON_SECRET` | no | Bearer token for calling `/api/cron/dispatch` from an external scheduler |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | for Google sign-in | OAuth 2.0 web client. Without them the "Continue with Google" button shows as unavailable |
+| `APP_URL` | recommended in production | Public base URL (no trailing slash); the Google redirect URI is `APP_URL/api/auth/google/callback` |
 
 Generate secrets:
 
@@ -49,11 +72,11 @@ npm run vapid                                                                   
 
 ## Demo mode (no database)
 
-Without `DATABASE_URL` Daybook runs as a public demo (this is how the public portfolio deployment runs):
+Without `DATABASE_URL` MyDiary runs as a demo-only preview (this is how the public portfolio deployment runs):
 
 - The data lives in an in-memory Postgres ([PGlite](https://pglite.dev), schema from `prisma/migrations`) inside the server process.
 - Every browser gets its own fictional sample account (Alex Rivera, from `seedDemoData`), so visitors never see each other's changes. Accounts are removed after 6 hours, and everything resets when the server restarts. Serverless hosts run several instances, each with its own database, so a `pad_demo` cookie names the account and any instance rebuilds it with fresh sample data when it first sees the browser (changes made on one instance may not show on another).
-- A "Demo" banner is shown on every screen. Sign-up and sign-in redirect to the demo.
+- The sign-in screen explains that accounts aren't available and offers **Explore the demo**; nothing starts automatically. To skip the sign-in screen (for example from the portfolio), link straight to `/api/demo/start`.
 - AI stays off unless `ANTHROPIC_API_KEY` (or `OPENAI_API_KEY`) is set; the per-user and per-server rate limits still apply.
 - No Web Push, no scheduled dispatcher, no cron, no file attachments.
 - `AUTH_SECRET` and `VAULT_ENCRYPTION_KEY` fall back to random per-process values.
@@ -62,7 +85,7 @@ Run it locally with `DATABASE_URL= npm run dev`. Set `DATABASE_URL` (and the oth
 
 ## Phone apps
 
-Inside the Android app (Capacitor shell) the page uses Material Design 3 and inside the iPhone app (Daybook-iOS) Apple's HIG, via the Kolam M3 and iOS kits loaded in `src/app/layout.tsx` (`src/components/layout/native-looks.tsx`). Browsers keep the web look; preview with `?app=android` or `?app=ios`.
+Inside the Android app (Capacitor shell) the page uses Material Design 3 and inside the iPhone app (MyDiary-iOS; older builds send Daybook-iOS) Apple's HIG, via the Kolam M3 and iOS kits loaded in `src/app/layout.tsx` (`src/components/layout/native-looks.tsx`). Browsers keep the web look; preview with `?app=android` or `?app=ios`.
 
 ## Scripts
 
@@ -155,6 +178,6 @@ Quick Capture (⌘K) parses input locally with `chrono-node` ("Basic parsing") a
 
 ## Not included (yet)
 
-- Google sign-in. Email and password are fully implemented, and the session layer is ready for an OAuth provider.
 - Email delivery of notifications. The setting is shown as unavailable instead of pretending to work.
+- Password reset by email (needs email delivery). Google sign-in is the recovery path for linked accounts.
 - Languages other than English.

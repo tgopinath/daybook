@@ -9,7 +9,7 @@ const MAX_ITERATIONS = 5;
 
 export async function systemPrompt(userId: string, tz: string, now = new Date()) {
   const snapshot = await buildSnapshot(userId, tz, now);
-  return `You are Daybook's assistant: a concise, practical productivity assistant inside the user's personal dashboard (tasks, goals, habits, reminders, calendar, notes).
+  return `You are MyDiary's assistant: a concise, practical productivity assistant inside the user's personal dashboard (tasks, goals, habits, reminders, calendar, notes).
 
 Rules:
 - Use tools to look things up instead of guessing. IDs in the snapshot below are real; use them.

@@ -3,7 +3,7 @@
 /**
  * Native looks inside the phone apps, from the shared Kolam kits (loaded in app/layout.tsx):
  * - Android app (Capacitor shell, or ?app=android): Material Design 3 top app bar + navigation bar (KolamM3).
- * - iPhone app (Daybook-iOS shell, or ?app=ios): Apple HIG navigation bar + tab bar (KolamIOS).
+ * - iPhone app (MyDiary-iOS or legacy Daybook-iOS shell, or ?app=ios): Apple HIG navigation bar + tab bar (KolamIOS).
  * In a normal browser both kits stay off and the website keeps its own look.
  */
 import { useEffect, useRef } from "react";
@@ -29,9 +29,9 @@ const openMore = () => ui.set({ mobileNavOpen: true });
 const tabOf = (path: string) => TABS.find((t) => path.startsWith(t.href))?.id;
 const titleOf = (path: string) => {
   for (const s of NAV) for (const i of s.items) if (i.href && path.startsWith(i.href)) return i.label;
-  return "Daybook";
+  return "MyDiary";
 };
-/** Daybook marks dark mode with html.dark; the kits read data-theme. */
+/** MyDiary marks dark mode with html.dark; the kits read data-theme. */
 function mirrorTheme() {
   const html = document.documentElement;
   const sync = () => html.setAttribute("data-theme", html.classList.contains("dark") ? "dark" : "light");
@@ -50,8 +50,8 @@ export function NativeLooks() {
   useEffect(() => {
     const go = (href: string) => router.push(href);
     const ios = window.KolamIOS?.init({
-      appName: "Daybook",
-      uaTokens: ["Daybook-iOS"],
+      appName: "MyDiary",
+      uaTokens: ["MyDiary-iOS", "Daybook-iOS"],
       tint: { light: "#635BFF", dark: "#9B95FF" },
       tabs: [
         ...TABS.map((t) => ({ id: t.id, label: t.label, icon: t.ios, href: t.href })),
@@ -72,7 +72,7 @@ export function NativeLooks() {
       mode.current = "android";
       m3.current = window.KolamM3.init({
         primary: "#635BFF",
-        title: "Daybook",
+        title: "MyDiary",
         home: "/overview",
         destinations: [
           ...TABS.map((t) => ({ id: t.id, label: t.label, icon: t.m3, onSelect: () => go(t.href) })),

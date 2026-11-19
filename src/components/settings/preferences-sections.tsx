@@ -215,7 +215,7 @@ export function NotificationsSection({ me }: { me: Me }) {
   ];
 
   return (
-    <Section id="notifications" title="Notifications" description="Choose what Daybook tells you about, and how.">
+    <Section id="notifications" title="Notifications" description="Choose what MyDiary tells you about, and how.">
       <Row
         label={
           <span className="flex items-center gap-2">
@@ -227,7 +227,7 @@ export function NotificationsSection({ me }: { me: Me }) {
             ? "Your browser is blocking notifications for this site. Allow them in the site settings, then reload."
             : perm === "unsupported"
               ? "This browser doesn't support notifications. In-app alerts still work."
-              : "Show reminders and alerts even when Daybook is in the background."
+              : "Show reminders and alerts even when MyDiary is in the background."
         }
       >
         <div className="flex items-center gap-3">

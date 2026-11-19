@@ -8,8 +8,8 @@ export const POST = route(async ({ user }) => {
   const devices = await db.pushSubscription.count({ where: { userId: user.id } });
   if (!devices) throw new ApiError(400, "No devices are subscribed yet. Allow notifications in this browser first.");
   const sent = await sendPush(user.id, {
-    title: "Daybook notifications are on",
-    body: "This is a test. Reminders will appear like this, even when Daybook is closed.",
+    title: "MyDiary notifications are on",
+    body: "This is a test. Reminders will appear like this, even when MyDiary is closed.",
     link: "/reminders",
     tag: `test-${Date.now()}`,
   });

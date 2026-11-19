@@ -46,6 +46,8 @@ export function ProfileSection({ me }: { me: Me }) {
   const [uploading, setUploading] = useState(false);
   const [emailOpen, setEmailOpen] = useState(false);
   const [pwOpen, setPwOpen] = useState(false);
+  const hasPassword = me.account?.hasPassword ?? true;
+  const isDemoAccount = me.account?.demo ?? false;
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => setName(me.user.name), [me.user.name]);
@@ -74,7 +76,7 @@ export function ProfileSection({ me }: { me: Me }) {
   const tzBrowser = browserTz();
 
   return (
-    <Section id="profile" title="Profile" description="How you appear in Daybook and how we reach you.">
+    <Section id="profile" title="Profile" description="How you appear in MyDiary and how we reach you.">
       <Row label="Profile picture" hint="PNG or JPEG up to 2 MB. We crop it to a square.">
         <div className="flex items-center gap-3">
           {me.user.avatarUrl ? (
@@ -127,17 +129,32 @@ export function ProfileSection({ me }: { me: Me }) {
         </form>
       </Row>
 
-      <Row label="Email" hint={me.user.email}>
-        <Button variant="outline" size="sm" onClick={() => setEmailOpen(true)}>
+      <Row label="Email" hint={hasPassword ? me.user.email : `${me.user.email} · set a password to change it`}>
+        <Button variant="outline" size="sm" onClick={() => setEmailOpen(true)} disabled={!hasPassword || isDemoAccount}>
           Change email
         </Button>
       </Row>
 
-      <Row label="Password" hint="Changing it signs you out on other devices.">
-        <Button variant="outline" size="sm" onClick={() => setPwOpen(true)}>
-          Change password
+      <Row
+        label="Password"
+        hint={
+          isDemoAccount
+            ? "Demo accounts sign in without a password."
+            : hasPassword
+              ? "Changing it signs you out on other devices."
+              : "You sign in with Google. Add a password to also sign in with your email."
+        }
+      >
+        <Button variant="outline" size="sm" onClick={() => setPwOpen(true)} disabled={isDemoAccount}>
+          {hasPassword ? "Change password" : "Set password"}
         </Button>
       </Row>
+
+      {me.account?.google && (
+        <Row label="Google" hint="You can sign in with Continue with Google.">
+          <span className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-success-soft px-2.5 text-[13px] font-medium text-success">Connected</span>
+        </Row>
+      )}
 
       <Row
         label="Time zone"
@@ -162,7 +179,7 @@ export function ProfileSection({ me }: { me: Me }) {
       </Row>
 
       <ChangeEmailDialog open={emailOpen} onOpenChange={setEmailOpen} current={me.user.email} />
-      <ChangePasswordDialog open={pwOpen} onOpenChange={setPwOpen} />
+      <ChangePasswordDialog open={pwOpen} onOpenChange={setPwOpen} hasPassword={hasPassword} />
     </Section>
   );
 }
@@ -313,7 +330,7 @@ function ChangeEmailDialog({ open, onOpenChange, current }: { open: boolean; onO
   );
 }
 
-function ChangePasswordDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+function ChangePasswordDialog({ open, onOpenChange, hasPassword }: { open: boolean; onOpenChange: (o: boolean) => void; hasPassword: boolean }) {
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
@@ -331,8 +348,9 @@ function ChangePasswordDialog({ open, onOpenChange }: { open: boolean; onOpenCha
     if (next !== confirmPw) return toast.error("The new passwords don't match");
     setBusy(true);
     try {
-      await api.post("/api/account/password", { currentPassword: current, newPassword: next });
-      toast.success("Password changed. Other devices were signed out.");
+      await api.post("/api/account/password", { ...(hasPassword ? { currentPassword: current } : {}), newPassword: next });
+      toast.success(hasPassword ? "Password changed. Other devices were signed out." : "Password set. You can now also sign in with your email.");
+      void refresh("/api/me");
       onOpenChange(false);
     } catch (err) {
       toastError(err);
@@ -345,14 +363,14 @@ function ChangePasswordDialog({ open, onOpenChange }: { open: boolean; onOpenCha
       open={open}
       onOpenChange={onOpenChange}
       size="sm"
-      title="Change password"
+      title={hasPassword ? "Change password" : "Set a password"}
       footer={
         <>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={submit} loading={busy} disabled={!current || next.length < 8 || next !== confirmPw}>
-            Change password
+          <Button onClick={submit} loading={busy} disabled={(hasPassword && !current) || next.length < 8 || next !== confirmPw}>
+            {hasPassword ? "Change password" : "Set password"}
           </Button>
         </>
       }
@@ -364,9 +382,11 @@ function ChangePasswordDialog({ open, onOpenChange }: { open: boolean; onOpenCha
           void submit();
         }}
       >
-        <Field label="Current password">
-          <Input type="password" autoComplete="current-password" value={current} onChange={(e) => setCurrent(e.target.value)} autoFocus />
-        </Field>
+        {hasPassword && (
+          <Field label="Current password">
+            <Input type="password" autoComplete="current-password" value={current} onChange={(e) => setCurrent(e.target.value)} autoFocus />
+          </Field>
+        )}
         <Field label="New password" hint="At least 8 characters.">
           <Input type="password" autoComplete="new-password" value={next} onChange={(e) => setNext(e.target.value)} />
         </Field>

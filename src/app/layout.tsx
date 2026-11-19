@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Daybook", template: "%s · Daybook" },
+  title: { default: "MyDiary", template: "%s · MyDiary" },
   description: "Your personal AI dashboard for tasks, goals, reminders, calendar, habits and notes.",
   manifest: "/manifest.webmanifest",
   icons: { icon: "/icon.svg" },
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@500&display=swap" rel="stylesheet" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         {/* Native looks only inside the phone apps (Material 3 on Android, Apple HIG on iPhone); inert in browsers. */}
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}

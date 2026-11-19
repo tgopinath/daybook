@@ -21,7 +21,8 @@ const color = z.string().regex(/^#[0-9a-fA-F]{6}$/).catch("#635BFF");
 const flag = z.boolean().default(false);
 
 const schema = z.object({
-  app: z.literal("daybook", { errorMap: () => ({ message: "This isn't a Daybook export file" }) }),
+  // "daybook" files come from before the rename to MyDiary and import the same way.
+  app: z.enum(["mydiary", "daybook"], { errorMap: () => ({ message: "This isn't a MyDiary export file" }) }),
   version: z.literal(1, { errorMap: () => ({ message: "Unsupported export version" }) }),
   categories: arr(z.object({ id, name: str(80), color: color.optional(), kind: str(20).default("general") })),
   projects: arr(z.object({ id, name: str(80), color: color.optional(), archived: flag })),
@@ -184,7 +185,7 @@ function summarize(d: Input, vaultSkipped: number) {
 }
 
 /**
- * Imports a Daybook export as new rows under the current user.
+ * Imports a MyDiary export as new rows under the current user.
  * `?dryRun=1` validates and returns the summary without writing anything.
  */
 export const POST = route(async ({ req, user }) => {

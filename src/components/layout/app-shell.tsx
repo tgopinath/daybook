@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { SWRConfig } from "swr";
@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/toast";
 import { ConfirmHost } from "@/components/ui/confirm";
 import { ui, openQuickCapture, openSearch, toggleAIPanel } from "@/lib/ui-store";
 import { useMe } from "@/lib/use-me";
+import { api } from "@/lib/client";
 import { AIPanel } from "@/components/ai/ai-panel";
 import { QuickCapture } from "@/components/capture/quick-capture";
 import { SearchPalette } from "@/components/search/search-palette";
@@ -72,15 +73,31 @@ function useAppearance() {
   }, [s?.theme, s?.accentColor, s?.density, s?.timezone]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
-/** Shown on every screen in demo mode (no database configured). */
+/** Shown on every screen while exploring the demo (a throwaway sample account). */
 function DemoBanner() {
+  const [leaving, setLeaving] = useState(false);
+  async function exit() {
+    setLeaving(true);
+    try {
+      await api.post("/api/auth/logout"); // also deletes the sample account
+    } finally {
+      window.location.assign("/login");
+    }
+  }
   return (
     <div role="note" className="demo-banner flex items-center gap-2 border-b border-line bg-primary-soft px-4 py-1.5 text-[13px] text-fg">
       <span className="rounded bg-primary px-1.5 py-px text-[11px] font-semibold uppercase tracking-wide text-white">Demo</span>
-      <span className="min-w-0 sm:hidden">Sample data. Changes are private to you and reset.</span>
-      <span className="hidden min-w-0 sm:inline">
-        Sample data for a fictional user. Your changes are private to this browser and reset after a while, so don&apos;t enter real personal details.
+      <span className="min-w-0 flex-1 truncate sm:hidden">Sample data. Your changes are temporary.</span>
+      <span className="hidden min-w-0 flex-1 sm:inline">
+        You&apos;re exploring MyDiary with sample data for a fictional user. Changes are temporary and kept apart from real accounts, so don&apos;t enter real personal details.
       </span>
+      <button
+        onClick={exit}
+        disabled={leaving}
+        className="shrink-0 rounded-md px-2 py-0.5 text-[13px] font-semibold text-primary hover:bg-primary/10 disabled:opacity-60"
+      >
+        {leaving ? "Leaving…" : "Exit demo"}
+      </button>
     </div>
   );
 }

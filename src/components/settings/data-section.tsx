@@ -41,7 +41,7 @@ export function DataSection({ me }: { me: Me }) {
   const download = async (kind: "export" | "backup") => {
     setExporting(kind);
     try {
-      const name = await downloadFromApi(kind === "backup" ? "/api/account/export?backup=1" : "/api/account/export", `daybook-${kind}.json`);
+      const name = await downloadFromApi(kind === "backup" ? "/api/account/export?backup=1" : "/api/account/export", `mydiary-${kind}.json`);
       toast.success(`Downloaded ${name}`);
     } catch (err) {
       toastError(err);
@@ -121,7 +121,7 @@ export function DataSection({ me }: { me: Me }) {
           {exporting !== "backup" && <Archive className="h-3.5 w-3.5" />} Download backup
         </Button>
       </Row>
-      <Row label="Import data" hint="Add items from a Daybook export. They're added as new items — nothing you have now is overwritten.">
+      <Row label="Import data" hint="Add items from a MyDiary export. They're added as new items — nothing you have now is overwritten.">
         <>
           <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={(e) => pickFile(e.target.files?.[0])} />
           <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()} loading={checking}>
@@ -184,12 +184,12 @@ export function DataSection({ me }: { me: Me }) {
         )}
       </Dialog>
 
-      <DeleteAccountDialog open={deleteOpen} onOpenChange={setDeleteOpen} email={me.user.email} />
+      <DeleteAccountDialog open={deleteOpen} onOpenChange={setDeleteOpen} email={me.user.email} needsPassword={me.account?.hasPassword ?? true} />
     </Section>
   );
 }
 
-function DeleteAccountDialog({ open, onOpenChange, email }: { open: boolean; onOpenChange: (o: boolean) => void; email: string }) {
+function DeleteAccountDialog({ open, onOpenChange, email, needsPassword }: { open: boolean; onOpenChange: (o: boolean) => void; email: string; needsPassword: boolean }) {
   const [typed, setTyped] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -201,10 +201,10 @@ function DeleteAccountDialog({ open, onOpenChange, email }: { open: boolean; onO
   }, [open]);
   const matches = typed.trim().toLowerCase() === email.toLowerCase();
   const submit = async () => {
-    if (!matches || !password) return;
+    if (!matches || (needsPassword && !password)) return;
     setBusy(true);
     try {
-      await api.post("/api/account/delete", { email: typed.trim(), password });
+      await api.post("/api/account/delete", { email: typed.trim(), ...(needsPassword ? { password } : {}) });
       window.location.href = "/signup";
     } catch (err) {
       toastError(err);
@@ -222,7 +222,7 @@ function DeleteAccountDialog({ open, onOpenChange, email }: { open: boolean; onO
           <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={busy}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={submit} loading={busy} disabled={!matches || !password}>
+          <Button variant="danger" onClick={submit} loading={busy} disabled={!matches || (needsPassword && !password)}>
             Delete account forever
           </Button>
         </>
@@ -241,9 +241,11 @@ function DeleteAccountDialog({ open, onOpenChange, email }: { open: boolean; onO
         <Field label={`Type ${email} to confirm`}>
           <Input value={typed} onChange={(e) => setTyped(e.target.value)} autoComplete="off" autoCapitalize="none" spellCheck={false} />
         </Field>
-        <Field label="Password">
-          <Input type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        </Field>
+        {needsPassword && (
+          <Field label="Password">
+            <Input type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          </Field>
+        )}
       </form>
     </Dialog>
   );

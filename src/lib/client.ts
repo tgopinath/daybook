@@ -30,7 +30,7 @@ async function request<T>(method: string, url: string, data?: unknown): Promise<
     credentials: "same-origin",
   });
   if (res.status === 401 && typeof window !== "undefined" && !url.startsWith("/api/auth")) {
-    window.location.href = `/login?next=${encodeURIComponent(location.pathname)}`;
+    window.location.href = `/login?reason=expired&next=${encodeURIComponent(location.pathname)}`;
   }
   const text = await res.text();
   const json = text ? JSON.parse(text) : null;

@@ -34,7 +34,7 @@ export const GET = route(async ({ req, user }) => {
     ]);
 
   const data = {
-    app: "daybook",
+    app: "mydiary",
     version: 1,
     exportedAt: new Date().toISOString(),
     user: { name: user.name, email: user.email, createdAt: user.createdAt },
@@ -68,7 +68,7 @@ export const GET = route(async ({ req, user }) => {
   return new NextResponse(JSON.stringify(data, null, 2), {
     headers: {
       "content-type": "application/json",
-      "content-disposition": `attachment; filename="daybook-${stamp}.json"`,
+      "content-disposition": `attachment; filename="mydiary-${stamp}.json"`,
       "cache-control": "no-store, private",
     },
   });

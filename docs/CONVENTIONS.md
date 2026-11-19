@@ -1,4 +1,4 @@
-# Daybook — code conventions
+# MyDiary — code conventions
 
 Next.js 15 App Router + React 19 + TypeScript (strict) + Tailwind v4 + Prisma 6 (PostgreSQL).
 Read `prisma/schema.prisma` first — it is the source of truth for the data model.
