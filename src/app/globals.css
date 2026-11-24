@@ -5,24 +5,25 @@
 :root {
   --primary: #635bff;
   --primary-hover: #544ce6;
-  --primary-soft: #efeeff;
-  --bg: #f8f9fb;
-  --surface: #ffffff;
-  --surface-2: #f3f4f7;
-  --text: #202124;
-  --text-2: #737780;
-  --text-3: #9a9ea6;
-  --border: #e8eaf0;
-  --border-strong: #d9dce4;
+  --primary-soft: #f0eefc;
+  /* Warm, paper-like neutrals: a personal diary rather than an office tool */
+  --bg: #f8f5f0;
+  --surface: #fffdfa;
+  --surface-2: #f3eee6;
+  --text: #2b2723;
+  --text-2: #776f66;
+  --text-3: #a39a8f;
+  --border: #ebe4d9;
+  --border-strong: #ddd4c6;
   --success: #20a779;
   --success-soft: #e6f6f0;
   --warning: #e9a23b;
   --warning-soft: #fcf3e4;
   --danger: #e45d5d;
   --danger-soft: #fcecec;
-  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
-  --shadow-md: 0 4px 16px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.04);
-  --shadow-lg: 0 16px 48px rgba(16, 24, 40, 0.12), 0 2px 6px rgba(16, 24, 40, 0.05);
+  --shadow-sm: 0 1px 2px rgba(60, 40, 20, 0.05);
+  --shadow-md: 0 6px 18px rgba(60, 40, 20, 0.07), 0 1px 3px rgba(60, 40, 20, 0.05);
+  --shadow-lg: 0 18px 48px rgba(60, 40, 20, 0.14), 0 2px 6px rgba(60, 40, 20, 0.06);
   --row-h: 44px;
   --gap: 20px;
   color-scheme: light;
@@ -30,15 +31,15 @@
 
 .dark {
   --primary-hover: #7a73ff;
-  --primary-soft: #26244a;
-  --bg: #0f1013;
-  --surface: #17181c;
-  --surface-2: #1f2025;
-  --text: #ececef;
-  --text-2: #a0a3ab;
-  --text-3: #6f727a;
-  --border: #2a2c33;
-  --border-strong: #363942;
+  --primary-soft: #2a2640;
+  --bg: #13110f;
+  --surface: #1b1916;
+  --surface-2: #24211d;
+  --text: #efe9e1;
+  --text-2: #aba296;
+  --text-3: #776f65;
+  --border: #2f2b26;
+  --border-strong: #3c3731;
   --success-soft: #143328;
   --warning-soft: #3a2c14;
   --danger-soft: #3b1d1d;
@@ -75,6 +76,8 @@
   --shadow-pop: var(--shadow-md);
   --shadow-modal: var(--shadow-lg);
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Page titles, greetings and journal headings */
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
   --radius-card: 14px;
 }
 
@@ -163,3 +166,7 @@ html.native-app .app-root main .pb-28 { padding-bottom: 1.5rem; }
 .dark .gsi-button { background: #131314; border-color: #8e918f; color: #e3e3e3; }
 .dark .gsi-button:not(:disabled):hover { background: #202124; }
 .dark .gsi-button:disabled:not([aria-busy="true"]) { background: rgba(19,19,20,.38); border-color: rgba(142,145,143,.3); color: rgba(227,227,227,.38); }
+
+/* Personal touches: serif display headings, softer type for writing */
+.font-display { font-family: var(--font-display); font-optical-sizing: auto; font-variation-settings: "SOFT" 50, "WONK" 0; letter-spacing: -0.01em; }
+.prose-editor h1, .prose-editor h2, .prose-editor h3 { font-family: var(--font-display); font-weight: 600; }

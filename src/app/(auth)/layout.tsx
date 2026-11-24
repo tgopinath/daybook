@@ -13,7 +13,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         </div>
         <div className="relative z-10 max-w-[440px]">
           <DiaryIllustration />
-          <h2 className="mt-10 text-[30px] leading-[1.15] font-semibold tracking-tight text-fg">Organise your life, one day at a time.</h2>
+          <h2 className="font-display mt-10 text-[34px] leading-[1.12] font-semibold text-fg">Organise your life, one day at a time.</h2>
           <p className="mt-3 text-[15px] leading-relaxed text-fg-2">Tasks, goals, habits, reminders and notes, together in one calm place.</p>
         </div>
         <p className="text-[12.5px] text-fg-3">Private by default. Your personal information is encrypted at rest.</p>

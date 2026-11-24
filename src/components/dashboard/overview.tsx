@@ -39,7 +39,7 @@ function Header({ data }: { data?: DashboardData }) {
         {data ? (
           <>
             <p className="text-[12.5px] font-medium text-fg-3">{data.today.label}</p>
-            <h1 className="mt-0.5 truncate text-[22px] font-semibold tracking-tight md:text-[24px]">
+            <h1 className="font-display mt-0.5 truncate text-[26px] font-semibold md:text-[30px]">
               {data.today.greeting}
               {data.today.firstName ? `, ${data.today.firstName}` : ""}
             </h1>

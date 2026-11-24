@@ -64,3 +64,6 @@ Typography: page titles 22px semibold (use `PageHeader`), section titles 15px se
 See `prisma/schema.prisma` (section "Phase 1"): `JournalEntry` (+`JournalTag`, `JournalMedia`), `GratitudeEntry`, `MoodEntry`, `Album`, `Memory` (+`MemoryMedia`), `PhotoCollection`, `PhotoEntry`, `BucketItem`, `TimelineEvent` (+`TimelineMedia`), `WeeklyReview`; `UserSettings.dashboardWidgets` (Overview layout) and `googlePhotosTokenEnc/Expires`.
 Mood values everywhere: `happy | excited | calm | neutral | sad | anxious | stressed | angry` (shared metadata in `src/lib/moods.ts`). Day keys are `yyyy-MM-dd` in the user's timezone (`dayKey`/`tzOf`).
 Journal entries with `isPrivate` are excluded from global search previews and from anything sent to AI.
+
+## Personal look (Nov 2026)
+Warm paper-like neutrals (tokens in `globals.css`), purple accent unchanged. Use `font-display` (Fraunces serif) for page titles (already in `PageHeader`), greetings, journal/memory titles and big numbers that should feel personal; keep controls, labels and body UI in the default sans. Prefer gentle, human copy ("What's on your mind today?") over system copy. Keep it minimal: no gradients or decorative textures.

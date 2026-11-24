@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F8F9FB" },
-    { media: "(prefers-color-scheme: dark)", color: "#0F1013" },
+    { media: "(prefers-color-scheme: light)", color: "#F8F5F0" },
+    { media: "(prefers-color-scheme: dark)", color: "#13110F" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@500&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..700,50&family=Inter:wght@400;500;600;700&family=Roboto:wght@500&display=swap" rel="stylesheet" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         {/* Native looks only inside the phone apps (Material 3 on Android, Apple HIG on iPhone); inert in browsers. */}
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}

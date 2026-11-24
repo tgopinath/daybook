@@ -76,7 +76,12 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
     >
       <div className={cn("flex h-14 items-center gap-2 px-4", collapsed && "justify-center px-0")}>
         <img src="/icon.svg" alt="" className="h-7 w-7" />
-        {!collapsed && <span className="flex-1 text-[15px] font-semibold tracking-tight">MyDiary</span>}
+        {!collapsed && (
+          <span className="flex min-w-0 flex-1 flex-col leading-tight">
+            <span className="font-display text-[16px] font-semibold">MyDiary</span>
+            {me?.user.name && <span className="truncate text-[11.5px] text-fg-3">{me.user.name.split(/\s+/)[0]}&apos;s diary</span>}
+          </span>
+        )}
         {!mobile && !collapsed && (
           <button onClick={() => ui.set({ sidebarCollapsed: true })} className="rounded-md p-1 text-fg-3 hover:bg-surface hover:text-fg" aria-label="Collapse sidebar" title="Collapse (⌘\)">
             <PanelLeftClose className="h-4 w-4" />

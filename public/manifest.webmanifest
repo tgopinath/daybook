@@ -3,7 +3,7 @@
   "short_name": "MyDiary",
   "start_url": "/overview",
   "display": "standalone",
-  "background_color": "#F8F9FB",
+  "background_color": "#F8F5F0",
   "theme_color": "#635BFF",
   "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
 }
