@@ -2,6 +2,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { body, route } from "@/lib/api";
 import { isValidTz } from "@/lib/time";
+import { publicSettings } from "@/lib/public-settings";
 
 const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Use HH:mm");
 
@@ -32,7 +33,7 @@ const schema = z
 
 export const GET = route(async ({ user }) => {
   const settings = await db.userSettings.upsert({ where: { userId: user.id }, update: {}, create: { userId: user.id } });
-  return { settings };
+  return { settings: publicSettings(settings) };
 });
 
 export const PATCH = route(async ({ req, user }) => {
@@ -42,5 +43,5 @@ export const PATCH = route(async ({ req, user }) => {
   const workEnd = input.workEnd ?? current.workEnd;
   if (workEnd <= workStart) return Response.json({ error: "Working hours must end after they start" }, { status: 400 });
   const settings = await db.userSettings.update({ where: { userId: user.id }, data: input });
-  return { settings };
+  return { settings: publicSettings(settings) };
 });

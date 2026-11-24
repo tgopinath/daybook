@@ -8,6 +8,7 @@ import { Badge, Segmented } from "@/components/ui/misc";
 import { toast, toastError } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import { Row, Section, useSaveSettings, type SettingsPatch } from "./shared";
+import { WhatsAppRow } from "./whatsapp-row";
 
 const ACCENTS = [
   { name: "Indigo", value: "#635BFF" },
@@ -268,6 +269,7 @@ export function NotificationsSection({ me }: { me: Me }) {
           <Switch checked={s[t.key]} onChange={(v) => save({ [t.key]: v })} label={t.label} />
         </Row>
       ))}
+      <WhatsAppRow demo={me.account?.demo ?? false} />
       <Row label="Email notifications" hint="Email delivery isn't configured on this server.">
         <div className="pointer-events-none opacity-50" aria-disabled="true" title="Email delivery isn't configured on this server">
           <Switch checked={false} onChange={() => {}} label="Email notifications (unavailable)" />

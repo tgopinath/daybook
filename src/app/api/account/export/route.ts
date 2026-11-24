@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { query, route } from "@/lib/api";
 import { decryptJSON } from "@/lib/crypto";
+import { publicSettings } from "@/lib/public-settings";
 
 function strip<T extends Record<string, unknown>>(row: T) {
   const { userId: _u, ...rest } = row as T & { userId?: unknown };
@@ -38,7 +39,7 @@ export const GET = route(async ({ req, user }) => {
     version: 1,
     exportedAt: new Date().toISOString(),
     user: { name: user.name, email: user.email, createdAt: user.createdAt },
-    settings: settings ? strip(settings) : null,
+    settings: settings ? strip(publicSettings(settings)) : null,
     categories: categories.map(strip),
     projects: projects.map(strip),
     tags: tags.map(strip),

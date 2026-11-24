@@ -128,6 +128,13 @@ model UserSettings {
   notifyHabits         Boolean  @default(true)
   notifyCalendar       Boolean  @default(true)
   notifyAI             Boolean  @default(true)
+  // WhatsApp reminders (Meta WhatsApp Cloud API). The number is E.164 digits without "+".
+  whatsappNumber       String?
+  whatsappVerified     Boolean  @default(false)
+  whatsappReminders    Boolean  @default(false)
+  whatsappCodeHash     String?  // HMAC of the pending 6-digit verification code
+  whatsappCodeExpires  DateTime?
+  whatsappCodeAttempts Int      @default(0)
   updatedAt            DateTime @updatedAt
   user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -454,6 +461,7 @@ model Notification {
   readAt     DateTime?
   snoozedUntil DateTime?
   delivered  Boolean          @default(false) // pushed to a device
+  whatsappSent Boolean        @default(false) // also sent as a WhatsApp message
   createdAt  DateTime         @default(now())
   user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 

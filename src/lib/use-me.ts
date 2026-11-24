@@ -6,6 +6,8 @@ export type Me = {
   user: Wire<Pick<User, "id" | "email" | "name" | "avatarUrl" | "createdAt">>;
   settings: Wire<UserSettings>;
   hasDemoData: boolean;
+  /** WhatsApp Cloud API credentials are configured on the server. */
+  whatsappAvailable?: boolean;
   /** How this account signs in. `demo` = throwaway sample account from "Explore demo". */
   account?: { hasPassword: boolean; google: boolean; demo: boolean };
 };

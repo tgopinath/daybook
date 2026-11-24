@@ -42,6 +42,22 @@ Setup:
    - `https://<your-domain>/api/auth/google/callback`
 4. Put the client ID and secret in `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`, set `APP_URL` in production, and restart the server.
 
+## WhatsApp reminders
+
+Reminders can also arrive as WhatsApp messages, sent through Meta's WhatsApp Cloud API (`src/lib/whatsapp.ts`). Each person adds their number in **Settings → Notifications → WhatsApp reminders**. MyDiary sends a 6-digit code on WhatsApp to confirm the number is theirs (10-minute expiry, 5 attempts), and only then sends reminders. They can turn it off, send a test, change or remove the number at any time. Only reminders are sent (not other alerts), at most 40 per person per day; demo accounts can't use it.
+
+WhatsApp only allows businesses to start conversations with **pre-approved templates**, and Meta charges per message for utility and authentication templates (see Meta's pricing for your country).
+
+Setup:
+1. Create a Meta app at [developers.facebook.com](https://developers.facebook.com/apps) → *Create app* → use case **Connect with customers through WhatsApp**, and link or create a **Meta Business portfolio**.
+2. In the app, open **WhatsApp → API Setup**. For testing, Meta gives you a test sender number and lets you message up to 5 verified recipient numbers. For real use, add your own phone number (one not already used on the WhatsApp app) and complete **business verification** in Business Settings.
+3. Create two message templates in **WhatsApp Manager → Message templates**, language *English* (`en`):
+   - `mydiary_reminder`: category **Utility**, body `Reminder: {{1}} ({{2}}). Open MyDiary to snooze or mark it done.`, with sample values like *Pay electricity bill* and *Due 6:00 PM*.
+   - `mydiary_verify`: category **Authentication**, code delivery **Copy code**. The body text is fixed by Meta (*"{{1}} is your verification code."*).
+   Wait until both show **Active / Approved**.
+4. Create a permanent token: **Business Settings → Users → System users** → add a system user (Admin) → **Assign assets** (your app and WhatsApp account) → **Generate token** with `whatsapp_business_messaging` and `whatsapp_business_management`. (The temporary token on the API Setup page expires after 24 hours.)
+5. Set `WHATSAPP_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID` (shown on the API Setup page) in your environment, then redeploy.
+
 ## Explore the demo
 
 The sign-in screen has a secondary **Explore the demo** link. The demo never starts by itself. Choosing it creates a throwaway sample account (Alex Rivera, from `seedDemoData`) under a reserved email domain, with no password. It's kept apart from every real account, so nothing done in the demo touches real data. A banner with **Exit demo** shows on every screen; exiting (or signing out) deletes the sample account, and any left behind are removed after 6 hours.
@@ -60,6 +76,8 @@ The sign-in screen has a secondary **Explore the demo** link. The demo never sta
 | `STORAGE_DIR` | no | Private folder for task attachments (default `./storage`) |
 | `CRON_SECRET` | no | Bearer token for calling `/api/cron/dispatch` from an external scheduler |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | for Google sign-in | OAuth 2.0 web client. Without them the "Continue with Google" button shows as unavailable |
+| `WHATSAPP_TOKEN` / `WHATSAPP_PHONE_NUMBER_ID` | for WhatsApp reminders | Meta WhatsApp Cloud API credentials. Without them WhatsApp shows as unavailable in Settings |
+| `WHATSAPP_REMINDER_TEMPLATE` / `WHATSAPP_VERIFY_TEMPLATE` / `WHATSAPP_TEMPLATE_LANG` | no | Approved template names (defaults `mydiary_reminder`, `mydiary_verify`, `en`) |
 | `APP_URL` | recommended in production | Public base URL (no trailing slash); the Google redirect URI is `APP_URL/api/auth/google/callback` |
 
 Generate secrets:

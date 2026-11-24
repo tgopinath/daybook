@@ -2,6 +2,7 @@ import "server-only";
 import type { NotificationType } from "@prisma/client";
 import { db } from "./db";
 import { sendPush } from "./push";
+import { DAILY_CAP, sendReminderMessage, whatsappConfigured } from "./whatsapp";
 
 const PREF: Partial<Record<NotificationType, "notifyOverdue" | "notifyHabits" | "notifyCalendar" | "notifyAI">> = {
   TASK_OVERDUE: "notifyOverdue",
@@ -31,6 +32,18 @@ export async function notify(
   const row = await db.notification.create({
     data: { userId, type: n.type, title: n.title, body: n.body, link: n.link, sourceId: n.sourceId },
   });
+  // WhatsApp: reminders only, to a verified number the user switched on, within the daily cap.
+  if (n.type === "REMINDER" && settings?.whatsappReminders && settings.whatsappVerified && settings.whatsappNumber && whatsappConfigured()) {
+    try {
+      const sentToday = await db.notification.count({ where: { userId, whatsappSent: true, createdAt: { gte: new Date(Date.now() - 864e5) } } });
+      if (sentToday < DAILY_CAP) {
+        await sendReminderMessage(settings.whatsappNumber, n.title, n.body ?? "Reminder");
+        await db.notification.update({ where: { id: row.id }, data: { whatsappSent: true } });
+      }
+    } catch (err) {
+      console.error("WhatsApp delivery failed", err);
+    }
+  }
   if (n.push !== false && (settings?.browserNotifications ?? true)) {
     // A push failure must never lose the in-app notification.
     try {
