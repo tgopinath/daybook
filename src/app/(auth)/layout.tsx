@@ -27,6 +27,9 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
             <span className="text-lg font-semibold tracking-tight">MyDiary</span>
           </div>
           {children}
+          <p className="mt-10 text-center text-[12px] text-fg-3">
+            <a href="/privacy" className="hover:text-fg-2 hover:underline">Privacy policy</a>
+          </p>
         </div>
       </section>
     </main>

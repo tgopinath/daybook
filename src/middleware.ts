@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // Edge gate: redirects signed-out visitors to /login. The session itself is
 // verified against the database in every API route and server layout.
 // The demo never starts on its own: visitors choose "Explore demo" on the sign-in screen.
-const PUBLIC = ["/login", "/signup", "/api/auth", "/api/cron", "/api/demo", "/sw.js", "/manifest.webmanifest", "/icon.svg"];
+const PUBLIC = ["/login", "/signup", "/privacy", "/api/auth", "/api/cron", "/api/demo", "/sw.js", "/manifest.webmanifest", "/icon.svg"];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
