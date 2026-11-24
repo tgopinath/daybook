@@ -6,15 +6,15 @@
   --primary: #635bff;
   --primary-hover: #544ce6;
   --primary-soft: #f0eefc;
-  /* Warm, paper-like neutrals: a personal diary rather than an office tool */
-  --bg: #f8f5f0;
-  --surface: #fffdfa;
-  --surface-2: #f3eee6;
+  /* Plain white surfaces with soft, slightly warm text and borders */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f6f5f3;
   --text: #2b2723;
-  --text-2: #776f66;
-  --text-3: #a39a8f;
-  --border: #ebe4d9;
-  --border-strong: #ddd4c6;
+  --text-2: #736c64;
+  --text-3: #a19a92;
+  --border: #ecebe7;
+  --border-strong: #dedcd6;
   --success: #20a779;
   --success-soft: #e6f6f0;
   --warning: #e9a23b;

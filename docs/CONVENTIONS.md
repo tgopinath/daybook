@@ -66,4 +66,4 @@ Mood values everywhere: `happy | excited | calm | neutral | sad | anxious | stre
 Journal entries with `isPrivate` are excluded from global search previews and from anything sent to AI.
 
 ## Personal look (Nov 2026)
-Warm paper-like neutrals (tokens in `globals.css`), purple accent unchanged. Use `font-display` (Fraunces serif) for page titles (already in `PageHeader`), greetings, journal/memory titles and big numbers that should feel personal; keep controls, labels and body UI in the default sans. Prefer gentle, human copy ("What's on your mind today?") over system copy. Keep it minimal: no gradients or decorative textures.
+Plain white background and cards (the user prefers white), soft warm-grey text and borders, purple accent unchanged. Use `font-display` (Fraunces serif) for page titles (already in `PageHeader`), greetings, journal/memory titles and big numbers that should feel personal; keep controls, labels and body UI in the default sans. Prefer gentle, human copy ("What's on your mind today?") over system copy. Keep it minimal: no gradients or decorative textures.
