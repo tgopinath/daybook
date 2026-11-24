@@ -1,6 +1,7 @@
 import {
   LayoutDashboard, CheckSquare, Target, CalendarDays, Bell, Repeat, StickyNote, Shield,
-  Sparkles, CalendarClock, Zap, BarChart3, Archive, Trash2, Settings, type LucideIcon,
+  Sparkles, CalendarClock, Zap, BarChart3, Archive, Trash2, Settings, BookOpen, Heart, Smile,
+  Images, Mountain, History, Camera, ClipboardCheck, type LucideIcon,
 } from "lucide-react";
 
 export type NavItem = { label: string; href?: string; icon: LucideIcon; action?: "quick-capture"; shortcut?: string };
@@ -16,14 +17,25 @@ export const NAV: { section: string; items: NavItem[] }[] = [
       { label: "Reminders", href: "/reminders", icon: Bell },
       { label: "Habits", href: "/habits", icon: Repeat },
       { label: "Notes", href: "/notes", icon: StickyNote },
+      { label: "Journal", href: "/journal", icon: BookOpen },
+      { label: "Gratitude", href: "/gratitude", icon: Heart },
+      { label: "Mood Tracker", href: "/mood", icon: Smile },
+      { label: "Memories", href: "/memories", icon: Images },
+      { label: "Bucket List", href: "/bucket-list", icon: Mountain },
+      { label: "Life Timeline", href: "/timeline", icon: History },
       { label: "Personal Information", href: "/vault", icon: Shield },
     ],
+  },
+  {
+    section: "Personal Collections",
+    items: [{ label: "Photo Diary", href: "/photos", icon: Camera }],
   },
   {
     section: "Smart Tools",
     items: [
       { label: "AI Assistant", href: "/assistant", icon: Sparkles },
       { label: "Daily Planner", href: "/planner", icon: CalendarClock },
+      { label: "Weekly Review", href: "/weekly-review", icon: ClipboardCheck },
       { label: "Quick Capture", icon: Zap, action: "quick-capture", shortcut: "⌘K" },
       { label: "Insights", href: "/insights", icon: BarChart3 },
     ],

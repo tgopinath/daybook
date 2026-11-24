@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { PanelLeftClose, PanelLeftOpen, Plus, LogOut, Settings, ChevronsUpDown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { PanelLeftClose, PanelLeftOpen, Plus, LogOut, Settings, ChevronsUpDown, ChevronDown } from "lucide-react";
 import { NAV, type NavItem } from "./nav";
 import { ui, openQuickCapture } from "@/lib/ui-store";
 import { useMe } from "@/lib/use-me";
@@ -16,6 +17,20 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
   const { sidebarCollapsed } = ui.use();
   const collapsed = !mobile && sidebarCollapsed;
   const { data: me } = useMe();
+  const [closedGroups, setClosedGroups] = useState<string[]>([]);
+  useEffect(() => {
+    try {
+      setClosedGroups(JSON.parse(localStorage.getItem("pad-nav-closed") || "[]"));
+    } catch {}
+  }, []);
+  const toggleGroup = (section: string) =>
+    setClosedGroups((prev) => {
+      const next = prev.includes(section) ? prev.filter((s) => s !== section) : [...prev, section];
+      try {
+        localStorage.setItem("pad-nav-closed", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
 
   const itemClass = (active: boolean) =>
     cn(
@@ -81,16 +96,29 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 pb-3 scroll-thin" style={collapsed ? { paddingInline: 8 } : undefined}>
-        {NAV.map((group) => (
-          <div key={group.section} className="mt-4 first:mt-2">
-            {!collapsed ? (
-              <div className="mb-1 px-2 text-[11px] font-medium tracking-wide text-fg-3 uppercase">{group.section}</div>
-            ) : (
-              <div className="mx-auto mb-2 h-px w-6 bg-line" />
-            )}
-            <div className="flex flex-col gap-0.5">{group.items.map(renderItem)}</div>
-          </div>
-        ))}
+        {NAV.map((group) => {
+          // A group stays open while it holds the current page, whatever was saved.
+          const holdsActive = group.items.some((i) => i.href && (pathname === i.href || pathname.startsWith(i.href + "/")));
+          const open = collapsed || holdsActive || !closedGroups.includes(group.section);
+          return (
+            <div key={group.section} className="mt-4 first:mt-2">
+              {!collapsed ? (
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(group.section)}
+                  aria-expanded={open}
+                  className="group/h mb-1 flex w-full items-center gap-1 rounded-md px-2 py-0.5 text-left text-[11px] font-medium tracking-wide text-fg-3 uppercase hover:text-fg-2"
+                >
+                  <span className="flex-1">{group.section}</span>
+                  <ChevronDown className={cn("h-3.5 w-3.5 opacity-0 transition-transform group-hover/h:opacity-100 focus-visible:opacity-100", !open && "-rotate-90 opacity-100")} />
+                </button>
+              ) : (
+                <div className="mx-auto mb-2 h-px w-6 bg-line" />
+              )}
+              {open && <div className="flex flex-col gap-0.5">{group.items.map(renderItem)}</div>}
+            </div>
+          );
+        })}
       </nav>
 
       {collapsed && (

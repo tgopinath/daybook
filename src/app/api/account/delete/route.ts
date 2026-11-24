@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { ApiError, body, route } from "@/lib/api";
 import { destroySession, throttle, verifyPassword } from "@/lib/auth";
 import { hasPassword } from "@/lib/google";
+import { deleteObjects } from "@/lib/storage";
 
 const schema = z.object({ email: z.string().trim().toLowerCase(), password: z.string().optional() });
 
@@ -15,7 +16,10 @@ export const POST = route(async ({ req, user }) => {
   if (!row) throw new ApiError(404, "Account not found");
   // Accounts without a password (Google sign-in) confirm with their typed email alone; they're already signed in.
   if (hasPassword(row.passwordHash) && !(await verifyPassword(input.password ?? "", row.passwordHash))) throw new ApiError(400, "Password is incorrect");
+  // Stored photos and files aren't covered by the database cascade, so remove them too.
+  const media = await db.mediaFile.findMany({ where: { userId: user.id }, select: { storageKey: true } });
   await destroySession();
   await db.user.delete({ where: { id: user.id } });
+  await deleteObjects(media.map((m) => m.storageKey)).catch((err) => console.error("[account] media cleanup failed", err));
   return { ok: true };
 });

@@ -53,3 +53,14 @@ Typography: page titles 22px semibold (use `PageHeader`), section titles 15px se
 - Sign in with curl: `curl -s -c /tmp/x.jar -H 'content-type: application/json' -d '{"email":"…","password":"…"}' localhost:3300/api/auth/login` then `curl -b /tmp/x.jar -H 'x-tz: Asia/Kolkata' localhost:3300/api/...`.
 - Typecheck: `npx tsc --noEmit` (other modules are being built in parallel; fix only errors in your own files).
 - Do NOT run `npm install` for new packages, do not edit `prisma/schema.prisma`, `package.json`, `src/lib/{api,auth,client,db,time,recurrence,notify,push,crypto,ui-store,use-me}.ts`, `src/components/ui/*` or `src/components/layout/*`. If you truly need a change there, describe it in your final report instead.
+
+## Media (photos, videos, audio, documents) — Phase 1+
+- Upload from the client with `uploadFile(file, { onProgress })` from `@/lib/upload` (downscales big photos, PUTs straight to object storage when configured, then confirms). It returns a `Media` (`id`, `kind`, `url`, …). `media.url` (`/api/media/:id`) is authenticated: use it directly in `<img src>` / `<video src>`.
+- UI: `MediaUploader` (drop zone or `variant="button"`, calls `onUploaded(media)` per file), `MediaThumb`, `MediaGrid` (with viewer + optional `onRemove`), `MediaViewer` — all from `@/components/media/media`. `ACCEPT` presets in `@/lib/upload`.
+- Server: rows reference `MediaFile` through join tables (`JournalMedia`, `MemoryMedia`, `TimelineMedia`) or a `mediaId` column (`PhotoEntry`, `BucketItem.imageMediaId`). When linking, **verify every mediaId belongs to the user** (`db.mediaFile.count({ where: { id: { in: ids }, userId: user.id, status: "ready" } })`). Serialize with `serializeMedia` from `@/lib/media`. Unlinking a file from a record should not delete the file; deleting a record permanently may delete media used only by it (`deleteObjects` from `@/lib/storage` + delete the MediaFile row).
+- Uploads are refused for demo accounts and when no storage is configured (clear 403/503 messages) — surface the API error with `toastError`.
+
+## Phase 1 data model
+See `prisma/schema.prisma` (section "Phase 1"): `JournalEntry` (+`JournalTag`, `JournalMedia`), `GratitudeEntry`, `MoodEntry`, `Album`, `Memory` (+`MemoryMedia`), `PhotoCollection`, `PhotoEntry`, `BucketItem`, `TimelineEvent` (+`TimelineMedia`), `WeeklyReview`; `UserSettings.dashboardWidgets` (Overview layout) and `googlePhotosTokenEnc/Expires`.
+Mood values everywhere: `happy | excited | calm | neutral | sad | anxious | stressed | angry` (shared metadata in `src/lib/moods.ts`). Day keys are `yyyy-MM-dd` in the user's timezone (`dayKey`/`tzOf`).
+Journal entries with `isPrivate` are excluded from global search previews and from anything sent to AI.
