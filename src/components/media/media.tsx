@@ -153,7 +153,7 @@ export function MediaThumb({ media, alt = "", className, onClick }: { media: Pic
           </span>
         </>
       )}
-      {(media.kind === "audio" || media.kind === "document") && (
+      {(media.kind === "audio" || media.kind === "document" || media.kind === "file") && (
         <span className="flex h-full w-full flex-col items-center justify-center gap-1 p-2 text-fg-3">
           {media.kind === "audio" ? <Music className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
           <span className="line-clamp-2 text-center text-[11px]">{media.originalName}</span>

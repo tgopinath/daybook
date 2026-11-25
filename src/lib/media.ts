@@ -11,6 +11,18 @@ export const MEDIA_RULES = {
   video: { types: ["video/mp4", "video/quicktime", "video/webm"], maxBytes: 250 * 1024 * 1024 },
   audio: { types: ["audio/webm", "audio/ogg", "audio/mpeg", "audio/mp4", "audio/x-m4a", "audio/wav", "audio/aac"], maxBytes: 50 * 1024 * 1024 },
   document: { types: ["application/pdf"], maxBytes: 25 * 1024 * 1024 },
+  // My Storage: everyday files. Always served as a download (never rendered inline).
+  file: {
+    types: [
+      "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "application/vnd.oasis.opendocument.text", "application/vnd.oasis.opendocument.spreadsheet", "application/vnd.oasis.opendocument.presentation",
+      "text/plain", "text/csv", "text/markdown", "application/json", "application/rtf",
+      "application/zip", "application/x-zip-compressed", "application/epub+zip",
+    ],
+    maxBytes: 100 * 1024 * 1024,
+  },
 } as const;
 export type MediaKind = keyof typeof MEDIA_RULES;
 
@@ -19,6 +31,12 @@ const EXT: Record<string, string> = {
   "video/mp4": "mp4", "video/quicktime": "mov", "video/webm": "webm",
   "audio/webm": "weba", "audio/ogg": "ogg", "audio/mpeg": "mp3", "audio/mp4": "m4a", "audio/x-m4a": "m4a", "audio/wav": "wav", "audio/aac": "aac",
   "application/pdf": "pdf",
+  "application/msword": "doc", "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+  "application/vnd.ms-excel": "xls", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+  "application/vnd.ms-powerpoint": "ppt", "application/vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
+  "application/vnd.oasis.opendocument.text": "odt", "application/vnd.oasis.opendocument.spreadsheet": "ods", "application/vnd.oasis.opendocument.presentation": "odp",
+  "text/plain": "txt", "text/csv": "csv", "text/markdown": "md", "application/json": "json", "application/rtf": "rtf",
+  "application/zip": "zip", "application/x-zip-compressed": "zip", "application/epub+zip": "epub",
 };
 
 export function kindOf(mimeType: string): MediaKind | null {
@@ -32,7 +50,7 @@ export function checkUpload(user: { email: string }, mimeType: string, size: num
   if (isDemoEmail(user.email)) throw new ApiError(403, "Uploading files isn't available in the demo");
   if (!storageAvailable()) throw new ApiError(503, "Photo and file storage isn't set up on this server yet");
   const kind = kindOf(mimeType);
-  if (!kind) throw new ApiError(415, "That file type isn't supported. Use photos (JPG, PNG, WebP, HEIC), videos (MP4, MOV), audio or PDF.");
+  if (!kind) throw new ApiError(415, "That file type isn't supported. Use photos, videos, audio, PDF, Office/OpenDocument files, text, CSV or ZIP.");
   const max = MEDIA_RULES[kind].maxBytes;
   if (size <= 0) throw new ApiError(400, "The file is empty");
   if (size > max) throw new ApiError(413, `That ${kind} is larger than ${Math.round(max / 1024 / 1024)} MB`);

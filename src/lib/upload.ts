@@ -4,7 +4,7 @@ import { api, HttpError } from "./client";
 /** What the media API returns for a file (see src/lib/media.ts → serializeMedia). */
 export type Media = {
   id: string;
-  kind: "image" | "video" | "audio" | "document";
+  kind: "image" | "video" | "audio" | "document" | "file";
   mimeType: string;
   size: number;
   width: number | null;

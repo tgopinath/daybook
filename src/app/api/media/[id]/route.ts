@@ -13,7 +13,9 @@ export const GET = route<{ id: string }>(async ({ req, user, params }) => {
   if (!media) throw notFound("File");
   const q = query(req);
   if (q.has("meta")) return { media: serializeMedia(media) };
-  const downloadName = q.has("download") ? media.originalName || `mydiary-${media.id}` : undefined;
+  // Everyday files (Office docs, text, ZIP…) are only ever downloaded, never rendered in the browser.
+  const forceDownload = q.has("download") || media.kind === "file";
+  const downloadName = forceDownload ? media.originalName || `mydiary-${media.id}` : undefined;
   const url = await presignDownload(media.storageKey, { downloadName, contentType: media.mimeType });
   if (url) return NextResponse.redirect(url, { status: 302, headers: { "cache-control": "private, max-age=600" } });
   return new Response(readLocalObject(media.storageKey), {
@@ -22,6 +24,7 @@ export const GET = route<{ id: string }>(async ({ req, user, params }) => {
       "content-length": String(media.size),
       "cache-control": "private, max-age=3600",
       "x-content-type-options": "nosniff",
+      "content-security-policy": "sandbox; default-src 'none'",
       ...(downloadName ? { "content-disposition": `attachment; filename*=UTF-8''${encodeURIComponent(downloadName)}` } : {}),
     },
   });

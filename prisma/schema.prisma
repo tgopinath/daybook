@@ -70,6 +70,9 @@ model User {
   // bcrypt hash; accounts created through Google sign-in hold a non-bcrypt marker until a password is set
   passwordHash String
   googleId     String?  @unique // Google account "sub", set on first Google sign-in
+  // Two-step verification (authenticator app, RFC 6238 TOTP). Secret is AES-GCM encrypted.
+  totpSecretEnc String?
+  totpEnabledAt DateTime?
   avatarUrl    String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -102,6 +105,12 @@ model User {
   bucketItems       BucketItem[]
   timelineEvents    TimelineEvent[]
   weeklyReviews     WeeklyReview[]
+  financeAccounts   FinanceAccount[]
+  transactions      Transaction[]
+  budgets           Budget[]
+  driveFolders      DriveFolder[]
+  driveFiles        DriveFile[]
+  backupCodes       BackupCode[]
 }
 
 model Session {
@@ -110,6 +119,7 @@ model Session {
   tokenHash String   @unique
   userAgent String?
   expiresAt DateTime
+  lastSeenAt DateTime @default(now())
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -151,6 +161,14 @@ model UserSettings {
   // Google Photos Picker: short-lived access token (encrypted) for importing picked photos
   googlePhotosTokenEnc     String?
   googlePhotosTokenExpires DateTime?
+  // Google Drive / Sheets (drive.file scope): short-lived access token, encrypted
+  googleDriveTokenEnc      String?
+  googleDriveTokenExpires  DateTime?
+  // Money
+  currency             String   @default("INR") // ISO 4217
+  // App lock: a PIN asked after inactivity (bcrypt hash); 0 minutes = off
+  appLockPinHash       String?
+  appLockMinutes       Int      @default(0)
   updatedAt            DateTime @updatedAt
   user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -564,6 +582,8 @@ model MediaFile {
   bucketItems  BucketItem[]
   timeline     TimelineMedia[]
   albumCovers  Album[]   @relation("AlbumCover")
+  receipts     Transaction[]
+  driveFiles   DriveFile[]
 
   @@index([userId, createdAt])
   @@index([userId, source, sourceId])
@@ -796,4 +816,116 @@ model WeeklyReview {
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, weekStart])
+}
+
+
+// ============================================================================
+// My Finance, My Storage, My Security
+// ============================================================================
+
+model FinanceAccount {
+  id             String        @id @default(cuid())
+  userId         String
+  name           String
+  type           String        @default("bank") // cash | bank | card | wallet | savings
+  openingBalance Int           @default(0) // minor units (paise, cents)
+  color          String        @default("#13601F")
+  archivedAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions   Transaction[] @relation("TxAccount")
+  transfersIn    Transaction[] @relation("TxToAccount")
+
+  @@index([userId])
+}
+
+// Amounts are integers in minor units (e.g. paise) in the user's currency.
+model Transaction {
+  id             String          @id @default(cuid())
+  userId         String
+  type           String          // expense | income | transfer
+  amount         Int             // > 0, minor units
+  accountId      String?
+  toAccountId    String?         // transfers
+  category       String          @default("Other")
+  paymentMethod  String?         // cash | upi | card | netbanking | wallet | other
+  date           String          // yyyy-MM-dd
+  note           String?
+  payee          String?
+  tags           String[]        @default([])
+  receiptMediaId String?
+  deletedAt      DateTime?
+  isDemo         Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account        FinanceAccount? @relation("TxAccount", fields: [accountId], references: [id], onDelete: SetNull)
+  toAccount      FinanceAccount? @relation("TxToAccount", fields: [toAccountId], references: [id], onDelete: SetNull)
+  receipt        MediaFile?      @relation(fields: [receiptMediaId], references: [id], onDelete: SetNull)
+
+  @@index([userId, date])
+  @@index([userId, category])
+}
+
+model Budget {
+  id        String   @id @default(cuid())
+  userId    String
+  category  String   // expense category, or "*" for the whole month
+  month     String   // yyyy-MM, or "*" for every month
+  limit     Int      // minor units
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category, month])
+}
+
+model DriveFolder {
+  id        String        @id @default(cuid())
+  userId    String
+  name      String
+  parentId  String?
+  color     String?
+  deletedAt DateTime?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent    DriveFolder?  @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children  DriveFolder[] @relation("FolderTree")
+  files     DriveFile[]
+
+  @@index([userId, parentId])
+}
+
+// A file in My Storage: a name and place for a stored MediaFile.
+model DriveFile {
+  id        String       @id @default(cuid())
+  userId    String
+  mediaId   String
+  folderId  String?
+  name      String
+  starred   Boolean      @default(false)
+  source    String       @default("upload") // upload | google_drive
+  sourceId  String?      // Google Drive file id (dedupe imports)
+  deletedAt DateTime?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  media     MediaFile    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  folder    DriveFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+
+  @@index([userId, folderId])
+}
+
+// One-time recovery codes for two-step verification (stored as HMAC).
+model BackupCode {
+  id        String    @id @default(cuid())
+  userId    String
+  codeHash  String
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

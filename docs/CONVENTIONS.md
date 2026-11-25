@@ -67,3 +67,8 @@ Journal entries with `isPrivate` are excluded from global search previews and fr
 
 ## Personal look (Nov 2026)
 Plain white background and cards (the user prefers white), soft warm-grey text and borders, purple accent unchanged. Use `font-display` (Fraunces serif) for page titles (already in `PageHeader`), greetings, journal/memory titles and big numbers that should feel personal; keep controls, labels and body UI in the default sans. Prefer gentle, human copy ("What's on your mind today?") over system copy. Keep it minimal: no gradients or decorative textures.
+
+## My spaces: Finance, Storage, Security (Nov 2026)
+Models (schema end): `FinanceAccount`, `Transaction` (amounts are **integers in minor units**, currency from `UserSettings.currency`, default INR), `Budget`, `DriveFolder`, `DriveFile` (a named, foldered pointer to a `MediaFile`), `BackupCode`; `User.totpSecretEnc/totpEnabledAt`; `Session.lastSeenAt`; `UserSettings.currency`, `appLockPinHash`, `appLockMinutes`, `googleDriveTokenEnc/Expires`.
+Media kind `file` (Office/OpenDocument, text, CSV, JSON, ZIP, EPUB; up to 100 MB) is always served as a download with a sandbox CSP.
+Google Drive and Sheets use the `https://www.googleapis.com/auth/drive.file` scope only (files the user picks or the app creates — non-sensitive). The Google Photos import uses a separate picker scope.
