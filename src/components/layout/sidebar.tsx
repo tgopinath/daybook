@@ -35,7 +35,7 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
   const itemClass = (active: boolean) =>
     cn(
       "group flex h-8 w-full items-center gap-2.5 rounded-lg px-2 text-[13.5px] transition-colors",
-      active ? "bg-surface text-fg font-medium shadow-card" : "text-fg-2 hover:bg-surface hover:text-fg",
+      active ? "bg-primary-soft text-primary font-medium" : "text-fg hover:bg-surface-2",
       collapsed && "justify-center px-0",
     );
 
@@ -43,7 +43,7 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
     const active = !!item.href && (pathname === item.href || pathname.startsWith(item.href + "/"));
     const inner = (
       <>
-        <item.icon className={cn("h-[17px] w-[17px] shrink-0", active ? "text-primary" : "opacity-80")} />
+        <item.icon className={cn("h-[17px] w-[17px] shrink-0", active ? "text-primary" : "text-fg-2")} />
         {!collapsed && <span className="flex-1 truncate text-left">{item.label}</span>}
         {!collapsed && item.shortcut && <span className="text-[11px] text-fg-3 opacity-0 group-hover:opacity-100">{item.shortcut}</span>}
       </>
