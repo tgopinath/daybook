@@ -5,6 +5,9 @@ import { db } from "@/lib/db";
 import { ApiError, query, route } from "@/lib/api";
 import { encryptJSON } from "@/lib/crypto";
 import { VAULT_CATEGORIES, vaultProblem } from "@/components/vault/guard";
+import { MOOD_VALUES } from "@/lib/moods";
+import { BUCKET_CATEGORIES } from "@/components/bucket-list/meta";
+import { DATE_PRECISIONS, TIMELINE_CATEGORIES } from "@/components/timeline/meta";
 
 // Validation for files produced by GET /api/account/export (version 1).
 const id = z.string().min(1).max(200);
@@ -19,6 +22,9 @@ const priority = z.enum(["HIGH", "MEDIUM", "LOW"]).catch("MEDIUM");
 const recurrence = z.enum(["NONE", "HOURLY", "DAILY", "WEEKLY", "MONTHLY", "YEARLY", "CUSTOM"]).catch("NONE");
 const color = z.string().regex(/^#[0-9a-fA-F]{6}$/).catch("#993399");
 const flag = z.boolean().default(false);
+const dayKey = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const mediaIds = z.array(id).max(200).default([]);
+const mood = z.enum(MOOD_VALUES);
 
 const schema = z.object({
   // "daybook" files come from before the rename to MyDiary and import the same way.
@@ -160,6 +166,100 @@ const schema = z.object({
       isDemo: flag,
     }),
   ),
+  // Phase 1 (absent in older exports).
+  journalEntries: arr(
+    z.object({
+      id,
+      title: str(200).default(""),
+      content: z.unknown().optional(),
+      plainText: str(200_000).default(""),
+      entryDate: dayKey,
+      mood: mood.nullable().optional().catch(null),
+      isPrivate: flag,
+      isDraft: flag,
+      pinned: flag,
+      wordCount: z.number().int().min(0).default(0),
+      archivedAt: optDate,
+      deletedAt: optDate,
+      isDemo: flag,
+      createdAt: optDate,
+      tagIds: z.array(id).max(50).default([]),
+      mediaIds,
+    }),
+  ),
+  gratitude: arr(z.object({ date: dayKey, items: z.array(str(500)).max(10).default([]), prompt: optStr(500), note: optStr(5000), isDemo: flag, createdAt: optDate })),
+  moods: arr(
+    z.object({
+      date: dayKey,
+      mood,
+      intensity: z.number().int().min(1).max(5).default(3),
+      note: optStr(5000),
+      factors: z.array(str(40)).max(30).default([]),
+      journalEntryId: optId,
+      loggedAt: optDate,
+      isDemo: flag,
+    }),
+  ),
+  albums: arr(z.object({ id, title: str(200), description: optStr(5000), coverMediaId: optId, createdAt: optDate })),
+  memories: arr(
+    z.object({
+      id,
+      title: str(300),
+      caption: optStr(10_000),
+      date,
+      location: optStr(300),
+      latitude: z.number().min(-90).max(90).nullable().optional(),
+      longitude: z.number().min(-180).max(180).nullable().optional(),
+      albumId: optId,
+      favorite: flag,
+      archivedAt: optDate,
+      deletedAt: optDate,
+      isDemo: flag,
+      createdAt: optDate,
+      mediaIds,
+    }),
+  ),
+  photoCollections: arr(z.object({ id, title: str(200), description: optStr(5000), createdAt: optDate })),
+  photos: arr(z.object({ mediaId: id, caption: optStr(2000), tags: z.array(str(60)).max(50).default([]), takenOn: dayKey, collectionId: optId, favorite: flag, deletedAt: optDate, createdAt: optDate })),
+  bucketItems: arr(
+    z.object({
+      title: str(200),
+      description: optStr(5000),
+      category: z.enum(BUCKET_CATEGORIES).catch("Personal"),
+      targetDate: optDate,
+      completedAt: optDate,
+      imageMediaId: optId,
+      sortOrder: z.number().default(0),
+      archivedAt: optDate,
+      deletedAt: optDate,
+      isDemo: flag,
+      createdAt: optDate,
+    }),
+  ),
+  timelineEvents: arr(
+    z.object({
+      title: str(200),
+      description: optStr(10_000),
+      date,
+      datePrecision: z.enum(DATE_PRECISIONS).catch("day"),
+      category: z.enum(TIMELINE_CATEGORIES).catch("Personal"),
+      deletedAt: optDate,
+      isDemo: flag,
+      createdAt: optDate,
+      mediaIds,
+    }),
+  ),
+  weeklyReviews: arr(
+    z.object({
+      weekStart: dayKey,
+      rating: z.number().int().min(1).max(5).nullable().optional(),
+      wins: optStr(10_000),
+      challenges: optStr(10_000),
+      lessons: optStr(10_000),
+      nextWeekFocus: optStr(10_000),
+      aiSummary: optStr(20_000),
+    }),
+  ),
 });
 
 type Input = z.infer<typeof schema>;
@@ -181,6 +281,16 @@ function summarize(d: Input, vaultSkipped: number) {
     notes: d.notes.length,
     vault: d.vault.length - vaultSkipped,
     vaultSkipped,
+    journalEntries: d.journalEntries.length,
+    gratitude: d.gratitude.length,
+    moods: d.moods.length,
+    albums: d.albums.length,
+    memories: d.memories.length,
+    photoCollections: d.photoCollections.length,
+    photos: d.photos.length,
+    bucketItems: d.bucketItems.length,
+    timelineEvents: d.timelineEvents.length,
+    weeklyReviews: d.weeklyReviews.length,
   };
 }
 
@@ -327,6 +437,80 @@ export const POST = route(async ({ req, user }) => {
     isDemo: v.isDemo,
   }));
 
+  // ---- Phase 1. Media files aren't in the export: links are kept only to files this account still owns.
+  const wantedMedia = new Set<string>([
+    ...d.journalEntries.flatMap((j) => j.mediaIds),
+    ...d.memories.flatMap((m) => m.mediaIds),
+    ...d.timelineEvents.flatMap((t) => t.mediaIds),
+    ...d.photos.map((p) => p.mediaId),
+    ...d.bucketItems.map((b) => b.imageMediaId).filter((x): x is string => !!x),
+    ...d.albums.map((a) => a.coverMediaId).filter((x): x is string => !!x),
+  ]);
+  const ownedMedia = new Set(
+    wantedMedia.size
+      ? (await db.mediaFile.findMany({ where: { userId, status: "ready", id: { in: [...wantedMedia] } }, select: { id: true } })).map((m) => m.id)
+      : [],
+  );
+  const own = (mid: string | null | undefined) => (mid && ownedMedia.has(mid) ? mid : null);
+  const links = (ids: string[]) => [...new Set(ids)].filter((x) => ownedMedia.has(x));
+  let mediaLinksSkipped = 0;
+  const countSkipped = (ids: (string | null | undefined)[]) => (mediaLinksSkipped += ids.filter((x) => x && !ownedMedia.has(x)).length);
+
+  const journalMap = map(), albumMap = map(), collectionMap = map();
+  const journal: Prisma.JournalEntryCreateManyInput[] = [];
+  const journalTags: Prisma.JournalTagCreateManyInput[] = [];
+  const journalMedia: Prisma.JournalMediaCreateManyInput[] = [];
+  for (const j of d.journalEntries) {
+    const jid = newId();
+    journalMap.set(j.id, jid);
+    const { id: _i, tagIds, mediaIds: mids, content, createdAt, mood: md, ...rest } = j;
+    const doc = content && typeof content === "object" ? (content as Prisma.InputJsonValue) : { type: "doc", content: [{ type: "paragraph" }] };
+    journal.push({ ...rest, id: jid, userId, content: doc, mood: md ?? null, ...(createdAt ? { createdAt } : {}) });
+    for (const tagId of new Set(tagIds.map((x) => tagMap.get(x)).filter((x): x is string => !!x))) journalTags.push({ entryId: jid, tagId });
+    countSkipped(mids);
+    links(mids).forEach((mediaId, i) => journalMedia.push({ entryId: jid, mediaId, sortOrder: i }));
+  }
+  const gratitude: Prisma.GratitudeEntryCreateManyInput[] = d.gratitude.map((g) => ({ ...g, userId, items: g.items.slice(0, 3), createdAt: g.createdAt ?? undefined }));
+  const moods: Prisma.MoodEntryCreateManyInput[] = d.moods.map(({ journalEntryId, loggedAt, ...m }) => ({ ...m, userId, journalEntryId: ref(journalMap, journalEntryId), ...(loggedAt ? { loggedAt } : {}) }));
+  const albums: Prisma.AlbumCreateManyInput[] = d.albums.map(({ id: aid, coverMediaId, createdAt, ...a }) => {
+    const nid = newId();
+    albumMap.set(aid, nid);
+    countSkipped([coverMediaId]);
+    return { ...a, id: nid, userId, coverMediaId: own(coverMediaId), ...(createdAt ? { createdAt } : {}) };
+  });
+  const memories: Prisma.MemoryCreateManyInput[] = [];
+  const memoryMedia: Prisma.MemoryMediaCreateManyInput[] = [];
+  for (const m of d.memories) {
+    const mid = newId();
+    const { id: _i, mediaIds: mids, albumId, createdAt, ...rest } = m;
+    memories.push({ ...rest, id: mid, userId, albumId: ref(albumMap, albumId), ...(createdAt ? { createdAt } : {}) });
+    countSkipped(mids);
+    links(mids).forEach((mediaId, i) => memoryMedia.push({ memoryId: mid, mediaId, sortOrder: i }));
+  }
+  const collections: Prisma.PhotoCollectionCreateManyInput[] = d.photoCollections.map(({ id: cid, createdAt, ...c }) => {
+    const nid = newId();
+    collectionMap.set(cid, nid);
+    return { ...c, id: nid, userId, ...(createdAt ? { createdAt } : {}) };
+  });
+  // A photo entry is its file: without the file there's nothing to show, so it's skipped.
+  const photos: Prisma.PhotoEntryCreateManyInput[] = d.photos
+    .filter((p) => (ownedMedia.has(p.mediaId) ? true : (mediaLinksSkipped++, false)))
+    .map(({ collectionId, createdAt, ...p }) => ({ ...p, userId, collectionId: ref(collectionMap, collectionId), ...(createdAt ? { createdAt } : {}) }));
+  const bucketItems: Prisma.BucketItemCreateManyInput[] = d.bucketItems.map(({ imageMediaId, createdAt, ...b }) => {
+    countSkipped([imageMediaId]);
+    return { ...b, userId, imageMediaId: own(imageMediaId), ...(createdAt ? { createdAt } : {}) };
+  });
+  const timeline: Prisma.TimelineEventCreateManyInput[] = [];
+  const timelineMedia: Prisma.TimelineMediaCreateManyInput[] = [];
+  for (const t of d.timelineEvents) {
+    const tid = newId();
+    const { mediaIds: mids, createdAt, ...rest } = t;
+    timeline.push({ ...rest, id: tid, userId, ...(createdAt ? { createdAt } : {}) });
+    countSkipped(mids);
+    links(mids).forEach((mediaId, i) => timelineMedia.push({ eventId: tid, mediaId, sortOrder: i }));
+  }
+  const reviews: Prisma.WeeklyReviewCreateManyInput[] = d.weeklyReviews.map((r) => ({ ...r, userId }));
+
   await db.$transaction(
     [
       db.category.createMany({ data: categories }),
@@ -345,8 +529,22 @@ export const POST = route(async ({ req, user }) => {
       db.note.createMany({ data: notes }),
       db.noteTag.createMany({ data: noteTags, skipDuplicates: true }),
       db.vaultItem.createMany({ data: vault }),
+      db.journalEntry.createMany({ data: journal }),
+      db.journalTag.createMany({ data: journalTags, skipDuplicates: true }),
+      db.journalMedia.createMany({ data: journalMedia, skipDuplicates: true }),
+      db.gratitudeEntry.createMany({ data: gratitude, skipDuplicates: true }),
+      db.moodEntry.createMany({ data: moods }),
+      db.album.createMany({ data: albums }),
+      db.memory.createMany({ data: memories }),
+      db.memoryMedia.createMany({ data: memoryMedia, skipDuplicates: true }),
+      db.photoCollection.createMany({ data: collections }),
+      db.photoEntry.createMany({ data: photos }),
+      db.bucketItem.createMany({ data: bucketItems }),
+      db.timelineEvent.createMany({ data: timeline }),
+      db.timelineMedia.createMany({ data: timelineMedia, skipDuplicates: true }),
+      db.weeklyReview.createMany({ data: reviews, skipDuplicates: true }),
     ],
   );
 
-  return { imported: true, summary };
+  return { imported: true, summary: { ...summary, mediaLinksSkipped } };
 });

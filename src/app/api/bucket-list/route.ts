@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { body, query, route } from "@/lib/api";
-import { assertOwnMedia, bucketFields, dayToDate, serializeBucket } from "./_lib";
+import { assertOwnMedia, bucketFields, DAY_RE, dayToDate, serializeBucket } from "./_lib";
 
 
 /**
@@ -26,10 +26,10 @@ export const GET = route(async ({ req, user }) => {
   return { items: rows.map(serializeBucket) };
 });
 
-const createSchema = z.object({ ...bucketFields, completed: z.boolean().optional() });
+const createSchema = z.object({ ...bucketFields, completed: z.boolean().optional(), completedOn: z.string().regex(DAY_RE).optional() });
 
 export const POST = route(async ({ req, user }) => {
-  const { targetDate, imageMediaId, completed, ...input } = await body(req, createSchema);
+  const { targetDate, imageMediaId, completed, completedOn, ...input } = await body(req, createSchema);
   if (imageMediaId) await assertOwnMedia(user.id, [imageMediaId]);
   const first = await db.bucketItem.findFirst({ where: { userId: user.id, deletedAt: null }, orderBy: { sortOrder: "asc" }, select: { sortOrder: true } });
   const item = await db.bucketItem.create({
@@ -38,7 +38,7 @@ export const POST = route(async ({ req, user }) => {
       userId: user.id,
       targetDate: dayToDate(targetDate) ?? null,
       imageMediaId: imageMediaId ?? null,
-      completedAt: completed ? new Date() : null,
+      completedAt: completed ? (completedOn ? dayToDate(completedOn)! : new Date()) : null,
       sortOrder: (first?.sortOrder ?? 1) - 1,
     },
     include: { image: true },

@@ -228,7 +228,7 @@ export function MediaViewer({
         <D.Content className="fixed inset-0 z-[70] flex flex-col outline-none" aria-describedby={undefined}>
           <D.Title className="sr-only">{m?.originalName || "Photo"}</D.Title>
           <div className="flex items-center justify-between gap-2 p-3 text-white">
-            <span className="text-[13px] text-white/70 tabular-nums">{index !== null ? `${index + 1} / ${items.length}` : ""}</span>
+            <span className="text-[13px] text-white tabular-nums">{index !== null ? `${index + 1} / ${items.length}` : ""}</span>
             <div className="flex items-center gap-1">
               {m && (
                 <a href={`${m.url}?download=1`} className="rounded-lg p-2 hover:bg-white/10" aria-label="Download">
@@ -261,7 +261,7 @@ export function MediaViewer({
               </>
             )}
           </div>
-          {m && caption && <div className="px-4 pb-[max(16px,env(safe-area-inset-bottom))] text-center text-[14px] text-white/85">{caption(m)}</div>}
+          {m && caption && <div className="px-4 pb-[max(16px,env(safe-area-inset-bottom))] text-center text-[14px] text-white">{caption(m)}</div>}
         </D.Content>
       </D.Portal>
     </D.Root>

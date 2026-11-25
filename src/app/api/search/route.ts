@@ -1,9 +1,11 @@
+import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { query, route, tzOf } from "@/lib/api";
 import { dayKey } from "@/lib/time";
 import { extractText } from "../notes/_lib";
+import { formatTimelineDate } from "@/components/timeline/meta";
 
-const SEARCH_TYPES = ["tasks", "goals", "reminders", "notes", "events", "vault"] as const;
+const SEARCH_TYPES = ["tasks", "goals", "reminders", "notes", "events", "vault", "journal", "memories", "photos", "bucket", "timeline", "gratitude"] as const;
 type SearchType = (typeof SEARCH_TYPES)[number];
 
 const LABELS: Record<SearchType, string> = {
@@ -13,6 +15,12 @@ const LABELS: Record<SearchType, string> = {
   notes: "Notes",
   events: "Events",
   vault: "Personal info",
+  journal: "Journal",
+  memories: "Memories",
+  photos: "Photos",
+  bucket: "Bucket list",
+  timeline: "Timeline",
+  gratitude: "Gratitude",
 };
 
 const PER_GROUP = 6;
@@ -42,7 +50,13 @@ export const GET = route(async ({ req, user }) => {
   const ci = { contains: q, mode: "insensitive" as const };
   const live = { userId, deletedAt: null };
 
-  const [tasks, goals, reminders, notes, events, vault] = await Promise.all([
+  const like = `%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
+  const fmtKey = (key: string) => {
+    const [y, m, d] = key.split("-").map(Number);
+    return new Intl.DateTimeFormat("en-US", { timeZone: "UTC", month: "short", day: "numeric", year: "numeric" }).format(new Date(Date.UTC(y!, m! - 1, d!)));
+  };
+
+  const [tasks, goals, reminders, notes, events, vault, journal, memories, photos, bucket, timeline, gratitude] = await Promise.all([
     types.has("tasks")
       ? db.task.findMany({ where: { ...live, OR: [{ title: ci }, { description: ci }] }, select: { id: true, title: true, dueDate: true, status: true, archivedAt: true }, orderBy: [{ status: "asc" }, { updatedAt: "desc" }], take: PER_GROUP })
       : [],
@@ -62,6 +76,29 @@ export const GET = route(async ({ req, user }) => {
     types.has("vault")
       ? db.vaultItem.findMany({ where: { ...live, OR: [{ title: ci }, { category: ci }] }, select: { id: true, title: true, category: true }, orderBy: { title: "asc" }, take: PER_GROUP })
       : [],
+    // Journal: private entries match on their title only and never expose their text.
+    types.has("journal")
+      ? db.journalEntry.findMany({ where: { ...live, OR: [{ title: ci }, { plainText: ci, isPrivate: false }] }, select: { id: true, title: true, entryDate: true, isPrivate: true, plainText: true, archivedAt: true }, orderBy: [{ entryDate: "desc" }, { createdAt: "desc" }], take: PER_GROUP })
+      : [],
+    types.has("memories")
+      ? db.memory.findMany({ where: { ...live, OR: [{ title: ci }, { caption: ci }, { location: ci }] }, select: { id: true, title: true, caption: true, date: true, location: true, archivedAt: true }, orderBy: { date: "desc" }, take: PER_GROUP })
+      : [],
+    types.has("photos")
+      ? db.photoEntry.findMany({ where: { ...live, OR: [{ caption: ci }, { tags: { has: q.toLowerCase().replace(/^#/, "") } }] }, select: { id: true, caption: true, tags: true, takenOn: true }, orderBy: { takenOn: "desc" }, take: PER_GROUP })
+      : [],
+    types.has("bucket")
+      ? db.bucketItem.findMany({ where: { ...live, OR: [{ title: ci }, { description: ci }] }, select: { id: true, title: true, category: true, completedAt: true, targetDate: true, archivedAt: true }, orderBy: { sortOrder: "asc" }, take: PER_GROUP })
+      : [],
+    types.has("timeline")
+      ? db.timelineEvent.findMany({ where: { ...live, OR: [{ title: ci }, { description: ci }] }, select: { id: true, title: true, category: true, date: true, datePrecision: true }, orderBy: { date: "desc" }, take: PER_GROUP })
+      : [],
+    types.has("gratitude")
+      ? db.$queryRaw<{ id: string; date: string; items: string[]; note: string | null }[]>(
+          Prisma.sql`SELECT "id", "date", "items", "note" FROM "GratitudeEntry"
+            WHERE "userId" = ${userId} AND (array_to_string("items", ' ') ILIKE ${like} OR COALESCE("note", '') ILIKE ${like})
+            ORDER BY "date" DESC LIMIT ${PER_GROUP}`,
+        )
+      : [],
   ]);
 
   const archived = (a: Date | null) => (a ? " · Archived" : "");
@@ -80,6 +117,34 @@ export const GET = route(async ({ req, user }) => {
     { type: "notes" as const, items: notes.map((n) => ({ id: n.id, title: n.title, subtitle: [n.category?.name, snippet(extractText(n.content))].filter(Boolean).join(" · ") + archived(n.archivedAt), href: `/notes?id=${n.id}` })) },
     { type: "events" as const, items: events.map((e) => ({ id: e.id, title: e.title, subtitle: e.allDay ? `${fmtDay(e.start)} · All day` : fmtDayTime(e.start), href: `/calendar?date=${dayKey(e.start, tz)}` })) },
     { type: "vault" as const, items: vault.map((v) => ({ id: v.id, title: v.title, subtitle: v.category, href: `/vault?id=${v.id}` })) },
+    {
+      type: "journal" as const,
+      items: journal.map((j) => ({
+        id: j.id,
+        title: j.title || "Untitled entry",
+        subtitle: (j.isPrivate ? `${fmtKey(j.entryDate)} · Private entry` : [fmtKey(j.entryDate), snippet(j.plainText)].filter(Boolean).join(" · ")) + archived(j.archivedAt),
+        href: `/journal?id=${j.id}`,
+      })),
+    },
+    { type: "memories" as const, items: memories.map((m) => ({ id: m.id, title: m.title, subtitle: [fmtKey(dayKey(m.date, tz)), m.location, m.caption ? snippet(m.caption) : null].filter(Boolean).join(" · ") + archived(m.archivedAt), href: `/memories?id=${m.id}` })) },
+    { type: "photos" as const, items: photos.map((p) => ({ id: p.id, title: p.caption || "Photo", subtitle: [fmtKey(p.takenOn), p.tags.length ? p.tags.map((t) => `#${t}`).join(" ") : null].filter(Boolean).join(" · "), href: `/photos?id=${p.id}` })) },
+    {
+      type: "bucket" as const,
+      items: bucket.map((b) => ({
+        id: b.id,
+        title: b.title,
+        subtitle: `${b.category} · ${b.completedAt ? "Done" : b.targetDate ? `Target ${fmtKey(b.targetDate.toISOString().slice(0, 10))}` : "Someday"}` + archived(b.archivedAt),
+        href: `/bucket-list?id=${b.id}`,
+      })),
+    },
+    { type: "timeline" as const, items: timeline.map((t) => ({ id: t.id, title: t.title, subtitle: `${formatTimelineDate(t.date.toISOString().slice(0, 10), t.datePrecision, true)} · ${t.category}`, href: `/timeline?id=${t.id}` })) },
+    {
+      type: "gratitude" as const,
+      items: gratitude.map((g) => {
+        const hit = g.items.find((i) => i.toLowerCase().includes(q.toLowerCase())) ?? g.note ?? g.items[0] ?? "";
+        return { id: g.id, title: snippet(hit) || "Gratitude", subtitle: `Grateful on ${fmtKey(g.date)}`, href: `/gratitude?date=${g.date}` };
+      }),
+    },
   ]
     .filter((g) => types.has(g.type) && g.items.length > 0)
     .map((g) => ({ ...g, label: LABELS[g.type] }));

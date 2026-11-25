@@ -1,5 +1,7 @@
-import { PageHeader } from "@/components/ui/misc";
+import { MemoriesView } from "@/components/memories/memories-view";
+
 export const metadata = { title: "Memories" };
+
 export default function Page() {
-  return <PageHeader title="Memories" />;
+  return <MemoriesView />;
 }

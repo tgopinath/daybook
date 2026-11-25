@@ -3,7 +3,7 @@ import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "
 import { useRouter } from "next/navigation";
 import * as D from "@radix-ui/react-dialog";
 import {
-  ArrowRight, Bell, CalendarDays, CheckSquare, Clock, CornerDownLeft, Loader2, Plus, Search, Settings, Shield, Sparkles, StickyNote, Target, X,
+  ArrowRight, Bell, BookOpen, CalendarDays, CheckSquare, Clock, CornerDownLeft, Heart, Hourglass, Image as ImageIcon, Images, Loader2, Mountain, Plus, Search, Settings, Shield, Sparkles, StickyNote, Target, X,
   type LucideIcon,
 } from "lucide-react";
 import { api, useApi } from "@/lib/client";
@@ -13,7 +13,7 @@ import { Kbd } from "@/components/ui/misc";
 import { toastError } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 
-type ResultType = "tasks" | "goals" | "reminders" | "notes" | "events" | "vault";
+type ResultType = "tasks" | "goals" | "reminders" | "notes" | "events" | "vault" | "journal" | "memories" | "photos" | "bucket" | "timeline" | "gratitude";
 type Result = { id: string; title: string; subtitle: string; href: string };
 type SearchResponse = {
   q: string;
@@ -29,6 +29,12 @@ const FILTERS: { value: "" | ResultType; label: string }[] = [
   { value: "reminders", label: "Reminders" },
   { value: "notes", label: "Notes" },
   { value: "events", label: "Events" },
+  { value: "journal", label: "Journal" },
+  { value: "memories", label: "Memories" },
+  { value: "photos", label: "Photos" },
+  { value: "gratitude", label: "Gratitude" },
+  { value: "bucket", label: "Bucket list" },
+  { value: "timeline", label: "Timeline" },
   { value: "vault", label: "Personal info" },
 ];
 
@@ -39,6 +45,12 @@ const TYPE_ICONS: Record<ResultType, LucideIcon> = {
   notes: StickyNote,
   events: CalendarDays,
   vault: Shield,
+  journal: BookOpen,
+  memories: Images,
+  photos: ImageIcon,
+  bucket: Mountain,
+  timeline: Hourglass,
+  gratitude: Heart,
 };
 
 const ACTION_ICONS: Record<string, LucideIcon> = {
@@ -221,7 +233,7 @@ function Palette({ onClose }: { onClose: () => void }) {
           autoFocus
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search tasks, goals, notes, events…"
+          placeholder="Search tasks, notes, journal, memories…"
           aria-label="Search"
           role="combobox"
           aria-expanded="true"

@@ -1,5 +1,7 @@
-import { PageHeader } from "@/components/ui/misc";
+import { PhotosView } from "@/components/photos/photos-view";
+
 export const metadata = { title: "Photo Diary" };
+
 export default function Page() {
-  return <PageHeader title="Photo Diary" />;
+  return <PhotosView />;
 }

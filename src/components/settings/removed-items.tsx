@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Archive, ArchiveRestore, Bell, CalendarDays, CheckSquare, Loader2, Repeat, RotateCcw, Shield, StickyNote, Target, Trash2, type LucideIcon } from "lucide-react";
+import { Archive, ArchiveRestore, Bell, BookOpen, CalendarDays, CheckSquare, Hourglass, Image as ImageIcon, Images, Loader2, Mountain, Repeat, RotateCcw, Shield, StickyNote, Target, Trash2, type LucideIcon } from "lucide-react";
 import { api, refresh, useApi, SUMMARY_KEYS } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import { Card, DemoBadge, EmptyState, PageHeader, Skeleton } from "@/components/ui/misc";
@@ -21,6 +21,11 @@ const TYPES: TypeDef[] = [
   { key: "habits", label: "Habits", singular: "habit", api: "/api/habits", icon: Repeat, archivable: true },
   { key: "notes", label: "Notes", singular: "note", api: "/api/notes", icon: StickyNote, archivable: true },
   { key: "vault", label: "Personal info", singular: "item", api: "/api/vault", icon: Shield, archivable: false },
+  { key: "journal", label: "Journal entries", singular: "journal entry", api: "/api/journal", icon: BookOpen, archivable: true },
+  { key: "memories", label: "Memories", singular: "memory", api: "/api/memories", icon: Images, archivable: true },
+  { key: "photos", label: "Photos", singular: "photo", api: "/api/photos", icon: ImageIcon, archivable: false },
+  { key: "bucket-list", label: "Bucket list", singular: "bucket list item", api: "/api/bucket-list", icon: Mountain, archivable: true },
+  { key: "timeline", label: "Timeline events", singular: "timeline event", api: "/api/timeline", icon: Hourglass, archivable: false },
 ];
 
 type Item = { id: string; title: string; isDemo: boolean; at: string | null };
@@ -34,7 +39,7 @@ function normalize(raw: unknown, key: string, mode: Mode): Item[] {
     .filter((x) => x && typeof x.id === "string")
     .map((x) => ({
       id: x.id as string,
-      title: String(x.title ?? x.name ?? "Untitled"),
+      title: String(x.title || x.name || x.caption || (typeof x.entryDate === "string" ? `Untitled entry · ${x.entryDate}` : "Untitled")),
       isDemo: !!x.isDemo,
       at: (mode === "trash" ? x.deletedAt : x.archivedAt) as string | null,
     }));
@@ -90,7 +95,7 @@ export function RemovedItemsPage({ mode }: { mode: Mode }) {
           <EmptyState
             icon={mode === "archived" ? Archive : Trash2}
             title={mode === "archived" ? "Nothing archived" : "Recently Deleted is empty"}
-            description={mode === "archived" ? "Archive tasks, goals, notes and more to tidy up without losing them." : "When you delete something, it shows up here so you can restore it."}
+            description={mode === "archived" ? "Archive tasks, goals, notes, journal entries, memories and more to tidy up without losing them." : "When you delete something, it shows up here so you can restore it."}
           />
         </Card>
       )}
