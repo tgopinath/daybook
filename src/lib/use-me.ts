@@ -9,7 +9,9 @@ export type Me = {
   /** WhatsApp Cloud API credentials are configured on the server. */
   whatsappAvailable?: boolean;
   /** How this account signs in. `demo` = throwaway sample account from "Explore demo". */
-  account?: { hasPassword: boolean; google: boolean; demo: boolean };
+  account?: { hasPassword: boolean; google: boolean; demo: boolean; twoFactor?: boolean };
+  /** App lock after this many idle minutes; 0 = off. */
+  appLock?: number;
 };
 
 export function useMe() {

@@ -59,8 +59,11 @@ export function clearCookie(jar: Awaited<ReturnType<typeof cookies>>, name: stri
   jar.set(name, "", { ...sessionCookieOptions(), maxAge: 0 });
 }
 
-/** Current user for this request, or null. Cached per request. */
-export const getCurrentUser = cache(async () => {
+/** How often Session.lastSeenAt is refreshed (at most one write per session per interval). */
+const LAST_SEEN_INTERVAL_MS = 5 * 60_000;
+
+/** Current session (id, createdAt, user) for this request, or null. Cached per request. */
+export const getCurrentSession = cache(async () => {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE)?.value;
   if (!token) return null;
@@ -76,8 +79,17 @@ export const getCurrentUser = cache(async () => {
     if (await restoreDemoAccount(jar.get(DEMO_COOKIE)?.value, hashToken(token), new Date(Date.now() + SESSION_DAYS * 864e5))) session = await find();
   }
   if (!session || session.expiresAt < new Date()) return null;
-  return session.user;
+  // "Last active" for the Security page's session list; throttled so most requests don't write.
+  if (Date.now() - session.lastSeenAt.getTime() > LAST_SEEN_INTERVAL_MS) {
+    await db.session
+      .updateMany({ where: { id: session.id, lastSeenAt: { lt: new Date(Date.now() - LAST_SEEN_INTERVAL_MS) } }, data: { lastSeenAt: new Date() } })
+      .catch(() => {});
+  }
+  return { id: session.id, createdAt: session.createdAt, user: session.user };
 });
+
+/** Current user for this request, or null. Cached per request. */
+export const getCurrentUser = cache(async () => (await getCurrentSession())?.user ?? null);
 
 export type CurrentUser = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
 

@@ -19,6 +19,7 @@ import { ReminderRunner } from "@/components/notifications/reminder-runner";
 import { TaskDialogHost, openTaskDialog } from "@/components/tasks/task-dialog";
 import { EventDialogHost } from "@/components/calendar/event-dialog";
 import { NativeLooks } from "./native-looks";
+import { AppLockOverlay } from "@/components/security/app-lock-overlay";
 
 function isTyping(e: KeyboardEvent) {
   const el = e.target as HTMLElement | null;
@@ -186,6 +187,7 @@ export function AppShell({ children, demo = false }: { children: React.ReactNode
       <ReminderRunner />
       <ConfirmHost />
       <Toaster />
+      <AppLockOverlay />
     </SWRConfig>
   );
 }

@@ -1,12 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowRight, Info, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Info, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Checkbox } from "@/components/ui/input";
 import { api } from "@/lib/client";
 import { browserTz } from "@/lib/time";
+import { clearLockState } from "@/lib/app-lock";
 
 /** Messages for ?error= codes set by the Google sign-in routes. */
 const ERRORS: Record<string, string> = {
@@ -43,6 +44,9 @@ export function AuthForm({ mode, googleEnabled, noDatabase }: { mode: "login" | 
   usePageShowReset(() => setBusy(null));
   const expired = params.get("reason") === "expired" && !error;
 
+  // Two-step verification: the password step returns a short-lived ticket instead of signing in.
+  const [ticket, setTicket] = useState<string | null>(null);
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (busy) return;
@@ -50,18 +54,32 @@ export function AuthForm({ mode, googleEnabled, noDatabase }: { mode: "login" | 
     setBusy("email");
     try {
       if (mode === "signup") await api.post("/api/auth/signup", { ...form, timezone: browserTz(), withDemo });
-      else await api.post("/api/auth/login", { email: form.email, password: form.password });
-      // Full navigation: starts the app with a clean client cache for this user.
-      window.location.assign(next);
+      else {
+        const res = await api.post<{ ok?: boolean; twoFactor?: boolean; ticket?: string }>("/api/auth/login", { email: form.email, password: form.password });
+        if (res.twoFactor && res.ticket) {
+          setTicket(res.ticket);
+          setForm((f) => ({ ...f, password: "" }));
+          setBusy(null);
+          return;
+        }
+      }
+      signedIn();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setBusy(null);
     }
   }
 
+  function signedIn() {
+    clearLockState(); // a full sign-in also ends any app-lock screen left in this tab
+    // Full navigation: starts the app with a clean client cache for this user.
+    window.location.assign(next);
+  }
+
   function google() {
     if (busy || !googleEnabled) return;
     setError(null);
+    clearLockState();
     setBusy("google");
     window.location.assign(`/api/auth/google?next=${encodeURIComponent(next)}&tz=${encodeURIComponent(browserTz())}`);
   }
@@ -73,6 +91,20 @@ export function AuthForm({ mode, googleEnabled, noDatabase }: { mode: "login" | 
   }
 
   const isLogin = mode === "login";
+
+  if (ticket) {
+    return (
+      <CodeStep
+        ticket={ticket}
+        email={form.email}
+        onDone={signedIn}
+        onBack={() => {
+          setTicket(null);
+          setError(null);
+        }}
+      />
+    );
+  }
 
   return (
     <div>
@@ -170,6 +202,119 @@ export function AuthForm({ mode, googleEnabled, noDatabase }: { mode: "login" | 
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+/** Second step for accounts with two-step verification: a code from the authenticator app, or a backup code. */
+function CodeStep({ ticket, email, onDone, onBack }: { ticket: string; email: string; onDone: () => void; onBack: () => void }) {
+  const [backup, setBackup] = useState(false);
+  const [code, setCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  usePageShowReset(() => setBusy(false));
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [backup]);
+
+  async function verify(value = code) {
+    if (busy) return;
+    const v = value.trim();
+    if (backup ? v.replace(/[^a-z0-9]/gi, "").length !== 10 : !/^\d{6}$/.test(v)) {
+      setError(backup ? "Enter one of your 10-character backup codes." : "Enter the 6-digit code.");
+      return;
+    }
+    setError(null);
+    setBusy(true);
+    try {
+      await api.post("/api/auth/2fa", backup ? { ticket, backupCode: v } : { ticket, code: v });
+      onDone();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+      setCode("");
+      setBusy(false);
+      requestAnimationFrame(() => inputRef.current?.focus());
+    }
+  }
+
+  function onChange(raw: string) {
+    if (backup) {
+      setCode(raw.slice(0, 11));
+      return;
+    }
+    const digits = raw.replace(/\D/g, "").slice(0, 6);
+    setCode(digits);
+    if (digits.length === 6) void verify(digits); // typed or pasted the whole code
+  }
+
+  return (
+    <div>
+      <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-soft text-primary">
+        <ShieldCheck className="h-5 w-5" aria-hidden />
+      </div>
+      <h1 className="font-display text-[30px] leading-tight font-semibold">Two-step verification</h1>
+      <p className="mt-1.5 text-[14.5px] text-fg-2">
+        {backup ? "Enter one of the backup codes you saved when you turned on two-step verification." : "Enter the 6-digit code from your authenticator app."}
+      </p>
+      {email && <p className="mt-1 text-[13px] text-fg-3">Signing in as {email}</p>}
+
+      {error && (
+        <p role="alert" className="mt-5 rounded-[10px] bg-danger-soft px-3 py-2.5 text-[13px] leading-snug text-danger">
+          {error}
+        </p>
+      )}
+
+      <form
+        className="mt-6 flex flex-col gap-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void verify();
+        }}
+      >
+        <Field label={backup ? "Backup code" : "Verification code"}>
+          <Input
+            ref={inputRef}
+            className={backup ? "h-11 font-mono text-[16px] tracking-[0.08em]" : "h-12 text-center font-mono text-[22px] tracking-[0.4em]"}
+            inputMode={backup ? "text" : "numeric"}
+            autoComplete={backup ? "off" : "one-time-code"}
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            pattern={backup ? undefined : "\\d{6}"}
+            maxLength={backup ? 11 : 6}
+            placeholder={backup ? "xxxxx-xxxxx" : "000000"}
+            aria-describedby="code-help"
+            required
+            value={code}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        </Field>
+        <Button type="submit" size="lg" loading={busy} className="w-full justify-center">
+          Verify and sign in
+        </Button>
+      </form>
+
+      <p id="code-help" className="mt-4 text-[13px] text-fg-2">
+        <button
+          type="button"
+          onClick={() => {
+            setBackup((b) => !b);
+            setCode("");
+            setError(null);
+          }}
+          className="font-medium text-primary hover:underline"
+        >
+          {backup ? "Use your authenticator app instead" : "Use a backup code instead"}
+        </button>
+      </p>
+
+      <div className="mt-8 border-t border-line pt-5">
+        <button type="button" onClick={onBack} className="inline-flex items-center gap-1.5 text-[13px] font-medium text-fg-2 hover:text-fg">
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden /> Back to sign in
+        </button>
+      </div>
     </div>
   );
 }
