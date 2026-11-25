@@ -1,9 +1,28 @@
 {
-  "name": "MyDiary — Personal AI Dashboard",
+  "name": "MyDiary \u2014 Personal AI Dashboard",
   "short_name": "MyDiary",
   "start_url": "/overview",
   "display": "standalone",
   "background_color": "#FFFFFF",
   "theme_color": "#635BFF",
-  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
