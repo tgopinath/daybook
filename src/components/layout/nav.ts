@@ -4,9 +4,9 @@ import {
   Images, Mountain, History, Camera, ClipboardCheck, type LucideIcon,
 } from "lucide-react";
 
-export type NavItem = { label: string; href?: string; icon: LucideIcon; action?: "quick-capture"; shortcut?: string };
+export type NavItem = { label: string; href?: string; icon: LucideIcon; action?: "quick-capture"; shortcut?: string; ready?: false };
 
-export const NAV: { section: string; items: NavItem[] }[] = [
+const ALL_NAV: { section: string; items: NavItem[] }[] = [
   {
     section: "Workspace",
     items: [
@@ -19,23 +19,23 @@ export const NAV: { section: string; items: NavItem[] }[] = [
       { label: "Notes", href: "/notes", icon: StickyNote },
       { label: "Journal", href: "/journal", icon: BookOpen },
       { label: "Gratitude", href: "/gratitude", icon: Heart },
-      { label: "Mood Tracker", href: "/mood", icon: Smile },
-      { label: "Memories", href: "/memories", icon: Images },
-      { label: "Bucket List", href: "/bucket-list", icon: Mountain },
-      { label: "Life Timeline", href: "/timeline", icon: History },
+      { label: "Mood Tracker", href: "/mood", icon: Smile, ready: false },
+      { label: "Memories", href: "/memories", icon: Images, ready: false },
+      { label: "Bucket List", href: "/bucket-list", icon: Mountain, ready: false },
+      { label: "Life Timeline", href: "/timeline", icon: History, ready: false },
       { label: "Personal Information", href: "/vault", icon: Shield },
     ],
   },
   {
     section: "Personal Collections",
-    items: [{ label: "Photo Diary", href: "/photos", icon: Camera }],
+    items: [{ label: "Photo Diary", href: "/photos", icon: Camera, ready: false }],
   },
   {
     section: "Smart Tools",
     items: [
       { label: "AI Assistant", href: "/assistant", icon: Sparkles },
       { label: "Daily Planner", href: "/planner", icon: CalendarClock },
-      { label: "Weekly Review", href: "/weekly-review", icon: ClipboardCheck },
+      { label: "Weekly Review", href: "/weekly-review", icon: ClipboardCheck, ready: false },
       { label: "Quick Capture", icon: Zap, action: "quick-capture", shortcut: "⌘K" },
       { label: "Insights", href: "/insights", icon: BarChart3 },
     ],
@@ -49,6 +49,9 @@ export const NAV: { section: string; items: NavItem[] }[] = [
     ],
   },
 ];
+
+/** Pages still being built (`ready: false`) stay out of the menu so it never links to an unfinished page. */
+export const NAV = ALL_NAV.map((g) => ({ ...g, items: g.items.filter((i) => i.ready !== false) })).filter((g) => g.items.length > 0);
 
 export const MOBILE_NAV: NavItem[] = [
   { label: "Overview", href: "/overview", icon: LayoutDashboard },
