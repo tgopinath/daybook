@@ -136,7 +136,7 @@ export async function buildTaskData(
   userId: string,
   input: TaskInput,
   tz: string,
-  current?: Pick<Task, "dueDate" | "startTime" | "endTime"> | null,
+  current?: Pick<Task, "dueDate" | "startTime" | "endTime"> & Partial<Pick<Task, "goalId" | "milestoneId">> | null,
 ): Promise<Prisma.TaskUncheckedUpdateInput> {
   await assertOwned(userId, input);
   const data: Prisma.TaskUncheckedUpdateInput = {};
@@ -167,9 +167,37 @@ export async function buildTaskData(
   const rem = parseDateish(input.reminderAt, tz, "09:00");
   if (rem !== undefined) data.reminderAt = rem;
   if (input.goalId === null) data.milestoneId = null;
+  await reconcileGoalMilestone(userId, input, data, current);
   if (input.archived !== undefined) data.archivedAt = input.archived ? new Date() : null;
   if (input.deletedAt === null) data.deletedAt = null;
   return data;
+}
+
+/**
+ * Keep goal and milestone consistent:
+ * - a milestone without a goal links the task to the milestone's goal;
+ * - a milestone that belongs to another goal than the (new) goal is rejected;
+ * - moving a task to another goal clears a milestone that doesn't belong to it.
+ */
+async function reconcileGoalMilestone(
+  userId: string,
+  input: TaskInput,
+  data: Prisma.TaskUncheckedUpdateInput,
+  current?: Partial<Pick<Task, "goalId" | "milestoneId">> | null,
+) {
+  const goalId = input.goalId !== undefined ? input.goalId : (current?.goalId ?? null);
+  if (input.milestoneId) {
+    const m = await db.milestone.findFirst({ where: { id: input.milestoneId, goal: { userId } }, select: { goalId: true } });
+    if (!m) throw new ApiError(400, "Milestone not found");
+    if (input.goalId === null) throw new ApiError(400, "A milestone needs its goal");
+    if (!goalId) data.goalId = m.goalId;
+    else if (goalId !== m.goalId) throw new ApiError(400, "That milestone belongs to another goal");
+    return;
+  }
+  if (input.milestoneId === undefined && input.goalId && current?.milestoneId && input.goalId !== current.goalId) {
+    const m = await db.milestone.findFirst({ where: { id: current.milestoneId }, select: { goalId: true } });
+    if (!m || m.goalId !== input.goalId) data.milestoneId = null;
+  }
 }
 
 export async function setTaskTags(userId: string, taskId: string, names: string[]) {

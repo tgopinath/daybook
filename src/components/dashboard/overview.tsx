@@ -18,6 +18,7 @@ import { TodayFocus, TodayFocusSkeleton } from "./today-focus";
 import { Upcoming, UpcomingSkeleton } from "./upcoming";
 import { ProductivityOverview } from "./productivity-charts";
 import { CustomizeDialog } from "./customize-dialog";
+import { SpacesWidget } from "./spaces-widget";
 import { GratitudeWidget, MoodCheckinWidget, QuickActionsWidget, QuickJournalWidget, RecentMemoriesWidget, WeekSummaryWidget } from "./personal-widgets";
 import { widgetMeta, type WidgetId } from "./widgets";
 
@@ -178,6 +179,8 @@ function renderWidget(id: WidgetId, data: DashboardData, mutate: KeyedMutator<Da
           <SummaryCards data={data} />
         </motion.div>
       );
+    case "spaces":
+      return <SpacesWidget data={data} />;
     case "capture":
       return <QuickActionsWidget {...props} />;
     case "focus":

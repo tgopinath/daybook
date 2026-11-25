@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
-import { CalendarDays, CheckCircle2, Columns3, Flag, Inbox, List, ListTodo, Plus, SearchX, Sun, AlarmClock, CalendarClock } from "lucide-react";
+import { CalendarDays, CheckCircle2, Columns3, Flag, Inbox, List, ListTodo, Plus, SearchX, Sun, AlarmClock, CalendarClock, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, EmptyState, PageHeader, Segmented, SkeletonList } from "@/components/ui/misc";
 import { openTaskDialog } from "@/components/tasks/task-dialog";
@@ -13,6 +13,7 @@ import { ListView } from "./_components/list-view";
 import { KanbanView } from "./_components/kanban-view";
 import { CalendarView } from "./_components/calendar-view";
 import { PriorityView } from "./_components/priority-view";
+import { GoalView } from "./_components/goal-view";
 import { BulkBar } from "./_components/bulk-bar";
 import { QuickAdd } from "./_components/quick-add";
 import { FilterButton, FilterChips, SearchBox, SortMenu } from "./_components/toolbar";
@@ -20,6 +21,7 @@ import { EMPTY_FILTERS, buildQuery, sortTasks, type Filters, type SmartList, typ
 
 const VIEWS: { value: ViewMode; label: string; icon: typeof List }[] = [
   { value: "list", label: "List", icon: List },
+  { value: "goal", label: "By goal", icon: Target },
   { value: "board", label: "Board", icon: Columns3 },
   { value: "calendar", label: "Calendar", icon: CalendarDays },
   { value: "priority", label: "Priority", icon: Flag },
@@ -56,7 +58,7 @@ export default function TasksPage() {
   const tz = useTz();
   const { data: me } = useMe();
   const [list, setList] = useStored<SmartList>("daybook.tasks.list", "all", ["all", "today", "upcoming", "overdue", "completed"], "view");
-  const [view, setView] = useStored<ViewMode>("daybook.tasks.view", "list", ["list", "board", "calendar", "priority"]);
+  const [view, setView] = useStored<ViewMode>("daybook.tasks.view", "list", ["list", "goal", "board", "calendar", "priority"]);
   const [sort, setSort] = useStored<SortKey>("daybook.tasks.sort", "manual", ["manual", "due", "priority", "category", "created"]);
   const [search, setSearch] = useState("");
   const [q, setQ] = useState("");
@@ -182,6 +184,9 @@ export default function TasksPage() {
         </Card>
       );
     if (isLoading && !data) return <SkeletonList rows={7} />;
+    // The goal view still shows its sections (with add fields) when nothing matches yet.
+    if (view === "goal" && !filtered)
+      return <GoalView open={open} done={done} sortable={effectiveSort === "manual" && list !== "completed"} selected={selected} onSelect={onSelect} defaults={quickDefaults} />;
     if (!items.length) {
       const e = filtered ? { icon: SearchX, title: "No matching tasks", description: "Try a different search or clear the filters." } : EMPTY[list];
       return (
@@ -206,6 +211,8 @@ export default function TasksPage() {
       );
     }
     if (view === "board") return <KanbanView items={sorted} newTaskInit={newTaskInit} />;
+    if (view === "goal")
+      return <GoalView open={open} done={done} sortable={effectiveSort === "manual" && list !== "completed"} selected={selected} onSelect={onSelect} defaults={quickDefaults} />;
     if (view === "priority")
       return (
         <div className="flex flex-col gap-5">

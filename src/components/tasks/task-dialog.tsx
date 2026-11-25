@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } 
 import { DndContext, PointerSensor, KeyboardSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Download, GripVertical, Paperclip, Plus, Trash2, X, Upload, Loader2 } from "lucide-react";
+import { Download, GripVertical, Paperclip, Plus, Target, Trash2, X, Upload, Loader2 } from "lucide-react";
 import { create } from "@/components/ui/store";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -255,6 +255,7 @@ function TaskDialog({ open, id, init }: { open: boolean; id: string | null; init
               />
               {errors.title && <p className="mt-1 text-xs text-danger">{errors.title}</p>}
             </div>
+            <GoalPicker goalId={form.goalId} milestoneId={form.milestoneId} onChange={(g, m) => setForm((f) => (f ? { ...f, goalId: g, milestoneId: m } : f))} current={task?.goal ?? null} />
             <Textarea value={form.description} onChange={(e) => set("description", e.target.value)} placeholder="Add details, links or notes…" aria-label="Description" rows={3} />
             <SubtaskEditor items={form.subtasks} onChange={(v) => set("subtasks", v)} />
             <Attachments taskId={id} existing={task?.attachments ?? []} queued={queued} onQueue={setQueued} />
@@ -331,7 +332,6 @@ function TaskDialog({ open, id, init }: { open: boolean; id: string | null; init
             <Field label="Tags">
               <TagInput value={form.tags} onChange={(v) => set("tags", v)} />
             </Field>
-            <GoalPicker goalId={form.goalId} milestoneId={form.milestoneId} onChange={(g, m) => setForm((f) => (f ? { ...f, goalId: g, milestoneId: m } : f))} current={task?.goal ?? null} />
             <EventPicker value={form.eventId} onChange={(v) => set("eventId", v)} current={task?.event ?? null} />
           </aside>
         </form>
@@ -421,34 +421,45 @@ function RefPicker({ kind, value, onChange }: { kind: "category" | "project"; va
   );
 }
 
-type GoalLite = { id: string; title: string; milestones?: { id: string; title: string; done?: boolean }[] };
+type GoalLite = { id: string; title: string; status?: string; milestones?: { id: string; title: string; done?: boolean }[] };
 
 function GoalPicker({ goalId, milestoneId, onChange, current }: { goalId: string; milestoneId: string; onChange: (goalId: string, milestoneId: string) => void; current: { id: string; title: string } | null }) {
   const { data, error } = useApi<{ items: GoalLite[] }>("/api/goals");
   const goals = useMemo(() => {
-    const list = Array.isArray(data?.items) ? data!.items : [];
+    const list = (Array.isArray(data?.items) ? data!.items : []).filter((g) => !g.status || g.status === "ACTIVE" || g.id === goalId);
     if (current && !list.some((g) => g.id === current.id)) return [{ id: current.id, title: current.title }, ...list];
     return list;
-  }, [data, current]);
+  }, [data, current, goalId]);
   const selected = goals.find((g) => g.id === goalId);
   const { data: detail } = useApi<{ item?: GoalLite } & Partial<GoalLite>>(goalId && !selected?.milestones ? `/api/goals/${goalId}` : null, { shouldRetryOnError: false });
   const milestones = selected?.milestones ?? detail?.item?.milestones ?? detail?.milestones ?? [];
+  const goalSelectId = "task-goal";
+  const msSelectId = "task-milestone";
   return (
-    <>
-      <Field label="Goal" hint={error ? "Goals aren't available right now" : undefined}>
-        <Select value={goalId} disabled={!!error && !goals.length} onChange={(e) => onChange(e.target.value, "")}>
-          <option value="">No goal</option>
-          {goals.map((g) => (
-            <option key={g.id} value={g.id}>
-              {g.title}
-            </option>
-          ))}
-        </Select>
-      </Field>
-      {goalId && milestones.length > 0 && (
-        <Field label="Milestone">
-          <Select value={milestoneId} onChange={(e) => onChange(goalId, e.target.value)}>
-            <option value="">No milestone</option>
+    <fieldset className="rounded-[12px] border border-line bg-surface-2/60 px-3 pt-2 pb-3">
+      <legend className="flex items-center gap-1.5 px-1 text-[12.5px] font-semibold text-fg-2">
+        <Target className="h-3.5 w-3.5 text-primary" aria-hidden /> Part of a goal
+      </legend>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <div className="flex min-w-0 flex-col gap-1">
+          <label htmlFor={goalSelectId} className="text-[12px] font-medium text-fg-3">
+            Goal
+          </label>
+          <Select id={goalSelectId} value={goalId} disabled={!!error && !goals.length} onChange={(e) => onChange(e.target.value, "")}>
+            <option value="">Not part of a goal</option>
+            {goals.map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.title}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="flex min-w-0 flex-col gap-1">
+          <label htmlFor={msSelectId} className="text-[12px] font-medium text-fg-3">
+            Milestone
+          </label>
+          <Select id={msSelectId} value={milestoneId} disabled={!goalId || milestones.length === 0} onChange={(e) => onChange(goalId, e.target.value)}>
+            <option value="">{!goalId ? "Pick a goal first" : milestones.length ? "No milestone" : "This goal has no milestones"}</option>
             {milestones.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.done ? "✓ " : ""}
@@ -456,9 +467,10 @@ function GoalPicker({ goalId, milestoneId, onChange, current }: { goalId: string
               </option>
             ))}
           </Select>
-        </Field>
-      )}
-    </>
+        </div>
+      </div>
+      {error && <p className="mt-1.5 text-[12px] text-fg-3">Goals aren&apos;t available right now.</p>}
+    </fieldset>
   );
 }
 

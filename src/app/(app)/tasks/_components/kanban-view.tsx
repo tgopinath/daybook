@@ -15,7 +15,8 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { CalendarDays, CheckSquare2, Paperclip, Plus, Repeat, Target } from "lucide-react";
+import { CalendarDays, CheckSquare2, Paperclip, Plus, Repeat } from "lucide-react";
+import { GoalChip } from "@/components/tasks/goal-chip";
 import { DemoBadge } from "@/components/ui/misc";
 import { TaskCheck } from "@/components/tasks/task-row";
 import { PriorityFlag } from "@/components/tasks/pickers";
@@ -186,12 +187,7 @@ function Card({ task, overlay }: { task: WireTask; overlay?: boolean }) {
           </span>
         )}
         {task.recurrence !== "NONE" && <Repeat className="h-3 w-3" aria-label="Repeats" />}
-        {task.goal && (
-          <span className="inline-flex max-w-[140px] items-center gap-1 truncate">
-            <Target className="h-3 w-3 shrink-0" style={{ color: task.goal.color }} />
-            <span className="truncate">{task.goal.title}</span>
-          </span>
-        )}
+        {task.goal && <GoalChip goal={task.goal} />}
         {task.category && (
           <span className="inline-flex items-center gap-1">
             <span className="h-1.5 w-1.5 rounded-full" style={{ background: task.category.color }} />

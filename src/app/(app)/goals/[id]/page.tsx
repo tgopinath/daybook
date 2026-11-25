@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Archive, ArchiveRestore, ArrowLeft, CalendarClock, CheckCircle2, Copy, Flag, MoreHorizontal, Pause, Pencil, Play, RotateCcw, Target, Trash2, TrendingUp, XCircle } from "lucide-react";
+import { Archive, ArchiveRestore, ArrowLeft, CalendarClock, CheckCircle2, Copy, Flag, Info, ListChecks, MoreHorizontal, Pause, Pencil, Play, RotateCcw, Target, Trash2, TrendingUp, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Menu } from "@/components/ui/menu";
 import { Badge, Card, DemoBadge, EmptyState, Progress, Skeleton } from "@/components/ui/misc";
@@ -15,7 +15,7 @@ import { GoalWeeklyChart } from "@/components/goals/goal-weekly-chart";
 import { GoalNotes } from "@/components/goals/goal-notes";
 import { UpdateProgressDialog } from "@/components/goals/update-progress-dialog";
 import { archiveGoal, deleteGoal, duplicateGoal, setGoalStatus } from "@/components/goals/goal-actions";
-import { formatValue } from "@/components/goals/goal-card";
+import { formatValue, progressBasis } from "@/components/goals/goal-card";
 import type { GoalDetail } from "@/components/goals/types";
 import { api, refresh, SUMMARY_KEYS, useApi } from "@/lib/client";
 import { describeDaysRemaining, goalCategoryLabel, goalPaceMessage, GOAL_STATUS_META } from "@/lib/goals";
@@ -155,6 +155,11 @@ export default function GoalDetailPage() {
           <Stat label="Milestones" value={`${goal.milestoneCounts.done} / ${goal.milestoneCounts.total}`} />
           <Stat label="Tasks" value={`${goal.taskCounts.done} / ${goal.taskCounts.total}`} />
         </div>
+        <p className="mt-3 flex items-center gap-1.5 text-[12.5px] text-fg-2">
+          <Info className="h-3.5 w-3.5 shrink-0 text-fg-3" aria-hidden />
+          {progressBasis(goal)}
+          {goal.progressMode === "tasks" && <span className="text-fg-3">· {goal.taskCounts.done} done so far</span>}
+        </p>
         {goal.expectedProgress != null && goal.status === "ACTIVE" && (
           <div className="mt-4">
             <div className="mb-1.5 flex justify-between text-xs text-fg-3">
@@ -175,8 +180,8 @@ export default function GoalDetailPage() {
           <Section title="Milestones" icon={Flag} meta={goal.milestoneCounts.total ? `${goal.milestoneCounts.done} of ${goal.milestoneCounts.total}` : undefined}>
             <MilestoneTimeline goalId={goal.id} milestones={goal.milestones} color={goal.color} readOnly={!!goal.deletedAt} />
           </Section>
-          <Section title="Related tasks">
-            <GoalTasks goalId={goal.id} color={goal.color} fallback={goal.tasks} milestones={goal.milestones} />
+          <Section title={goal.milestones.length ? "Tasks by milestone" : "Tasks"} icon={ListChecks} meta={goal.progressMode === "tasks" ? "Drives progress" : undefined}>
+            <GoalTasks goalId={goal.id} color={goal.color} fallback={goal.tasks} milestones={goal.milestones} readOnly={!!goal.deletedAt} />
           </Section>
         </div>
         <div className="flex flex-col gap-5">

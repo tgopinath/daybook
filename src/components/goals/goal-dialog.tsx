@@ -41,14 +41,43 @@ export function GoalDialog({
   const [milestones, setMilestones] = useState<{ title: string; dueDate: string }[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // After creating a goal we offer to add its first tasks right here.
+  const [created, setCreated] = useState<GoalListItem | null>(null);
+  const [firstTasks, setFirstTasks] = useState(["", "", ""]);
 
   useEffect(() => {
     if (open) {
       setForm(initial(goal, tz));
       setMilestones([]);
       setError(null);
+      setCreated(null);
+      setFirstTasks(["", "", ""]);
     }
   }, [open, goal, tz]);
+
+  /** Close the dialog; a freshly created goal is handed to onSaved either way. */
+  function close() {
+    if (created) onSaved?.(created);
+    onOpenChange(false);
+  }
+
+  async function addFirstTasks(e?: React.FormEvent) {
+    e?.preventDefault();
+    if (!created) return;
+    const titles = firstTasks.map((t) => t.trim()).filter(Boolean);
+    if (!titles.length) return close();
+    setSaving(true);
+    try {
+      for (const title of titles) await api.post("/api/tasks", { title, goalId: created.id });
+      await refresh("/api/goals", "/api/tasks", ...SUMMARY_KEYS);
+      toast.success(`Added ${titles.length} ${titles.length === 1 ? "task" : "tasks"} to “${created.title}”`);
+      close();
+    } catch (err) {
+      toastError(err);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -78,14 +107,61 @@ export function GoalDialog({
       const res = goal ? await api.patch<{ item: GoalListItem }>(`/api/goals/${goal.id}`, payload) : await api.post<{ item: GoalListItem }>("/api/goals", payload);
       await refresh("/api/goals", "/api/tasks", ...SUMMARY_KEYS);
       toast.success(goal ? "Goal updated" : "Goal created");
-      onSaved?.(res.item);
-      onOpenChange(false);
+      if (goal) {
+        onSaved?.(res.item);
+        onOpenChange(false);
+      } else {
+        setCreated(res.item);
+      }
     } catch (err) {
       toastError(err);
     } finally {
       setSaving(false);
     }
   }
+
+  if (created)
+    return (
+      <Dialog
+        open={open}
+        onOpenChange={(o) => !o && close()}
+        size="md"
+        title="Add first tasks"
+        description={`Goals move forward one small step at a time. What are the first steps toward “${created.title}”?`}
+        footer={
+          <>
+            <Button variant="ghost" onClick={close}>
+              Skip for now
+            </Button>
+            <Button onClick={() => void addFirstTasks()} loading={saving} disabled={!firstTasks.some((t) => t.trim())}>
+              Add tasks
+            </Button>
+          </>
+        }
+      >
+        <form onSubmit={addFirstTasks} className="flex flex-col gap-2.5">
+          {firstTasks.map((t, i) => (
+            <div key={i} className="flex items-center gap-2.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-2 text-[12px] font-semibold text-fg-2 tabular-nums" aria-hidden>
+                {i + 1}
+              </span>
+              <Input
+                autoFocus={i === 0}
+                value={t}
+                onChange={(e) => setFirstTasks((list) => list.map((x, j) => (j === i ? e.target.value : x)))}
+                placeholder={["e.g. Buy running shoes", "e.g. Plan a 4-week schedule", "e.g. First 3 km run"][i]}
+                aria-label={`First task ${i + 1}`}
+                maxLength={300}
+              />
+            </div>
+          ))}
+          <p className="mt-1 text-[12px] text-fg-3">They&apos;ll be linked to this goal, so its progress grows as you check them off.</p>
+          <button type="submit" className="sr-only">
+            Add tasks
+          </button>
+        </form>
+      </Dialog>
+    );
 
   return (
     <Dialog

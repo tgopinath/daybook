@@ -11,12 +11,12 @@ import {
   Paperclip,
   Pencil,
   Repeat,
-  Target,
   Trash2,
   Bell,
 } from "lucide-react";
 import { DemoBadge } from "@/components/ui/misc";
-import { Menu } from "@/components/ui/menu";
+import { Menu, type MenuItem } from "@/components/ui/menu";
+import { GoalChip } from "./goal-chip";
 import { useTz } from "@/lib/use-me";
 import { cn } from "@/lib/utils";
 import { openTaskDialog } from "./task-dialog";
@@ -115,6 +115,12 @@ export type TaskRowProps = {
   /** Slot for a drag handle rendered before the checkbox. */
   dragHandle?: ReactNode;
   hideDue?: boolean;
+  /** Hide the goal chip (e.g. inside a goal's own section). */
+  hideGoal?: boolean;
+  /** Extra control rendered before the actions menu. */
+  trailing?: ReactNode;
+  /** Extra items appended to the actions menu. */
+  menuItems?: MenuItem[];
   className?: string;
 };
 
@@ -132,7 +138,7 @@ function useCoarsePointer() {
 
 const REVEAL = 148;
 
-export function TaskRow({ task: raw, onToggle, compact, selected, selectionMode, onSelect: onSelectRaw, dragHandle, hideDue, className }: TaskRowProps) {
+export function TaskRow({ task: raw, onToggle, compact, selected, selectionMode, onSelect: onSelectRaw, dragHandle, hideDue, hideGoal, trailing, menuItems, className }: TaskRowProps) {
   const tz = useTz();
   const task = withDefaults(raw);
   const onSelect = onSelectRaw ? (t: TaskRowTask, e: MouseEvent | KeyboardEvent) => onSelectRaw(t as WireTask, e) : undefined;
@@ -203,6 +209,7 @@ export function TaskRow({ task: raw, onToggle, compact, selected, selectionMode,
         { label: "Edit", icon: Pencil, onSelect: open },
         { label: "Duplicate", icon: Copy, onSelect: () => void duplicateTask(task) },
         { label: "Archive", icon: Archive, onSelect: () => void archiveTask(task) },
+        ...(menuItems?.length ? [{ type: "separator" as const }, ...menuItems] : []),
         { type: "separator" },
         { label: "Delete", icon: Trash2, danger: true, onSelect: () => void deleteTask(task) },
       ]}
@@ -225,12 +232,7 @@ export function TaskRow({ task: raw, onToggle, compact, selected, selectionMode,
       )}
       {task.recurrence !== "NONE" && <Repeat className="h-3.5 w-3.5 shrink-0" aria-label="Repeats" />}
       {task.reminderAt && !done && <Bell className="hidden h-3.5 w-3.5 shrink-0 sm:block" aria-label="Has reminder" />}
-      {task.goal && !compact && (
-        <span className="hidden max-w-[140px] items-center gap-1 truncate rounded-md bg-surface-2 px-1.5 py-0.5 text-[11px] text-fg-2 md:inline-flex" title={`Goal: ${task.goal.title}`}>
-          <Target className="h-3 w-3 shrink-0" style={{ color: task.goal.color }} />
-          <span className="truncate">{task.goal.title}</span>
-        </span>
-      )}
+      {task.goal && !hideGoal && <GoalChip goal={task.goal} className={cn("hidden sm:inline-flex", compact && "max-w-[120px]")} />}
       {!compact &&
         task.tags.slice(0, 2).map((t) => (
           <span key={t.id} className="hidden truncate text-[11.5px] text-fg-3 lg:inline">
@@ -361,6 +363,7 @@ export function TaskRow({ task: raw, onToggle, compact, selected, selectionMode,
           }
         />
       )}
+      {trailing}
       {!compact && menu}
     </motion.div>
   );

@@ -2,7 +2,7 @@ import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { route, tzOf } from "@/lib/api";
 import { addDaysKey, dayKey, dayRange, greeting, zonedToUtc } from "@/lib/time";
-import type { DashboardData, FocusTask, ReminderOccurrence, UpcomingDay, UpcomingItem } from "@/components/dashboard/types";
+import type { DashboardData, FocusTask, SpacesStats, ReminderOccurrence, UpcomingDay, UpcomingItem } from "@/components/dashboard/types";
 import { normalizeLayout } from "@/components/dashboard/widgets";
 import { averageScore, checkinStreaks, dominantMood } from "@/lib/mood";
 import type { Mood } from "@/lib/moods";
@@ -305,6 +305,7 @@ export const GET = route(async ({ req, user }) => {
   };
 
   const firstName = user.name?.trim().split(/\s+/)[0] ?? "";
+  const spaces = await spacesStats(userId, todayKey, weekStart, todayEvents.length, todayTasks.length - completedToday, overdue);
 
   const data: DashboardData = {
     today: { key: todayKey, label: longDayLabel(todayKey), greeting: greeting(now, tz), firstName, generatedAt: now.toISOString() },
@@ -366,6 +367,55 @@ export const GET = route(async ({ req, user }) => {
       journalDays: weekJournalDays,
       elapsed: Math.round((Date.parse(todayKey) - Date.parse(weekStart)) / 86400000) + 1,
     },
+    spaces,
   };
   return data;
 });
+
+/** Format minor units in a currency (e.g. 123450 INR → "₹1,234.50"). */
+function formatMinor(amount: number, currency: string) {
+  try {
+    const nf = new Intl.NumberFormat(currency === "INR" ? "en-IN" : "en-US", { style: "currency", currency, minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    const digits = new Intl.NumberFormat("en", { style: "currency", currency }).resolvedOptions().maximumFractionDigits ?? 2;
+    return nf.format(amount / 10 ** digits);
+  } catch {
+    return `${(amount / 100).toFixed(0)} ${currency}`;
+  }
+}
+
+function formatBytes(n: number) {
+  if (n < 1024) return `${n} B`;
+  const units = ["KB", "MB", "GB", "TB"];
+  let v = n / 1024;
+  let i = 0;
+  while (v >= 1024 && i < units.length - 1) {
+    v /= 1024;
+    i++;
+  }
+  return `${v < 10 ? v.toFixed(1) : Math.round(v)} ${units[i]}`;
+}
+
+/** Live numbers for the "My spaces" cards. Each part fails soft so one broken module never blanks the Overview. */
+async function spacesStats(userId: string, todayKey: string, weekStart: string, eventsToday: number, dueToday: number, overdue: number): Promise<SpacesStats> {
+  const monthStart = `${todayKey.slice(0, 7)}-01`;
+  const soft = <T,>(p: Promise<T>, fallback: T) => p.catch((err) => (console.error("spaces stat failed", err), fallback));
+  const [entries, settings, spend, media, driveFiles, account] = await Promise.all([
+    soft(db.journalEntry.count({ where: { userId, deletedAt: null, isDraft: false, entryDate: { gte: weekStart, lte: todayKey } } }), 0),
+    soft(db.userSettings.findUnique({ where: { userId }, select: { currency: true } }), null),
+    soft(db.transaction.aggregate({ where: { userId, deletedAt: null, type: "expense", date: { gte: monthStart, lte: todayKey } }, _sum: { amount: true } }), { _sum: { amount: null } }),
+    soft(db.mediaFile.aggregate({ where: { userId, status: "ready" }, _sum: { size: true } }), { _sum: { size: null } }),
+    soft(db.driveFile.count({ where: { userId, deletedAt: null } }), 0),
+    soft(db.user.findUnique({ where: { id: userId }, select: { totpEnabledAt: true } }), null),
+  ]);
+  const currency = settings?.currency || "INR";
+  const spent = spend._sum.amount ?? 0;
+  const bytes = media._sum.size ?? 0;
+  return {
+    diary: { entriesThisWeek: entries },
+    schedule: { eventsToday },
+    finance: { spentThisMonth: spent, currency, label: formatMinor(spent, currency) },
+    tasks: { dueToday, overdue },
+    storage: { bytesUsed: bytes, files: driveFiles, label: formatBytes(bytes) },
+    security: { twoFactor: !!account?.totpEnabledAt },
+  };
+}

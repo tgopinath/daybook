@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, CheckSquare, Target, CalendarDays, Bell, Repeat, StickyNote, Shield,
   Sparkles, CalendarClock, Zap, BarChart3, Archive, Trash2, Settings, BookOpen, Heart, Smile,
-  Images, Mountain, History, Camera, ClipboardCheck, type LucideIcon,
+  Images, Mountain, History, Camera, ClipboardCheck, Wallet, Cloud, ShieldCheck, type LucideIcon,
 } from "lucide-react";
 
 export type NavItem = { label: string; href?: string; icon: LucideIcon; action?: "quick-capture"; shortcut?: string; ready?: false };
@@ -24,6 +24,14 @@ const ALL_NAV: { section: string; items: NavItem[] }[] = [
       { label: "Bucket List", href: "/bucket-list", icon: Mountain },
       { label: "Life Timeline", href: "/timeline", icon: History },
       { label: "Personal Information", href: "/vault", icon: Shield },
+    ],
+  },
+  {
+    section: "My Spaces",
+    items: [
+      { label: "My Finance", href: "/finance", icon: Wallet, ready: false },
+      { label: "My Storage", href: "/drive", icon: Cloud, ready: false },
+      { label: "My Security", href: "/security", icon: ShieldCheck, ready: false },
     ],
   },
   {

@@ -71,6 +71,46 @@ export function toggleComplete(task: Pick<WireTask, "id" | "status">) {
   return setStatus(task, task.status === "COMPLETED" ? "NOT_STARTED" : "COMPLETED");
 }
 
+/**
+ * Complete a task with an Undo toast. Undo reopens it and, for a repeating
+ * task, removes the next occurrence that completing created.
+ */
+export async function completeWithUndo(task: Pick<WireTask, "id" | "title"> & Partial<Pick<WireTask, "recurrence">>) {
+  const res = await setStatus(task, "COMPLETED");
+  if (!res) return null;
+  toast.undo(`Completed “${truncate(task.title)}”`, async () => {
+    try {
+      if (res.next) await api.delete(`/api/tasks/${res.next.id}?permanent=1`);
+      patchLocal(task.id, { status: "NOT_STARTED", completedAt: null });
+      await api.patch(`/api/tasks/${task.id}`, {
+        status: "NOT_STARTED",
+        ...(res.next && task.recurrence && task.recurrence !== "NONE" ? { recurrence: task.recurrence } : {}),
+      });
+    } catch (err) {
+      toastError(err);
+    } finally {
+      refreshTasks();
+    }
+  });
+  return res;
+}
+
+/** Link a task to a goal (or unlink with null). Moving to another goal clears its milestone. */
+export async function linkTaskToGoal(task: Pick<WireTask, "id" | "title">, goal: { id: string; title: string; color: string } | null, milestone?: { id: string; title: string } | null) {
+  const local: Partial<WireTask> = {
+    goalId: goal?.id ?? null,
+    goal,
+    milestoneId: milestone?.id ?? null,
+    milestone: milestone ?? null,
+  };
+  try {
+    await updateTask(task.id, { goalId: goal?.id ?? null, milestoneId: milestone?.id ?? null }, local);
+    toast.success(goal ? `Linked to “${truncate(goal.title, 32)}”` : "Removed from its goal");
+  } catch {
+    /* updateTask already showed the error */
+  }
+}
+
 export async function deleteTask(task: Pick<WireTask, "id" | "title">) {
   optimistic((items) => items.filter((t) => t.id !== task.id));
   try {

@@ -8,6 +8,7 @@ import { EmptyState, PageHeader, Segmented, Skeleton } from "@/components/ui/mis
 import { GoalCard } from "@/components/goals/goal-card";
 import { GoalDialog } from "@/components/goals/goal-dialog";
 import type { GoalListItem } from "@/components/goals/types";
+import { isDone, type TaskList, type WireTask } from "@/components/tasks/types";
 import { useApi } from "@/lib/client";
 import { GOAL_CATEGORIES } from "@/lib/goals";
 
@@ -21,6 +22,18 @@ export default function GoalsPage() {
   const [category, setCategory] = useState("");
   const [sort, setSort] = useState<Sort>("target");
   const [dialog, setDialog] = useState<{ open: boolean; goal: GoalListItem | null }>({ open: false, goal: null });
+  // Open tasks for the "next steps" on each card (one request, grouped here).
+  const { data: taskData } = useApi<TaskList>("/api/tasks?view=active&counts=0");
+  const tasksByGoal = useMemo(() => {
+    const m = new Map<string, WireTask[]>();
+    const due = (t: WireTask) => (t.dueDate ? Date.parse(t.dueDate) : Infinity);
+    for (const t of taskData?.items ?? []) {
+      if (!t.goalId || isDone(t)) continue;
+      m.set(t.goalId, [...(m.get(t.goalId) ?? []), t]);
+    }
+    for (const list of m.values()) list.sort((a, b) => due(a) - due(b) || a.sortOrder - b.sortOrder);
+    return m;
+  }, [taskData]);
 
   const items = data?.items ?? [];
   const counts = useMemo(() => {
@@ -126,7 +139,7 @@ export default function GoalsPage() {
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((g) => (
-            <GoalCard key={g.id} goal={g} onEdit={(goal) => setDialog({ open: true, goal })} />
+            <GoalCard key={g.id} goal={g} tasks={taskData ? (tasksByGoal.get(g.id) ?? []) : undefined} onEdit={(goal) => setDialog({ open: true, goal })} />
           ))}
         </div>
       )}

@@ -1,7 +1,7 @@
 import type { WireTask, Priority } from "@/components/tasks/types";
 
 export type SmartList = "all" | "today" | "upcoming" | "overdue" | "completed";
-export type ViewMode = "list" | "board" | "calendar" | "priority";
+export type ViewMode = "list" | "goal" | "board" | "calendar" | "priority";
 export type SortKey = "manual" | "due" | "priority" | "category" | "created";
 export type Filters = { priority: Priority | ""; categoryId: string; projectId: string; tag: string };
 export const EMPTY_FILTERS: Filters = { priority: "", categoryId: "", projectId: "", tag: "" };

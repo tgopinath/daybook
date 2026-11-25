@@ -3,6 +3,7 @@
 
 export const WIDGETS = [
   { id: "summary", label: "Summary cards", description: "Tasks, goals, habits, reminders, calendar and notes at a glance", size: "full" },
+  { id: "spaces", label: "My spaces", description: "Diary, schedule, finance, tasks, storage and security in one tap", size: "full" },
   { id: "capture", label: "Quick actions", description: "Shortcuts to add a task, journal, mood, memory or gratitude", size: "full" },
   { id: "focus", label: "Today's Focus", description: "Your three most important tasks", size: "half" },
   { id: "upcoming", label: "Upcoming", description: "The next seven days", size: "half" },
@@ -40,6 +41,14 @@ export function normalizeLayout(raw: unknown): WidgetPref[] {
     seen.add(id);
     out.push({ id: id as WidgetId, visible: (r as { visible?: unknown }).visible !== false });
   }
-  for (const w of DEFAULT_LAYOUT) if (!seen.has(w.id)) out.push({ ...w });
+  // Widgets added since the layout was saved go in at their default position
+  // (after the default widget that precedes them), visible by default.
+  DEFAULT_LAYOUT.forEach((w, i) => {
+    if (seen.has(w.id)) return;
+    const prev = i > 0 ? DEFAULT_LAYOUT[i - 1]!.id : null;
+    const at = prev ? out.findIndex((x) => x.id === prev) + 1 : 0;
+    out.splice(at > 0 || !prev ? at : out.length, 0, { ...w });
+    seen.add(w.id);
+  });
   return out;
 }

@@ -78,6 +78,17 @@ export interface DashboardData {
   gratitude: { today: { items: string[] } | null; streak: number };
   memories: { id: string; title: string; dateLabel: string; cover: { id: string; kind: "image" | "video" | "audio" | "document"; url: string; originalName: string | null } | null }[];
   week: { start: string; label: string; tasksDone: number; habitRate: number | null; moodAvg: number | null; moodDominant: Mood | null; journalDays: number; elapsed: number };
+  /** One live stat per "My spaces" card. */
+  spaces: SpacesStats;
+}
+
+export interface SpacesStats {
+  diary: { entriesThisWeek: number };
+  schedule: { eventsToday: number };
+  finance: { spentThisMonth: number; currency: string; label: string };
+  tasks: { dueToday: number; overdue: number };
+  storage: { bytesUsed: number; files: number; label: string };
+  security: { twoFactor: boolean };
 }
 
 export interface StatsBucket {
