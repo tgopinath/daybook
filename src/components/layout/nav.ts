@@ -29,7 +29,7 @@ const ALL_NAV: { section: string; items: NavItem[] }[] = [
   {
     section: "My Spaces",
     items: [
-      { label: "My Finance", href: "/finance", icon: Wallet, ready: false },
+      { label: "My Finance", href: "/finance", icon: Wallet },
       { label: "My Storage", href: "/drive", icon: Cloud },
       { label: "My Security", href: "/security", icon: ShieldCheck },
     ],
