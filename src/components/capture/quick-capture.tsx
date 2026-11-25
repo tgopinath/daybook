@@ -271,7 +271,7 @@ function Preview({ form, patch, aiFor, stale, matched }: { form: CaptureParse; p
         {matched.length > 0 && (
           <span className="flex flex-wrap gap-1">
             {matched.slice(0, 4).map((m, i) => (
-              <span key={i} className="rounded bg-warning-soft px-1 text-[11px] text-[#b9781a] dark:text-warning">
+              <span key={i} className="rounded bg-warning-soft px-1 text-[11px] text-warning-text">
                 {m}
               </span>
             ))}

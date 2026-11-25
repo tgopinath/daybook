@@ -247,7 +247,7 @@ export default function RemindersPage() {
                   >
                     <k.icon className="h-3.5 w-3.5" />
                     {k.label}
-                    {count ? <span className="tabular-nums opacity-60">{count}</span> : null}
+                    {count ? <span className="tabular-nums">{count}</span> : null}
                   </button>
                 );
               })}

@@ -5,11 +5,11 @@ export const HOUR_PX = 48;
 export const SNAP_MIN = 15;
 export const DAY_MS = 86400000;
 
-export const PALETTE = ["#635BFF", "#3B9BE9", "#14B8A6", "#20A779", "#E9A23B", "#F97316", "#E45D5D", "#8B5CF6"];
+export const PALETTE = ["#993399", "#3B9BE9", "#14B8A6", "#20A779", "#E9A23B", "#F97316", "#E45D5D", "#8B5CF6"];
 
 export const KIND_META: Record<EventKind, { label: string; color: string }> = {
   event: { label: "Event", color: "#3B9BE9" },
-  meeting: { label: "Meeting", color: "#635BFF" },
+  meeting: { label: "Meeting", color: "#993399" },
   personal: { label: "Personal", color: "#20A779" },
   birthday: { label: "Birthday", color: "#E45D5D" },
   important: { label: "Important", color: "#E9A23B" },

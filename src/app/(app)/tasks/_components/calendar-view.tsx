@@ -175,7 +175,7 @@ function DayCell({ day, inMonth, isToday, isSelected, lastCol, tasks, loading, o
         <span
           className={cn(
             "inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1 text-[12px] tabular-nums",
-            isToday ? "bg-primary font-semibold text-white" : inMonth ? "text-fg-2" : "text-fg-3",
+            isToday ? "bg-primary font-semibold text-on-primary" : inMonth ? "text-fg-2" : "text-fg-3",
           )}
         >
           {Number(day.slice(8))}

@@ -32,7 +32,7 @@ export function HabitCard({ habit, onOpen, onEdit }: { habit: HabitItem; onOpen:
             <span className="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-fg-3">
               <span>{describeSchedule(habit)}{counted ? ` · ${target}× a day` : ""}</span>
               {habit.streak > 0 && (
-                <span className={cn("inline-flex items-center gap-0.5", habit.streak >= 3 && "text-[#d9822b]")}>
+                <span className={cn("inline-flex items-center gap-0.5", habit.streak >= 3 && "text-warning-text")}>
                   <Flame className="h-3 w-3" />
                   {habit.streak}
                 </span>

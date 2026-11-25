@@ -212,7 +212,7 @@ function SortableFocusRow({ task, rank, onToggle, onRemove }: { task: FocusTask;
         {...attributes}
         {...listeners}
         aria-label={`Reorder ${task.title}. Press space to pick up, arrow keys to move.`}
-        className="flex h-7 w-5 shrink-0 cursor-grab touch-none items-center justify-center rounded text-fg-3 opacity-60 group-hover:opacity-100 focus-visible:opacity-100 active:cursor-grabbing"
+        className="flex h-7 w-5 shrink-0 cursor-grab touch-none items-center justify-center rounded text-fg-3 group-hover:text-fg focus-visible:text-fg active:cursor-grabbing"
       >
         <GripVertical className="h-4 w-4" />
       </button>

@@ -10,7 +10,7 @@ export const POST = route(async ({ req, user }) => {
   const item = await db.category.upsert({
     where: { userId_name_kind: { userId: user.id, name: input.name, kind: "note" } },
     update: {},
-    create: { userId: user.id, name: input.name, kind: "note", color: input.color ?? "#635BFF" },
+    create: { userId: user.id, name: input.name, kind: "note", color: input.color ?? "#993399" },
     select: { id: true, name: true, color: true, kind: true },
   });
   return { item };

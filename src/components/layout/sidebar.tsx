@@ -92,7 +92,7 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
       <div className={cn("px-3 pb-2", collapsed && "px-2")}>
         <button
           onClick={() => { openTaskDialog(); onNavigate?.(); }}
-          className={cn("flex h-9 w-full items-center gap-2 rounded-[10px] bg-primary px-3 text-[13.5px] font-medium text-white shadow-[0_1px_2px_rgba(99,91,255,.25)] hover:bg-primary-hover", collapsed && "justify-center px-0")}
+          className={cn("flex h-9 w-full items-center gap-2 rounded-[10px] bg-primary px-3 text-[13.5px] font-medium text-on-primary shadow-[0_1px_2px_rgba(99,91,255,.25)] hover:bg-primary-hover", collapsed && "justify-center px-0")}
           title="New task (N)"
         >
           <Plus className="h-4 w-4" />

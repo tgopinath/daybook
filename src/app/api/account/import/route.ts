@@ -17,7 +17,7 @@ const MAX = 20_000;
 const arr = <T extends z.ZodTypeAny>(s: T) => z.array(s).max(MAX).default([]);
 const priority = z.enum(["HIGH", "MEDIUM", "LOW"]).catch("MEDIUM");
 const recurrence = z.enum(["NONE", "HOURLY", "DAILY", "WEEKLY", "MONTHLY", "YEARLY", "CUSTOM"]).catch("NONE");
-const color = z.string().regex(/^#[0-9a-fA-F]{6}$/).catch("#635BFF");
+const color = z.string().regex(/^#[0-9a-fA-F]{6}$/).catch("#993399");
 const flag = z.boolean().default(false);
 
 const schema = z.object({
@@ -222,7 +222,7 @@ export const POST = route(async ({ req, user }) => {
     if (!nid) {
       nid = newId();
       catKey.set(k, nid);
-      categories.push({ id: nid, userId, name: c.name, kind: c.kind, color: c.color ?? "#635BFF" });
+      categories.push({ id: nid, userId, name: c.name, kind: c.kind, color: c.color ?? "#993399" });
     }
     catMap.set(c.id, nid);
   }
@@ -232,7 +232,7 @@ export const POST = route(async ({ req, user }) => {
     if (!nid) {
       nid = newId();
       projKey.set(p.name, nid);
-      projects.push({ id: nid, userId, name: p.name, color: p.color ?? "#635BFF", archived: p.archived });
+      projects.push({ id: nid, userId, name: p.name, color: p.color ?? "#993399", archived: p.archived });
     }
     projMap.set(p.id, nid);
   }
@@ -254,7 +254,7 @@ export const POST = route(async ({ req, user }) => {
     const gid = newId();
     goalMap.set(g.id, gid);
     const { id: _i, milestones: ms, progressLogs, startDate, createdAt, color: c, ...rest } = g;
-    goals.push({ ...rest, id: gid, userId, color: c ?? "#635BFF", ...(startDate ? { startDate } : {}), ...(createdAt ? { createdAt } : {}) });
+    goals.push({ ...rest, id: gid, userId, color: c ?? "#993399", ...(startDate ? { startDate } : {}), ...(createdAt ? { createdAt } : {}) });
     for (const m of ms) {
       const mid = newId();
       msMap.set(m.id, mid);
@@ -277,7 +277,7 @@ export const POST = route(async ({ req, user }) => {
     const hid = newId();
     habitMap.set(h.id, hid);
     const { id: _i, entries: es, createdAt, color: c, ...rest } = h;
-    habits.push({ ...rest, id: hid, userId, color: c ?? "#635BFF", ...(createdAt ? { createdAt } : {}) });
+    habits.push({ ...rest, id: hid, userId, color: c ?? "#993399", ...(createdAt ? { createdAt } : {}) });
     for (const e of es) entries.push({ habitId: hid, date: e.date, count: e.count });
   }
 

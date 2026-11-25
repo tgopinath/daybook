@@ -18,7 +18,7 @@ export function MobileBottomNav() {
         if (item.action === "quick-capture")
           return (
             <button key={item.label} className={cls} onClick={() => openQuickCapture()}>
-              <span className="-mt-5 flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white shadow-pop"><item.icon className="h-5 w-5" /></span>
+              <span className="-mt-5 flex h-11 w-11 items-center justify-center rounded-full bg-primary text-on-primary shadow-pop"><item.icon className="h-5 w-5" /></span>
               {item.label}
             </button>
           );

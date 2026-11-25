@@ -28,7 +28,7 @@ export const HABIT_ICONS: Record<string, { icon: LucideIcon; label: string }> = 
   bed: { icon: Bed, label: "Rest" },
 };
 
-export const HABIT_COLORS = ["#635BFF", "#20A779", "#E9A23B", "#E45D5D", "#3B9BE9", "#8B5CF6", "#EC4899", "#14B8A6"];
+export const HABIT_COLORS = ["#993399", "#20A779", "#E9A23B", "#E45D5D", "#3B9BE9", "#8B5CF6", "#EC4899", "#14B8A6"];
 
 export function HabitIcon({ name, className }: { name: string; className?: string }) {
   const I = HABIT_ICONS[name]?.icon ?? Check;

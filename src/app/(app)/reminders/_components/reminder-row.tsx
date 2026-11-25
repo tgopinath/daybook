@@ -129,9 +129,9 @@ export function ReminderRow({
           {completed ? (
             <span>Completed{r.updatedAt ? ` · ${fmtWhen(new Date(r.updatedAt), tz)}` : ""}</span>
           ) : snoozedUntil ? (
-            <span className="text-[#b9781a] dark:text-warning">Snoozed until {fmtWhen(snoozedUntil, tz)}</span>
+            <span className="text-warning-text">Snoozed until {fmtWhen(snoozedUntil, tz)}</span>
           ) : due && lastFired && !recurring ? (
-            <span className="text-[#b9781a] dark:text-warning">Due {fmtWhen(when, tz)}</span>
+            <span className="text-warning-text">Due {fmtWhen(when, tz)}</span>
           ) : (
             <span>{recurring ? "Next" : ""} {fmtWhen(when, tz)}</span>
           )}

@@ -54,6 +54,6 @@ function cookiesBlocked(next: string) {
 <div style="font:15px/1.5 system-ui,sans-serif;color:#1d1d24;max-width:340px;margin:0 auto;padding:48px 24px;text-align:center">
 <p style="font-weight:600;font-size:17px;margin:0 0 8px">This browser blocked the demo's cookie here</p>
 <p style="margin:0 0 20px;color:#555">The MyDiary demo keeps your sample account in a cookie. Open it in its own tab to try it.</p>
-<a href="${next}" target="_blank" rel="noopener" style="display:inline-block;background:#635BFF;color:#fff;text-decoration:none;padding:10px 18px;border-radius:10px;font-weight:600">Open MyDiary in a new tab</a></div>`;
+<a href="${next}" target="_blank" rel="noopener" style="display:inline-block;background:#993399;color:#fff;text-decoration:none;padding:10px 18px;border-radius:10px;font-weight:600">Open MyDiary in a new tab</a></div>`;
   return new NextResponse(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
 }

@@ -565,7 +565,7 @@ function SubtaskItem({ item, onChange, onRemove }: { item: SubItem; onChange: (p
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn("group/sub flex h-9 items-center gap-2 rounded-lg px-1 hover:bg-surface-2", isDragging && "relative z-10 bg-surface shadow-pop")}
     >
-      <button type="button" {...attributes} {...listeners} aria-label="Reorder subtask" className="cursor-grab touch-none rounded p-0.5 text-fg-3 opacity-60 hover:opacity-100 active:cursor-grabbing">
+      <button type="button" {...attributes} {...listeners} aria-label="Reorder subtask" className="cursor-grab touch-none rounded p-0.5 text-fg-3 hover:text-fg active:cursor-grabbing">
         <GripVertical className="h-3.5 w-3.5" />
       </button>
       <Checkbox checked={item.done} onChange={(v) => onChange({ done: v })} size={16} color="var(--success)" label={item.done ? "Mark subtask not done" : "Mark subtask done"} />

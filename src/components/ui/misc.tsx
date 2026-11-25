@@ -12,7 +12,7 @@ export function Badge({ children, tone = "neutral", className }: { children: Rea
     neutral: "bg-surface-2 text-fg-2",
     primary: "bg-primary-soft text-primary",
     success: "bg-success-soft text-success",
-    warning: "bg-warning-soft text-[#b9781a] dark:text-warning",
+    warning: "bg-warning-soft text-warning-text",
     danger: "bg-danger-soft text-danger",
   };
   return <span className={cn("inline-flex h-5 items-center gap-1 rounded-md px-1.5 text-[11px] font-medium whitespace-nowrap", tones[tone], className)}>{children}</span>;

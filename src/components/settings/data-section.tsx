@@ -172,7 +172,7 @@ export function DataSection({ me }: { me: Me }) {
               ))}
             </ul>
             {(importState?.summary.vaultSkipped ?? 0) > 0 && (
-              <p className="flex gap-2 rounded-[10px] bg-warning-soft px-3 py-2 text-[12.5px] text-[#9a6412] dark:text-warning">
+              <p className="flex gap-2 rounded-[10px] bg-warning-soft px-3 py-2 text-[12.5px] text-warning-text">
                 <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                 {pluralize(importState!.summary.vaultSkipped!, "personal info item")} will be skipped because they look like passwords or financial credentials.
               </p>

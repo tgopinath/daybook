@@ -15,12 +15,12 @@ export async function seedDemoData(userId: string, tz: string) {
 
   const [work, personal, health] = await Promise.all(
     [
-      { name: "Work", color: "#635BFF" },
+      { name: "Work", color: "#993399" },
       { name: "Personal", color: "#20A779" },
       { name: "Health", color: "#E9A23B" },
     ].map((c) => db.category.create({ data: { ...c, userId, kind: "general" } })),
   );
-  const portfolio = await db.project.create({ data: { userId, name: "Portfolio refresh", color: "#635BFF" } });
+  const portfolio = await db.project.create({ data: { userId, name: "Portfolio refresh", color: "#993399" } });
 
   const fitness = await db.goal.create({
     data: {
@@ -58,7 +58,7 @@ export async function seedDemoData(userId: string, tz: string) {
       targetValue: 3,
       currentValue: 1,
       unit: "case studies",
-      color: "#635BFF",
+      color: "#993399",
       milestones: {
         create: [
           { title: "Case study 1 published", done: true, completedAt: at(-2, "17:00"), sortOrder: 0 },
@@ -84,17 +84,17 @@ export async function seedDemoData(userId: string, tz: string) {
   });
 
   const standup = await db.calendarEvent.create({
-    data: { userId, isDemo, title: "Design review", kind: "meeting", start: at(0, "11:00"), end: at(0, "12:00"), categoryId: work.id, location: "Zoom", color: "#635BFF" },
+    data: { userId, isDemo, title: "Design review", kind: "meeting", start: at(0, "11:00"), end: at(0, "12:00"), categoryId: work.id, location: "Zoom", color: "#993399" },
   });
   await db.calendarEvent.createMany({
     data: [
-      { userId, isDemo, title: "1:1 with manager", kind: "meeting", start: at(0, "15:30"), end: at(0, "16:00"), categoryId: work.id, color: "#635BFF" },
+      { userId, isDemo, title: "1:1 with manager", kind: "meeting", start: at(0, "15:30"), end: at(0, "16:00"), categoryId: work.id, color: "#993399" },
       { userId, isDemo, title: "Gym session", kind: "personal", start: at(1, "07:00"), end: at(1, "08:00"), categoryId: health.id, color: "#E9A23B" },
       { userId, isDemo, title: "Dinner with family", kind: "personal", start: at(2, "19:30"), end: at(2, "21:00"), categoryId: personal.id, color: "#20A779" },
-      { userId, isDemo, title: "Product roadmap workshop", kind: "meeting", start: at(3, "10:00"), end: at(3, "12:30"), categoryId: work.id, color: "#635BFF" },
+      { userId, isDemo, title: "Product roadmap workshop", kind: "meeting", start: at(3, "10:00"), end: at(3, "12:30"), categoryId: work.id, color: "#993399" },
       { userId, isDemo, title: "Mom's birthday", kind: "birthday", allDay: true, start: at(5, "00:00"), end: at(6, "00:00"), recurrence: "YEARLY", color: "#E45D5D" },
       { userId, isDemo, title: "Car insurance renewal", kind: "important", allDay: true, start: at(12, "00:00"), end: at(13, "00:00"), color: "#E9A23B" },
-      { userId, isDemo, title: "Team offsite", kind: "event", start: at(-2, "09:30"), end: at(-2, "17:00"), categoryId: work.id, color: "#635BFF" },
+      { userId, isDemo, title: "Team offsite", kind: "event", start: at(-2, "09:30"), end: at(-2, "17:00"), categoryId: work.id, color: "#993399" },
     ],
   });
 
@@ -136,7 +136,7 @@ export async function seedDemoData(userId: string, tz: string) {
   const habitDefs = [
     { name: "Exercise", icon: "dumbbell", color: "#20A779", rate: 0.75 },
     { name: "Read 20 pages", icon: "book-open", color: "#E9A23B", rate: 0.85 },
-    { name: "Meditate", icon: "brain", color: "#635BFF", rate: 0.6 },
+    { name: "Meditate", icon: "brain", color: "#993399", rate: 0.6 },
     { name: "Drink 8 glasses of water", icon: "glass-water", color: "#3B9BE9", rate: 0.9, targetPerDay: 8 },
     { name: "Sleep by 11 PM", icon: "moon", color: "#8B5CF6", rate: 0.5, reminderTime: "22:30" },
   ];

@@ -87,7 +87,7 @@ export function MonthGrid({ habits, todayKey, windowDays = 140 }: { habits: Habi
                           className={cn(
                             "relative flex h-[22px] w-[22px] items-center justify-center rounded-[5px] transition-colors disabled:cursor-default",
                             !ok && !count && (sched && !future ? "bg-surface-2 hover:bg-line" : "border border-dashed border-line"),
-                            future && "opacity-40",
+                            future && "text-fg-3",
                             k === todayKey && !ok && "ring-1 ring-fg-3/40",
                           )}
                           style={ok ? { background: h.color } : count ? { background: tint(h.color, 0.3) } : undefined}

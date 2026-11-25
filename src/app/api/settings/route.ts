@@ -11,7 +11,7 @@ const schema = z
     timezone: z.string().refine(isValidTz, "Unknown time zone"),
     language: z.literal("en"),
     theme: z.enum(["light", "dark", "system"]),
-    accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Use a hex color like #635BFF"),
+    accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Use a hex color like #993399"),
     density: z.enum(["comfortable", "compact"]),
     defaultPriority: z.enum(["HIGH", "MEDIUM", "LOW"]),
     workStart: hhmm,

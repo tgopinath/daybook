@@ -176,7 +176,7 @@ export function ReminderDialog({
                     aria-pressed={active}
                     className={cn(
                       "h-8 w-11 rounded-lg border text-[12.5px] font-medium transition-colors",
-                      active ? "border-primary bg-primary text-white" : "border-line text-fg-2 hover:border-line-strong",
+                      active ? "border-primary bg-primary text-on-primary" : "border-line text-fg-2 hover:border-line-strong",
                     )}
                   >
                     {name}

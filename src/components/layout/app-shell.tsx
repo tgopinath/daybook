@@ -11,6 +11,7 @@ import { ConfirmHost } from "@/components/ui/confirm";
 import { ui, openQuickCapture, openSearch, toggleAIPanel } from "@/lib/ui-store";
 import { useMe } from "@/lib/use-me";
 import { api } from "@/lib/client";
+import { accentVars, normalizeAccent } from "@/lib/accent";
 import { AIPanel } from "@/components/ai/ai-panel";
 import { QuickCapture } from "@/components/capture/quick-capture";
 import { SearchPalette } from "@/components/search/search-palette";
@@ -58,13 +59,21 @@ function useAppearance() {
     if (!s) return;
     const root = document.documentElement;
     const mq = matchMedia("(prefers-color-scheme: dark)");
-    const apply = () => root.classList.toggle("dark", s.theme === "dark" || (s.theme === "system" && mq.matches));
+    const apply = () => {
+      const dark = s.theme === "dark" || (s.theme === "system" && mq.matches);
+      root.classList.toggle("dark", dark);
+      // Accent plus readable text shades for it (WCAG AA) in the active theme.
+      const vars = accentVars(s.accentColor, dark);
+      for (const [k, v] of Object.entries(vars)) root.style.setProperty(k, v);
+      try {
+        localStorage.setItem("pad-accent-vars", JSON.stringify(vars));
+      } catch {}
+    };
     apply();
-    root.style.setProperty("--primary", s.accentColor);
     root.classList.toggle("compact", s.density === "compact");
     try {
       localStorage.setItem("pad-theme", s.theme);
-      localStorage.setItem("pad-accent", s.accentColor);
+      localStorage.setItem("pad-accent", normalizeAccent(s.accentColor));
       localStorage.setItem("pad-density", s.density);
       if (s.timezone && s.timezone !== "UTC") localStorage.setItem("pad-tz", s.timezone);
     } catch {}
@@ -86,7 +95,7 @@ function DemoBanner() {
   }
   return (
     <div role="note" className="demo-banner flex items-center gap-2 border-b border-line bg-primary-soft px-4 py-1.5 text-[13px] text-fg">
-      <span className="rounded bg-primary px-1.5 py-px text-[11px] font-semibold uppercase tracking-wide text-white">Demo</span>
+      <span className="rounded bg-primary px-1.5 py-px text-[11px] font-semibold uppercase tracking-wide text-on-primary">Demo</span>
       <span className="min-w-0 flex-1 truncate sm:hidden">Sample data. Your changes are temporary.</span>
       <span className="hidden min-w-0 flex-1 sm:inline">
         You&apos;re exploring MyDiary with sample data for a fictional user. Changes are temporary and kept apart from real accounts, so don&apos;t enter real personal details.

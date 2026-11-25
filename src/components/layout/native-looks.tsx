@@ -52,7 +52,7 @@ export function NativeLooks() {
     const ios = window.KolamIOS?.init({
       appName: "MyDiary",
       uaTokens: ["MyDiary-iOS", "Daybook-iOS"],
-      tint: { light: "#635BFF", dark: "#9B95FF" },
+      tint: { light: "#993399", dark: "#C77DC7" },
       tabs: [
         ...TABS.map((t) => ({ id: t.id, label: t.label, icon: t.ios, href: t.href })),
         { id: "more", label: "More", icon: "ellipsis", href: "#more" },
@@ -71,7 +71,7 @@ export function NativeLooks() {
     } else if (window.KolamM3?.isAndroid) {
       mode.current = "android";
       m3.current = window.KolamM3.init({
-        primary: "#635BFF",
+        primary: "#993399",
         title: "MyDiary",
         home: "/overview",
         destinations: [

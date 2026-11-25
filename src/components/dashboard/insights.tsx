@@ -249,7 +249,7 @@ export function Insights() {
           <motion.div variants={item} className="min-w-0">
             <Card className="h-full p-4 md:p-5">
               <h3 className="flex items-center gap-2 text-[14px] font-semibold">
-                <Flame className="h-4 w-4 text-[#e8793a]" /> Habit consistency
+                <Flame className="h-4 w-4 text-warning-text" /> Habit consistency
               </h3>
               <p className="mt-0.5 text-[12px] text-fg-3">Completed share of scheduled days, per {unit}</p>
               {data.habits.length === 0 ? (

@@ -69,7 +69,7 @@ export function GoalCard({ goal, onEdit }: { goal: GoalListItem; onEdit: (g: Goa
       </div>
 
       <div className="mt-3.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-fg-2">
-        <span className={cn("inline-flex items-center gap-1", days.tone === "danger" && "font-medium text-danger", days.tone === "warning" && "text-[#b9781a] dark:text-warning")}>
+        <span className={cn("inline-flex items-center gap-1", days.tone === "danger" && "font-medium text-danger", days.tone === "warning" && "text-warning-text")}>
           <CalendarClock className="h-3.5 w-3.5" />
           {goal.status === "COMPLETED" ? "Completed" : days.label}
         </span>

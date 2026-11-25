@@ -19,7 +19,7 @@ export interface ChartColors {
 }
 
 const FALLBACK: ChartColors = {
-  primary: "#635bff",
+  primary: "#993399",
   success: "#20a779",
   warning: "#e9a23b",
   danger: "#e45d5d",

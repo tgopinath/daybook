@@ -413,7 +413,7 @@ function TagInput({ tags, suggestions, onChange }: { tags: string[]; suggestions
   );
 }
 
-const CAT_COLORS = ["#635BFF", "#20A779", "#E9A23B", "#E45D5D", "#3B9BE9", "#8B5CF6"];
+const CAT_COLORS = ["#993399", "#20A779", "#E9A23B", "#E45D5D", "#3B9BE9", "#8B5CF6"];
 
 function NewCategoryDialog({ open, onOpenChange, onCreated }: { open: boolean; onOpenChange: (o: boolean) => void; onCreated: (id: string) => void }) {
   const [name, setName] = useState("");

@@ -130,7 +130,7 @@ export function MessageList({
         if (m.role === "USER")
           return (
             <div key={m.id} className="flex justify-end">
-              <div className={cn("max-w-[85%] rounded-2xl rounded-br-md bg-primary px-3.5 py-2 text-white whitespace-pre-wrap", compact ? "text-[13px]" : "text-[13.5px]")}>{m.content}</div>
+              <div className={cn("max-w-[85%] rounded-2xl rounded-br-md bg-primary px-3.5 py-2 text-on-primary whitespace-pre-wrap", compact ? "text-[13px]" : "text-[13.5px]")}>{m.content}</div>
             </div>
           );
         if (m.role === "TOOL")

@@ -122,7 +122,7 @@ model UserSettings {
   timezone             String   @default("UTC")
   language             String   @default("en")
   theme                String   @default("system") // light | dark | system
-  accentColor          String   @default("#635BFF")
+  accentColor          String   @default("#993399")
   density              String   @default("comfortable") // comfortable | compact
   defaultPriority      Priority @default(MEDIUM)
   workStart            String   @default("09:00")

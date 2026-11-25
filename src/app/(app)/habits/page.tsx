@@ -104,7 +104,7 @@ export default function HabitsPage() {
                 <div>
                   <p className="text-[11.5px] text-fg-3">Longest active streak</p>
                   <p className="mt-0.5 flex items-center gap-1 text-[20px] font-semibold tabular-nums">
-                    <Flame className="h-4 w-4 text-[#d9822b]" />
+                    <Flame className="h-4 w-4 text-warning-text" />
                     {summary?.bestCurrentStreak ?? 0}
                     <span className="text-xs font-normal text-fg-3">{summary?.bestCurrentStreak === 1 ? "day" : "days"}</span>
                   </p>
@@ -154,9 +154,9 @@ export default function HabitsPage() {
                 <h2 className="text-[15px] font-semibold">All habits · last 20 weeks</h2>
                 <p className="text-xs text-fg-3">Share of scheduled habits completed each day</p>
               </div>
-              <HeatLegend color="#635BFF" />
+              <HeatLegend color="#993399" />
             </div>
-            <Heatmap todayKey={data!.todayKey} weeks={20} weekStart={me?.settings.weekStart ?? 1} color="#635BFF" cell={combined} />
+            <Heatmap todayKey={data!.todayKey} weeks={20} weekStart={me?.settings.weekStart ?? 1} color="#993399" cell={combined} />
           </Card>
         </div>
       )}

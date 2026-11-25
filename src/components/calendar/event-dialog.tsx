@@ -468,7 +468,7 @@ function TaskLinker({ value, onChange, linked }: { value: string[]; onChange: (v
                         onClick={() => toggle(t.id)}
                         className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] hover:bg-surface-2"
                       >
-                        <span className={cn("flex h-4 w-4 shrink-0 items-center justify-center rounded border", on ? "border-primary bg-primary text-white" : "border-line-strong")}>
+                        <span className={cn("flex h-4 w-4 shrink-0 items-center justify-center rounded border", on ? "border-primary bg-primary text-on-primary" : "border-line-strong")}>
                           {on && <Check className="h-3 w-3" />}
                         </span>
                         <span className={cn("flex-1 truncate", t.status === "COMPLETED" && "text-fg-3 line-through")}>{t.title}</span>

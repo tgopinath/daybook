@@ -8,16 +8,11 @@ import { Badge, Segmented } from "@/components/ui/misc";
 import { toast, toastError } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import { Row, Section, useSaveSettings, type SettingsPatch } from "./shared";
+import { THEME_COLORS, accentVars } from "@/lib/accent";
 import { WhatsAppRow } from "./whatsapp-row";
 
-const ACCENTS = [
-  { name: "Indigo", value: "#635BFF" },
-  { name: "Blue", value: "#2F80ED" },
-  { name: "Teal", value: "#14A38B" },
-  { name: "Green", value: "#20A779" },
-  { name: "Amber", value: "#D9822B" },
-  { name: "Rose", value: "#E0457B" },
-];
+// The MyDiary theme colours (src/lib/accent.ts); text on them is picked for WCAG AA automatically.
+const ACCENTS = THEME_COLORS;
 
 export function AppearanceSection({ me }: { me: Me }) {
   const save = useSaveSettings();
@@ -61,8 +56,8 @@ export function AppearanceSection({ me }: { me: Me }) {
                 aria-label={a.name}
                 title={a.name}
                 onClick={() => save({ accentColor: a.value })}
-                className="flex h-7 w-7 items-center justify-center rounded-full text-white ring-offset-2 ring-offset-surface transition-transform hover:scale-110"
-                style={{ background: a.value, boxShadow: active ? `0 0 0 2px var(--surface), 0 0 0 4px ${a.value}` : undefined }}
+                className="flex h-7 w-7 items-center justify-center rounded-full ring-offset-2 ring-offset-surface transition-transform hover:scale-110"
+                style={{ background: a.value, color: accentVars(a.value, false)["--on-primary"], boxShadow: active ? `0 0 0 2px var(--surface), 0 0 0 4px ${a.value}` : undefined }}
               >
                 {active && <Check className="h-3.5 w-3.5" />}
               </button>
@@ -77,7 +72,7 @@ export function AppearanceSection({ me }: { me: Me }) {
             <input
               type="color"
               aria-label="Custom accent color"
-              value={s.accentColor.length === 7 ? s.accentColor : "#635BFF"}
+              value={s.accentColor.length === 7 ? s.accentColor : "#993399"}
               onChange={(e) => save({ accentColor: e.target.value.toUpperCase() })}
               className="absolute inset-0 cursor-pointer opacity-0"
             />

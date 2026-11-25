@@ -16,7 +16,7 @@ function Shell({ tone, icon: Icon, title, children, action }: { tone: "primary" 
     neutral: "border-line bg-surface-2/60",
     success: "border-line bg-surface",
   };
-  const iconTones = { primary: "text-primary", warning: "text-[#b9781a] dark:text-warning", neutral: "text-fg-3", success: "text-success" };
+  const iconTones = { primary: "text-primary", warning: "text-warning-text", neutral: "text-fg-3", success: "text-success" };
   return (
     <div className={cn("mb-5 flex flex-col gap-3 rounded-[14px] border px-4 py-3 sm:flex-row sm:items-center", tones[tone])} role="status">
       <Icon className={cn("hidden h-5 w-5 shrink-0 sm:block", iconTones[tone])} />

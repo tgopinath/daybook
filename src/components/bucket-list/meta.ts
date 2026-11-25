@@ -7,7 +7,7 @@ export type BucketCategory = (typeof BUCKET_CATEGORIES)[number];
 export const BUCKET_META: Record<BucketCategory, { icon: LucideIcon; color: string }> = {
   Travel: { icon: Plane, color: "#3B9BE9" },
   Adventure: { icon: Mountain, color: "#20A779" },
-  Career: { icon: Briefcase, color: "#635BFF" },
+  Career: { icon: Briefcase, color: "#993399" },
   Family: { icon: Heart, color: "#E45D5D" },
   Learning: { icon: GraduationCap, color: "#E9A23B" },
   Lifestyle: { icon: Sparkles, color: "#D9468F" },

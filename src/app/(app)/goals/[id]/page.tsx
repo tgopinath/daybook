@@ -96,7 +96,7 @@ export default function GoalDetailPage() {
             <h1 className="mt-1 text-[22px] leading-tight font-semibold tracking-tight">{goal.title}</h1>
             {goal.description && <p className="mt-1.5 max-w-2xl text-sm leading-relaxed whitespace-pre-line text-fg-2">{goal.description}</p>}
             <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13px] text-fg-2">
-              <span className={cn("inline-flex items-center gap-1.5", days.tone === "danger" && "font-medium text-danger", days.tone === "warning" && "text-[#b9781a] dark:text-warning")}>
+              <span className={cn("inline-flex items-center gap-1.5", days.tone === "danger" && "font-medium text-danger", days.tone === "warning" && "text-warning-text")}>
                 <CalendarClock className="h-4 w-4" />
                 {goal.status === "COMPLETED" ? "Completed" : days.label}
                 {goal.targetDate && <span className="text-fg-3">· {fmtDate(goal.targetDate)}</span>}

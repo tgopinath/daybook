@@ -295,7 +295,7 @@ export function TaskRow({ task: raw, onToggle, compact, selected, selectionMode,
           }}
           className={cn(
             "inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-[5px] border-[1.5px] transition-opacity",
-            selected ? "border-primary bg-primary text-white" : "border-line-strong bg-surface",
+            selected ? "border-primary bg-primary text-on-primary" : "border-line-strong bg-surface",
             !selected && !selectionMode && !coarse && "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
             !selected && !selectionMode && coarse && "hidden",
           )}

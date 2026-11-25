@@ -3,24 +3,33 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --primary: #635bff;
-  --primary-hover: #544ce6;
-  --primary-soft: #f0eefc;
+  /* MyDiary theme: Plum (accent), Parsley (success), Burgundy (danger), Sunshine (warning), Olive (secondary).
+     --on-primary / --primary-text are recomputed for custom accents in app-shell (src/lib/accent.ts). */
+  --primary: #993399;
+  --primary-hover: color-mix(in oklab, var(--primary) 86%, black);
+  --primary-soft: color-mix(in oklab, var(--primary) 9%, white);
+  --on-primary: #ffffff;
+  --primary-text: #993399;
+  --secondary: #999900; /* Olive: fills, chart series */
+  --secondary-text: #6b6b00;
   /* Plain white surfaces with soft, slightly warm text and borders */
   --bg: #ffffff;
   --surface: #ffffff;
   --surface-2: #f6f5f3;
   --text: #2b2723;
-  --text-2: #736c64;
-  --text-3: #a19a92;
+  /* All text tokens meet WCAG 2.2 AA (≥4.5:1) on white and on surface-2 */
+  --text-2: #5f5952;
+  --text-3: #6b645c;
   --border: #ecebe7;
   --border-strong: #dedcd6;
-  --success: #20a779;
-  --success-soft: #e6f6f0;
-  --warning: #e9a23b;
-  --warning-soft: #fcf3e4;
-  --danger: #e45d5d;
-  --danger-soft: #fcecec;
+  --success: #13601f; /* Parsley */
+  --success-soft: #e8f1e9;
+  --warning-fill: #f9b21d; /* Sunshine: fills/highlights, dark text on top */
+  --warning: #a8740b; /* icons and bars on white (≥3:1) */
+  --warning-text: #8a5a00; /* amber text (≥4.5:1) */
+  --warning-soft: #fdf1d6;
+  --danger: #821f1f; /* Burgundy */
+  --danger-soft: #f6e9e9;
   --shadow-sm: 0 1px 2px rgba(60, 40, 20, 0.05);
   --shadow-md: 0 6px 18px rgba(60, 40, 20, 0.07), 0 1px 3px rgba(60, 40, 20, 0.05);
   --shadow-lg: 0 18px 48px rgba(60, 40, 20, 0.14), 0 2px 6px rgba(60, 40, 20, 0.06);
@@ -30,14 +39,20 @@
 }
 
 .dark {
-  --primary-hover: #7a73ff;
-  --primary-soft: #2a2640;
+  --primary-hover: color-mix(in oklab, var(--primary) 80%, white);
+  --primary-soft: color-mix(in oklab, var(--primary) 24%, #1b1916);
+  --primary-text: #b468b4;
+  --secondary-text: #b8b84d;
   --bg: #13110f;
   --surface: #1b1916;
   --surface-2: #24211d;
   --text: #efe9e1;
   --text-2: #aba296;
-  --text-3: #776f65;
+  --text-3: #9a9186;
+  --success: #5fae6c;
+  --warning: #f9b21d;
+  --warning-text: #f9b21d;
+  --danger: #e27a7a;
   --border: #2f2b26;
   --border-strong: #3c3731;
   --success-soft: #143328;
@@ -70,6 +85,11 @@
   --color-success-soft: var(--success-soft);
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
+  --color-warning-text: var(--warning-text);
+  --color-warning-fill: var(--warning-fill);
+  --color-on-primary: var(--on-primary);
+  --color-secondary: var(--secondary);
+  --color-secondary-text: var(--secondary-text);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --shadow-card: var(--shadow-sm);
@@ -170,3 +190,7 @@ html.native-app .app-root main .pb-28 { padding-bottom: 1.5rem; }
 /* Personal touches: serif display headings, softer type for writing */
 .font-display { font-family: var(--font-display); font-optical-sizing: auto; font-variation-settings: "SOFT" 50, "WONK" 0; letter-spacing: -0.01em; }
 .prose-editor h1, .prose-editor h2, .prose-editor h3 { font-family: var(--font-display); font-weight: 600; }
+
+/* Accent as text uses --primary-text (≥4.5:1 for any accent, see src/lib/accent.ts).
+   Unlayered, so it wins over the Tailwind utility. */
+.text-primary, .hover\:text-primary:hover, .group:hover .group-hover\:text-primary { color: var(--primary-text); }

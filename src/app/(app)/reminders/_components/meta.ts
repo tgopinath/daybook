@@ -8,7 +8,7 @@ export type Kind = "water" | "break" | "meeting" | "bill" | "family" | "deadline
 export const KINDS: { value: Kind; label: string; icon: LucideIcon; color: string }[] = [
   { value: "water", label: "Drink water", icon: GlassWater, color: "#0EA5E9" },
   { value: "break", label: "Take a break", icon: Coffee, color: "#F59E0B" },
-  { value: "meeting", label: "Meeting", icon: Users, color: "#635BFF" },
+  { value: "meeting", label: "Meeting", icon: Users, color: "#993399" },
   { value: "bill", label: "Pay a bill", icon: Receipt, color: "#10B981" },
   { value: "family", label: "Family", icon: Heart, color: "#EC4899" },
   { value: "deadline", label: "Deadline", icon: Flag, color: "#EF4444" },

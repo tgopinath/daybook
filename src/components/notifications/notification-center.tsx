@@ -37,7 +37,7 @@ export const NOTIFICATION_META: Record<NotificationType, { icon: LucideIcon; lab
   REMINDER: { icon: AlarmClock, label: "Reminder", className: "bg-primary-soft text-primary" },
   TASK_OVERDUE: { icon: TriangleAlert, label: "Overdue task", className: "bg-danger-soft text-danger" },
   GOAL_MILESTONE: { icon: Trophy, label: "Goal milestone", className: "bg-success-soft text-success" },
-  HABIT: { icon: Flame, label: "Habit", className: "bg-warning-soft text-[#b9781a] dark:text-warning" },
+  HABIT: { icon: Flame, label: "Habit", className: "bg-warning-soft text-warning-text" },
   CALENDAR: { icon: CalendarClock, label: "Calendar", className: "bg-primary-soft text-primary" },
   AI: { icon: Sparkles, label: "AI recommendation", className: "bg-primary-soft text-primary" },
   SYSTEM: { icon: Info, label: "MyDiary", className: "bg-surface-2 text-fg-2" },
