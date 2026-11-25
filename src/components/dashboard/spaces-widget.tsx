@@ -3,6 +3,10 @@ import Link from "next/link";
 import { BookOpen, CalendarDays, CheckSquare, Cloud, ShieldCheck, Wallet, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DashboardData, SpacesStats } from "./types";
+import { NAV } from "@/components/layout/nav";
+
+// Cards only for spaces whose page is live (same `ready` flag as the sidebar).
+const LIVE = new Set(["/journal", "/calendar", "/tasks", ...NAV.flatMap((g) => g.items.map((i) => i.href))]);
 
 type Space = {
   key: keyof SpacesStats;
@@ -95,7 +99,7 @@ export function SpacesWidget({ data }: { data: DashboardData }) {
         My spaces
       </h2>
       <ul className="grid grid-cols-2 gap-2.5 sm:gap-3 md:gap-4 2xl:grid-cols-3">
-        {SPACES.map((s) => {
+        {SPACES.filter((s) => LIVE.has(s.href)).map((s) => {
           const stat = stats ? s.stat(stats) : null;
           const Icon = s.icon;
           return (
