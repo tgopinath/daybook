@@ -1,5 +1,6 @@
-import { PageHeader } from "@/components/ui/misc";
-export const metadata = { title: "Weekly Review" };
+"use client";
+import { WeeklyReviewPage } from "@/components/weekly-review/weekly-review-page";
+
 export default function Page() {
-  return <PageHeader title="Weekly Review" />;
+  return <WeeklyReviewPage />;
 }

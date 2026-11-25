@@ -1,19 +1,25 @@
 "use client";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FlaskConical, Plus, RotateCw, Sparkles } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { FlaskConical, LayoutGrid, Plus, RotateCw, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, Skeleton } from "@/components/ui/misc";
 import { openTaskDialog } from "@/components/tasks/task-dialog";
 import { toggleAIPanel } from "@/lib/ui-store";
 import { useApi } from "@/lib/client";
 import { useMe } from "@/lib/use-me";
+import type { KeyedMutator } from "swr";
+import { cn } from "@/lib/utils";
 import type { DashboardData } from "./types";
 import { container, item } from "./motion";
 import { SummaryCards, SummaryCardsSkeleton } from "./summary-cards";
 import { TodayFocus, TodayFocusSkeleton } from "./today-focus";
 import { Upcoming, UpcomingSkeleton } from "./upcoming";
 import { ProductivityOverview } from "./productivity-charts";
+import { CustomizeDialog } from "./customize-dialog";
+import { GratitudeWidget, MoodCheckinWidget, QuickActionsWidget, QuickJournalWidget, RecentMemoriesWidget, WeekSummaryWidget } from "./personal-widgets";
+import { widgetMeta, type WidgetId } from "./widgets";
 
 // Mobile: 2-col mini tiles. Tablet: 2 columns. Desktop: 3 columns.
 const CARD_GRID = "grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3 lg:gap-5";
@@ -32,7 +38,7 @@ function DemoBanner() {
   );
 }
 
-function Header({ data }: { data?: DashboardData }) {
+function Header({ data, onCustomize }: { data?: DashboardData; onCustomize?: () => void }) {
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div className="min-w-0">
@@ -43,6 +49,7 @@ function Header({ data }: { data?: DashboardData }) {
               {data.today.greeting}
               {data.today.firstName ? `, ${data.today.firstName}` : ""}
             </h1>
+            {data.subtitle && <p className="mt-1 text-[13.5px] text-fg-2">{data.subtitle}</p>}
           </>
         ) : (
           <>
@@ -51,7 +58,12 @@ function Header({ data }: { data?: DashboardData }) {
           </>
         )}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        {onCustomize && (
+          <Button variant="ghost" size="sm" onClick={onCustomize}>
+            <LayoutGrid className="h-3.5 w-3.5" /> Customise
+          </Button>
+        )}
         <Button variant="outline" size="sm" onClick={() => toggleAIPanel(true)}>
           <Sparkles className="h-3.5 w-3.5 text-primary" /> Ask AI
         </Button>
@@ -65,6 +77,7 @@ function Header({ data }: { data?: DashboardData }) {
 
 export function Overview() {
   const { data, error, isLoading, mutate } = useApi<DashboardData>("/api/dashboard", { refreshInterval: 5 * 60_000 });
+  const [customizing, setCustomizing] = useState(false);
 
   if (error && !data) {
     return (
@@ -108,7 +121,7 @@ export function Overview() {
   return (
     <motion.div variants={container} initial="hidden" animate="show">
       <motion.div variants={item}>
-        <Header data={data} />
+        <Header data={data} onCustomize={() => setCustomizing(true)} />
         <DemoBanner />
       </motion.div>
 
@@ -121,22 +134,67 @@ export function Overview() {
         </motion.div>
       )}
 
-      <motion.div variants={container} className={CARD_GRID} aria-label="Summary">
-        <SummaryCards data={data} />
-      </motion.div>
-
-      <div className="mt-5 grid gap-5 lg:mt-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
-        <motion.div variants={item} className="min-w-0">
-          <TodayFocus data={data} mutate={mutate} />
-        </motion.div>
-        <motion.div variants={item} className="relative min-w-0 xl:min-h-[520px]">
-          <Upcoming data={data} className="xl:absolute xl:inset-0" />
-        </motion.div>
+      <div className="grid gap-5 xl:grid-cols-2">
+        {data.layout
+          .filter((w) => w.visible)
+          .map((w) => (
+            <WidgetSlot key={w.id} id={w.id}>
+              {renderWidget(w.id, data, mutate)}
+            </WidgetSlot>
+          ))}
       </div>
-
-      <motion.div variants={item} className="mt-8">
-        <ProductivityOverview />
-      </motion.div>
+      {data.layout.every((w) => !w.visible) && (
+        <Card className="flex flex-col items-center gap-3 px-6 py-12 text-center">
+          <p className="text-[13.5px] text-fg-2">All widgets are hidden. Bring back the ones you like.</p>
+          <Button variant="outline" size="sm" onClick={() => setCustomizing(true)}>
+            <LayoutGrid className="h-3.5 w-3.5" /> Customise
+          </Button>
+        </Card>
+      )}
+      <CustomizeDialog open={customizing} onOpenChange={setCustomizing} data={data} mutate={mutate} />
     </motion.div>
   );
+}
+
+function WidgetSlot({ id, children }: { id: WidgetId; children: ReactNode }) {
+  const full = widgetMeta(id)?.size === "full";
+  return (
+    <motion.div
+      variants={item}
+      className={cn("min-w-0", full && "xl:col-span-2", id === "upcoming" && "relative xl:min-h-[520px]", id === "productivity" && "mt-3")}
+      aria-label={id === "summary" ? "Summary" : undefined}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function renderWidget(id: WidgetId, data: DashboardData, mutate: KeyedMutator<DashboardData>) {
+  const props = { data, mutate };
+  switch (id) {
+    case "summary":
+      return (
+        <motion.div variants={container} className={CARD_GRID}>
+          <SummaryCards data={data} />
+        </motion.div>
+      );
+    case "capture":
+      return <QuickActionsWidget {...props} />;
+    case "focus":
+      return <TodayFocus data={data} mutate={mutate} />;
+    case "upcoming":
+      return <Upcoming data={data} className="xl:absolute xl:inset-0" />;
+    case "mood":
+      return <MoodCheckinWidget {...props} />;
+    case "journal":
+      return <QuickJournalWidget {...props} />;
+    case "gratitude":
+      return <GratitudeWidget {...props} />;
+    case "week":
+      return <WeekSummaryWidget {...props} />;
+    case "memories":
+      return <RecentMemoriesWidget {...props} />;
+    case "productivity":
+      return <ProductivityOverview />;
+  }
 }

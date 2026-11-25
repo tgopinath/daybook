@@ -19,7 +19,7 @@ const ALL_NAV: { section: string; items: NavItem[] }[] = [
       { label: "Notes", href: "/notes", icon: StickyNote },
       { label: "Journal", href: "/journal", icon: BookOpen },
       { label: "Gratitude", href: "/gratitude", icon: Heart },
-      { label: "Mood Tracker", href: "/mood", icon: Smile, ready: false },
+      { label: "Mood Tracker", href: "/mood", icon: Smile },
       { label: "Memories", href: "/memories", icon: Images, ready: false },
       { label: "Bucket List", href: "/bucket-list", icon: Mountain, ready: false },
       { label: "Life Timeline", href: "/timeline", icon: History, ready: false },
@@ -35,7 +35,7 @@ const ALL_NAV: { section: string; items: NavItem[] }[] = [
     items: [
       { label: "AI Assistant", href: "/assistant", icon: Sparkles },
       { label: "Daily Planner", href: "/planner", icon: CalendarClock },
-      { label: "Weekly Review", href: "/weekly-review", icon: ClipboardCheck, ready: false },
+      { label: "Weekly Review", href: "/weekly-review", icon: ClipboardCheck },
       { label: "Quick Capture", icon: Zap, action: "quick-capture", shortcut: "⌘K" },
       { label: "Insights", href: "/insights", icon: BarChart3 },
     ],

@@ -1,5 +1,6 @@
-import { PageHeader } from "@/components/ui/misc";
-export const metadata = { title: "Mood Tracker" };
+"use client";
+import { MoodPage } from "@/components/mood/mood-page";
+
 export default function Page() {
-  return <PageHeader title="Mood Tracker" />;
+  return <MoodPage />;
 }

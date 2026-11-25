@@ -1,5 +1,7 @@
 // Wire types for /api/dashboard, /api/dashboard/stats and /api/dashboard/insights.
 // Shared by the API routes (type-only import) and the dashboard components.
+import type { Mood } from "@/lib/moods";
+import type { WidgetPref } from "./widgets";
 
 export type RangeKey = "7d" | "30d" | "90d" | "12m";
 export type Granularity = "day" | "week" | "month";
@@ -68,6 +70,14 @@ export interface DashboardData {
   notes: { total: number; latest: { id: string; title: string; updatedAt: string } | null };
   focus: { tasks: FocusTask[]; suggested: FocusTask[]; statement: string | null; reminders: ReminderOccurrence[] };
   upcoming: UpcomingDay[];
+  /** Gentle one-liner under the greeting, from the user's own data. */
+  subtitle: string | null;
+  layout: WidgetPref[];
+  mood: { today: { id: string; mood: Mood; intensity: number; loggedAt: string; count: number } | null; streak: number };
+  journal: { todayCount: number; streak: number };
+  gratitude: { today: { items: string[] } | null; streak: number };
+  memories: { id: string; title: string; dateLabel: string; cover: { id: string; kind: "image" | "video" | "audio" | "document"; url: string; originalName: string | null } | null }[];
+  week: { start: string; label: string; tasksDone: number; habitRate: number | null; moodAvg: number | null; moodDominant: Mood | null; journalDays: number; elapsed: number };
 }
 
 export interface StatsBucket {
