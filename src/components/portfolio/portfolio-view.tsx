@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, Check, Copy, ExternalLink, Globe, Link2, ListPlus, Mail, MessageCircle, MoreHorizontal, Pencil, Plus, Share2, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Copy, Download, ExternalLink, Globe, Link2, ListPlus, Mail, MessageCircle, MoreHorizontal, Pencil, Plus, Share2, Trash2, X } from "lucide-react";
 import { parseAppLinks, type ParsedLink } from "@/lib/parse-app-links";
 import type { AppLink } from "@prisma/client";
 import { api, refresh, useApi, type Wire } from "@/lib/client";
@@ -45,9 +45,93 @@ async function shareLink(title: string, url: string, text?: string) {
   await copyText(url);
 }
 
+/**
+ * Compose an email draft inside My Diary: To is left for the user, subject and message are
+ * prefilled with the link. My Diary doesn't send mail itself — the draft opens in Gmail or the
+ * user's mail app (or is copied), so it goes from their own account.
+ */
+export function EmailComposeDialog({
+  open,
+  onOpenChange,
+  subject: initialSubject,
+  body: initialBody,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  subject: string;
+  body: string;
+}) {
+  const { data: me } = useMe();
+  const [to, setTo] = useState("");
+  const [subject, setSubject] = useState(initialSubject);
+  const [body, setBody] = useState(initialBody);
+  const signature = me?.user.name ? `\n\n${me.user.name.split(" ")[0]}` : "";
+  const recipients = to
+    .split(/[,;\s]+/)
+    .map((r) => r.trim())
+    .filter(Boolean);
+  const badRecipient = recipients.find((r) => !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(r));
+  const toParam = recipients.join(",");
+
+  const openGmail = () =>
+    window.open(
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toParam)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
+      "_blank",
+      "noopener",
+    );
+  const openMailApp = () => {
+    window.location.href = `mailto:${encodeURIComponent(toParam).replace(/%2C/g, ",")}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (o) {
+          setTo("");
+          setSubject(initialSubject);
+          setBody(initialBody + signature);
+        }
+        onOpenChange(o);
+      }}
+      title="Email"
+      description="Add who it's for, adjust the message, then open the draft in your email."
+      footer={
+        <>
+          <Button variant="ghost" onClick={() => void copyText(`${subject}\n\n${body}`, "Message")}>
+            <Copy className="h-4 w-4" /> Copy
+          </Button>
+          <Button variant="outline" onClick={openMailApp} disabled={!!badRecipient}>
+            <Mail className="h-4 w-4" /> Mail app
+          </Button>
+          <Button onClick={openGmail} disabled={!!badRecipient}>
+            <ExternalLink className="h-4 w-4" /> Open in Gmail
+          </Button>
+        </>
+      }
+    >
+      <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+        <Field label="To" error={badRecipient ? `“${badRecipient}” doesn't look like an email address` : undefined} hint="Separate several addresses with commas. You can also leave it empty and add people in your email.">
+          <Input type="text" inputMode="email" autoComplete="email" placeholder="name@example.com" value={to} onChange={(e) => setTo(e.target.value)} autoFocus />
+        </Field>
+        <Field label="Subject">
+          <Input value={subject} maxLength={200} onChange={(e) => setSubject(e.target.value)} />
+        </Field>
+        <Field label="Message">
+          <Textarea rows={8} value={body} onChange={(e) => setBody(e.target.value)} />
+        </Field>
+      </form>
+    </Dialog>
+  );
+}
+
 function ShareMenu({ title, url, text }: { title: string; url: string; text?: string }) {
   const message = text ? `${text}\n${url}` : `${title}\n${url}`;
+  const [emailOpen, setEmailOpen] = useState(false);
+  const emailBody = `Hi,\n\nI'd love for you to take a look at ${title}${text ? ` — ${text.replace(/\.$/, "")}` : ""}:\n${url}`;
   return (
+    <>
+    <EmailComposeDialog open={emailOpen} onOpenChange={setEmailOpen} subject={title} body={emailBody} />
     <Menu
       trigger={
         <Button size="sm" variant="outline" aria-label={`Share ${title}`}>
@@ -58,9 +142,10 @@ function ShareMenu({ title, url, text }: { title: string; url: string; text?: st
         { label: "Share…", icon: Share2, onSelect: () => void shareLink(title, url, text) },
         { label: "Copy link", icon: Copy, onSelect: () => void copyText(url) },
         { label: "WhatsApp", icon: MessageCircle, onSelect: () => window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener") },
-        { label: "Email", icon: Mail, onSelect: () => (window.location.href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(message)}`) },
+        { label: "Email…", icon: Mail, onSelect: () => setEmailOpen(true) },
       ]}
     />
+    </>
   );
 }
 
@@ -380,12 +465,140 @@ function BulkAddDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o
   );
 }
 
+type ImportRow = { name: string; url: string; description: string; saved: boolean; pick: boolean };
+
+/** Paste a projects or portfolio page link; every project card on it becomes an app you can pick. */
+function ImportDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+  const [url, setUrl] = useState("");
+  const [rows, setRows] = useState<ImportRow[] | null>(null);
+  const [busy, setBusy] = useState(false);
+  const picked = (rows ?? []).filter((r) => r.pick);
+
+  const read = async () => {
+    setBusy(true);
+    try {
+      const res = await api.post<{ apps: Omit<ImportRow, "pick">[] }>("/api/links/import", { url: url.trim() });
+      setRows(res.apps.map((a) => ({ ...a, pick: !a.saved })));
+    } catch (err) {
+      toastError(err);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const add = async () => {
+    setBusy(true);
+    try {
+      const res = await api.post<{ added: number; skipped: number }>("/api/links/bulk", {
+        items: picked.map((r) => ({ name: r.name, url: r.url, description: r.description || null })),
+      });
+      await refresh("/api/links");
+      toast.success(res.skipped ? `Added ${res.added} apps · ${res.skipped} already saved` : `Added ${res.added} apps`);
+      onOpenChange(false);
+    } catch (err) {
+      toastError(err);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (o) {
+          setUrl("");
+          setRows(null);
+        }
+        onOpenChange(o);
+      }}
+      size="lg"
+      title="Import apps from a page"
+      description={rows ? `Found ${rows.length} ${rows.length === 1 ? "project" : "projects"}. Pick the ones to add as cards.` : "Paste the link to a page that lists your projects, like your pet projects or portfolio page. Each project card becomes an app."}
+      footer={
+        rows ? (
+          <>
+            <Button variant="ghost" onClick={() => setRows(null)}>
+              Back
+            </Button>
+            <Button onClick={add} loading={busy} disabled={!picked.length}>
+              Add {picked.length} {picked.length === 1 ? "app" : "apps"}
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button variant="ghost" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button onClick={read} loading={busy} disabled={!/^https?:\/\/\S+\.\S+/.test(url.trim())}>
+              Find projects
+            </Button>
+          </>
+        )
+      }
+    >
+      {!rows ? (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (/^https?:\/\/\S+\.\S+/.test(url.trim())) void read();
+          }}
+        >
+          <Field label="Page link">
+            <Input type="url" autoFocus placeholder="https://yourname.github.io/projects/" value={url} onChange={(e) => setUrl(e.target.value)} />
+          </Field>
+        </form>
+      ) : rows.length === 0 ? (
+        <p className="text-[13.5px] text-fg-2">No projects found on that page. Try a page that lists your apps with links, or use “Add several” to paste them.</p>
+      ) : (
+        <>
+          <div className="mb-2 flex items-center justify-between text-[13px]">
+            <span className="text-fg-2">{picked.length} selected</span>
+            <button
+              type="button"
+              className="font-medium text-primary hover:underline"
+              onClick={() => setRows((rs) => rs!.map((r) => ({ ...r, pick: !r.saved && picked.length < rs!.filter((x) => !x.saved).length })))}
+            >
+              {picked.length < rows.filter((r) => !r.saved).length ? "Select all" : "Clear"}
+            </button>
+          </div>
+          <ul className="flex flex-col gap-2">
+            {rows.map((r, i) => (
+              <li key={r.url}>
+                <label className={`flex items-start gap-3 rounded-xl border p-3 ${r.pick ? "border-primary bg-primary-soft" : "border-line"} ${r.saved ? "opacity-70" : "cursor-pointer"}`}>
+                  <input
+                    type="checkbox"
+                    className="mt-1 h-4 w-4 accent-[var(--primary)]"
+                    checked={r.pick}
+                    disabled={r.saved}
+                    onChange={(e) => setRows((rs) => rs!.map((x, j) => (j === i ? { ...x, pick: e.target.checked } : x)))}
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-2 text-[14px] font-medium text-fg">
+                      {r.name}
+                      {r.saved && <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] font-normal text-fg-2">Already added</span>}
+                    </span>
+                    <span className="block truncate text-[12.5px] text-fg-2">{r.url.replace(/^https:\/\//, "").replace(/\/$/, "")}</span>
+                    {r.description && <span className="mt-0.5 line-clamp-2 block text-[12.5px] text-fg-3">{r.description}</span>}
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </Dialog>
+  );
+}
+
 function AppsSection() {
   const { data, isLoading } = useApi<{ items: Link[] }>("/api/links");
   const { data: me } = useMe();
   const [dialog, setDialog] = useState<{ open: boolean; item: Link | null }>({ open: false, item: null });
   const [copiedAll, setCopiedAll] = useState(false);
   const [bulkOpen, setBulkOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [emailAllOpen, setEmailAllOpen] = useState(false);
   const items = data?.items ?? [];
   // "New → App link" lands here with ?new=1
   useEffect(() => {
@@ -410,7 +623,7 @@ function AppsSection() {
   };
 
   const remove = async (item: Link) => {
-    if (!(await confirm({ title: `Remove ${item.name}?`, body: "This only removes the link from MyDiary. The app itself isn't affected.", destructive: true, confirmLabel: "Remove" }))) return;
+    if (!(await confirm({ title: `Remove ${item.name}?`, body: "This only removes the link from My Diary. The app itself isn't affected.", destructive: true, confirmLabel: "Remove" }))) return;
     try {
       await api.delete(`/api/links/${item.id}`);
       await refresh("/api/links");
@@ -454,8 +667,14 @@ function AppsSection() {
               <Button size="sm" variant="ghost" onClick={() => void copyText(allText(), "All app links")}>
                 <Copy className="h-4 w-4" /> Copy all
               </Button>
+              <Button size="sm" variant="ghost" onClick={() => setEmailAllOpen(true)}>
+                <Mail className="h-4 w-4" /> Email all
+              </Button>
             </>
           )}
+          <Button size="sm" variant="outline" onClick={() => setImportOpen(true)}>
+            <Download className="h-4 w-4" /> Import from link
+          </Button>
           <Button size="sm" variant="outline" onClick={() => setBulkOpen(true)}>
             <ListPlus className="h-4 w-4" /> Add several
           </Button>
@@ -476,6 +695,9 @@ function AppsSection() {
           <EmptyState icon={Link2} title="Add the apps you've built" description="Keep every link in one place, ready to open or share with anyone." action={
               <div className="flex flex-wrap justify-center gap-2">
                 <Button onClick={() => setDialog({ open: true, item: null })}>Add your first app</Button>
+                <Button variant="outline" onClick={() => setImportOpen(true)}>
+                  <Download className="h-4 w-4" /> Import from a page
+                </Button>
                 <Button variant="outline" onClick={() => setBulkOpen(true)}>
                   <ListPlus className="h-4 w-4" /> Paste several
                 </Button>
@@ -528,6 +750,13 @@ function AppsSection() {
       )}
       <AppDialog open={dialog.open} onOpenChange={(open) => setDialog((d) => ({ ...d, open }))} initial={dialog.item} />
       <BulkAddDialog open={bulkOpen} onOpenChange={setBulkOpen} />
+      <ImportDialog open={importOpen} onOpenChange={setImportOpen} />
+      <EmailComposeDialog
+        open={emailAllOpen}
+        onOpenChange={setEmailAllOpen}
+        subject={me?.user.name ? `${me.user.name.split(" ")[0]}'s apps` : "My apps"}
+        body={`Hi,\n\nHere are the apps I've built — I'd love for you to try them:\n\n${items.map((i) => `• ${i.name}${i.description ? ` — ${i.description}` : ""}\n  ${i.url}`).join("\n")}${me?.settings.portfolioUrl ? `\n\nMore about my work: ${me.settings.portfolioUrl}` : ""}`}
+      />
     </section>
   );
 }

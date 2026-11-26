@@ -40,7 +40,7 @@ export const NOTIFICATION_META: Record<NotificationType, { icon: LucideIcon; lab
   HABIT: { icon: Flame, label: "Habit", className: "bg-warning-soft text-warning-text" },
   CALENDAR: { icon: CalendarClock, label: "Calendar", className: "bg-primary-soft text-primary" },
   AI: { icon: Sparkles, label: "AI recommendation", className: "bg-primary-soft text-primary" },
-  SYSTEM: { icon: Info, label: "MyDiary", className: "bg-surface-2 text-fg-2" },
+  SYSTEM: { icon: Info, label: "My Diary", className: "bg-surface-2 text-fg-2" },
 };
 
 const KEY = "/api/notifications?limit=60";

@@ -11,7 +11,7 @@ import { Row, Section, useSaveSettings, type SettingsPatch } from "./shared";
 import { THEME_COLORS, accentVars } from "@/lib/accent";
 import { WhatsAppRow } from "./whatsapp-row";
 
-// The MyDiary theme colours (src/lib/accent.ts); text on them is picked for WCAG AA automatically.
+// The My Diary theme colours (src/lib/accent.ts); text on them is picked for WCAG AA automatically.
 const ACCENTS = THEME_COLORS;
 
 export function AppearanceSection({ me }: { me: Me }) {
@@ -211,7 +211,7 @@ export function NotificationsSection({ me }: { me: Me }) {
   ];
 
   return (
-    <Section id="notifications" title="Notifications" description="Choose what MyDiary tells you about, and how.">
+    <Section id="notifications" title="Notifications" description="Choose what My Diary tells you about, and how.">
       <Row
         label={
           <span className="flex items-center gap-2">
@@ -223,7 +223,7 @@ export function NotificationsSection({ me }: { me: Me }) {
             ? "Your browser is blocking notifications for this site. Allow them in the site settings, then reload."
             : perm === "unsupported"
               ? "This browser doesn't support notifications. In-app alerts still work."
-              : "Show reminders and alerts even when MyDiary is in the background."
+              : "Show reminders and alerts even when My Diary is in the background."
         }
       >
         <div className="flex items-center gap-3">

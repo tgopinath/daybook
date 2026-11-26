@@ -121,7 +121,7 @@ export function DataSection({ me }: { me: Me }) {
           {exporting !== "backup" && <Archive className="h-3.5 w-3.5" />} Download backup
         </Button>
       </Row>
-      <Row label="Import data" hint="Add items from a MyDiary export. They're added as new items — nothing you have now is overwritten.">
+      <Row label="Import data" hint="Add items from a My Diary export. They're added as new items — nothing you have now is overwritten.">
         <>
           <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={(e) => pickFile(e.target.files?.[0])} />
           <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()} loading={checking}>

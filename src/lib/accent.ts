@@ -12,7 +12,7 @@ export const THEME_COLORS = [
 ] as const;
 
 export const DEFAULT_ACCENT = "#993399";
-/** The accent every account had before the MyDiary theme; treated as "use the default". */
+/** The accent every account had before the My Diary theme; treated as "use the default". */
 export const LEGACY_DEFAULT_ACCENT = "#635BFF";
 
 const LIGHT_SURFACE = "#ffffff";

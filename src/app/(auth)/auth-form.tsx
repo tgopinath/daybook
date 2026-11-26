@@ -108,7 +108,7 @@ export function AuthForm({ mode, googleEnabled, noDatabase }: { mode: "login" | 
 
   return (
     <div>
-      <h1 className="font-display text-[30px] leading-tight font-semibold">{isLogin ? "Welcome to MyDiary" : "Create your MyDiary account"}</h1>
+      <h1 className="font-display text-[30px] leading-tight font-semibold">{isLogin ? "Welcome to My Diary" : "Create your My Diary account"}</h1>
       <p className="mt-1.5 text-[14.5px] text-fg-2">{isLogin ? "Sign in to organise your day." : "Plan your days, track your goals and keep your notes in one place."}</p>
 
       {expired && <Notice>Your session has ended. Please sign in again.</Notice>}
@@ -174,7 +174,7 @@ export function AuthForm({ mode, googleEnabled, noDatabase }: { mode: "login" | 
           <p className="mt-6 text-center text-[13px] text-fg-2">
             {isLogin ? (
               <>
-                New to MyDiary?{" "}
+                New to My Diary?{" "}
                 <Link href={`/signup${params.toString() ? `?next=${encodeURIComponent(next)}` : ""}`} className="font-medium text-primary hover:underline">
                   Create an account
                 </Link>

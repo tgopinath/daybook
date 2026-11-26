@@ -155,7 +155,7 @@ export function SetupDialog({ open, onOpenChange, hasPassword }: { open: boolean
 
         {step === "password" && hasPassword && (
           <form id="tf-password" onSubmit={start} className="flex flex-col gap-4">
-            <Field label="Your MyDiary password">
+            <Field label="Your My Diary password">
               <Input type="password" autoComplete="current-password" required autoFocus value={password} onChange={(e) => setPassword(e.target.value)} />
             </Field>
           </form>

@@ -76,7 +76,7 @@ export function ProfileSection({ me }: { me: Me }) {
   const tzBrowser = browserTz();
 
   return (
-    <Section id="profile" title="Profile" description="How you appear in MyDiary and how we reach you.">
+    <Section id="profile" title="Profile" description="How you appear in My Diary and how we reach you.">
       <Row label="Profile picture" hint="PNG or JPEG up to 2 MB. We crop it to a square.">
         <div className="flex items-center gap-3">
           {me.user.avatarUrl ? (

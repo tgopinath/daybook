@@ -75,8 +75,8 @@ export function PermissionBanner() {
 
   if (permission === "unsupported") {
     return (
-      <Shell tone="neutral" icon={BellOff} title="This browser can't show MyDiary notifications">
-        {unsupportedReason() || "Push notifications aren't supported here."} Reminders still appear in the notification center while MyDiary is open.
+      <Shell tone="neutral" icon={BellOff} title="This browser can't show My Diary notifications">
+        {unsupportedReason() || "Push notifications aren't supported here."} Reminders still appear in the notification center while My Diary is open.
       </Shell>
     );
   }
@@ -84,7 +84,7 @@ export function PermissionBanner() {
   if (permission === "denied") {
     return (
       <Shell tone="warning" icon={ShieldAlert} title="Notifications are blocked for this site">
-        Your browser is blocking MyDiary&apos;s notifications. To turn them back on, click the lock or site-settings icon next to the address bar, set
+        Your browser is blocking My Diary&apos;s notifications. To turn them back on, click the lock or site-settings icon next to the address bar, set
         <strong className="font-medium text-fg"> Notifications</strong> to <strong className="font-medium text-fg">Allow</strong>, then reload this page. On
         macOS, also check System Settings → Notifications for your browser.
       </Shell>
@@ -96,7 +96,7 @@ export function PermissionBanner() {
       <Shell
         tone="primary"
         icon={BellRing}
-        title="Get reminders even when MyDiary is closed"
+        title="Get reminders even when My Diary is closed"
         action={
           <Button size="sm" onClick={enable} loading={busy}>
             Enable notifications
@@ -121,7 +121,7 @@ export function PermissionBanner() {
           </Button>
         }
       >
-        This browser allows notifications, but MyDiary won&apos;t push to your devices until you turn them back on.
+        This browser allows notifications, but My Diary won&apos;t push to your devices until you turn them back on.
       </Shell>
     );
   }

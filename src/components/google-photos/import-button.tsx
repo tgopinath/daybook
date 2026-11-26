@@ -286,7 +286,7 @@ export function GooglePhotosImport({
           )}
           {step === "connect" && (
             <p>
-              MyDiary asks Google only for permission to see the photos you pick — never your whole library. You&apos;ll come back here
+              My Diary asks Google only for permission to see the photos you pick — never your whole library. You&apos;ll come back here
               afterwards.
             </p>
           )}

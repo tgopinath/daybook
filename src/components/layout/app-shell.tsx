@@ -100,7 +100,7 @@ function DemoBanner() {
       <span className="rounded bg-primary px-1.5 py-px text-[11px] font-semibold uppercase tracking-wide text-on-primary">Demo</span>
       <span className="min-w-0 flex-1 truncate sm:hidden">Sample data. Your changes are temporary.</span>
       <span className="hidden min-w-0 flex-1 sm:inline">
-        You&apos;re exploring MyDiary with sample data for a fictional user. Changes are temporary and kept apart from real accounts, so don&apos;t enter real personal details.
+        You&apos;re exploring My Diary with sample data for a fictional user. Changes are temporary and kept apart from real accounts, so don&apos;t enter real personal details.
       </span>
       <button
         onClick={exit}

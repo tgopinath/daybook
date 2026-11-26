@@ -97,8 +97,8 @@ export function FinanceSettingsHost() {
             <p className="mt-1 flex items-start gap-1.5 text-[13px] text-fg-2">
               {sheets.connected ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden /> : null}
               {sheets.connected
-                ? "Connected. MyDiary can create new spreadsheets in your Drive (it can't see your other files)."
-                : "Not connected yet. The first export asks Google for permission to create files — MyDiary can only see files it creates."}
+                ? "Connected. My Diary can create new spreadsheets in your Drive (it can't see your other files)."
+                : "Not connected yet. The first export asks Google for permission to create files — My Diary can only see files it creates."}
             </p>
           ) : (
             <p className="mt-1 text-[13px] text-fg-2">{sheets?.message ?? "Checking…"}</p>

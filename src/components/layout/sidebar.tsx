@@ -78,7 +78,7 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
         <img src="/icon.svg" alt="" className="h-7 w-7" />
         {!collapsed && (
           <span className="flex min-w-0 flex-1 flex-col leading-tight">
-            <span className="font-display text-[16px] font-semibold">MyDiary</span>
+            <span className="font-display text-[16px] font-semibold">My Diary</span>
             {me?.user.name && <span className="truncate text-[11.5px] text-fg-3">{me.user.name.split(/\s+/)[0]}&apos;s diary</span>}
           </span>
         )}

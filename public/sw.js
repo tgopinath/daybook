@@ -1,4 +1,4 @@
-/* MyDiary service worker: Web Push notifications only (no offline caching). */
+/* My Diary service worker: Web Push notifications only (no offline caching). */
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -18,9 +18,9 @@ self.addEventListener("push", (event) => {
   try {
     data = event.data ? event.data.json() : {};
   } catch {
-    data = { title: "MyDiary", body: event.data ? event.data.text() : "" };
+    data = { title: "My Diary", body: event.data ? event.data.text() : "" };
   }
-  const title = data.title || "MyDiary";
+  const title = data.title || "My Diary";
   const actions = Array.isArray(data.actions) && data.notificationId ? data.actions.slice(0, 2) : [];
   const options = {
     body: data.body || "",

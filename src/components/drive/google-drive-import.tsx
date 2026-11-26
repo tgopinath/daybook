@@ -316,7 +316,7 @@ export function GoogleDriveImport({ folderId, onImported, compact }: { folderId:
               <span>{note}</span>
             </p>
           )}
-          {step === "connect" && <p>MyDiary asks Google only for the files you pick — it can&apos;t see the rest of your Drive. You&apos;ll come back here afterwards.</p>}
+          {step === "connect" && <p>My Diary asks Google only for the files you pick — it can&apos;t see the rest of your Drive. You&apos;ll come back here afterwards.</p>}
           {step === "ready" && (
             <>
               <p>Google Docs, Sheets and Slides are saved as Word, Excel and PowerPoint files. Files you&apos;ve imported before are skipped.</p>

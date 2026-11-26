@@ -146,7 +146,7 @@ export function buildWorkbook(txs: ExportTx[], accountNames: Map<string, string>
   net[0] = "Net (income − expense)";
   net[7] = toMajor(t.net, currency);
   return {
-    title: `MyDiary — Transactions ${label}`,
+    title: `My Diary — Transactions ${label}`,
     transactions: [EXPORT_HEADER.map((h, i) => (i >= 7 && i <= 9 ? `${h} (${currency})` : h)), ...body, totals, net],
     summary: [["Category", `Expense (${currency})`, `Income (${currency})`, "Transactions"], ...categorySummaryRows(txs, currency)],
     digits: minorDigits(currency),

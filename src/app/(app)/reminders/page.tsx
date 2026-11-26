@@ -171,7 +171,7 @@ export default function RemindersPage() {
     <div>
       <PageHeader
         title="Reminders"
-        description="Nudges for water, breaks, bills, meetings and everything in between — delivered to your devices even when MyDiary is closed."
+        description="Nudges for water, breaks, bills, meetings and everything in between — delivered to your devices even when My Diary is closed."
         actions={
           <Button onClick={() => openNew()}>
             <Plus className="h-4 w-4" /> New reminder

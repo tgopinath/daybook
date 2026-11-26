@@ -29,9 +29,9 @@ const openMore = () => ui.set({ mobileNavOpen: true });
 const tabOf = (path: string) => TABS.find((t) => path.startsWith(t.href))?.id;
 const titleOf = (path: string) => {
   for (const s of NAV) for (const i of s.items) if (i.href && path.startsWith(i.href)) return i.label;
-  return "MyDiary";
+  return "My Diary";
 };
-/** MyDiary marks dark mode with html.dark; the kits read data-theme. */
+/** My Diary marks dark mode with html.dark; the kits read data-theme. */
 function mirrorTheme() {
   const html = document.documentElement;
   const sync = () => html.setAttribute("data-theme", html.classList.contains("dark") ? "dark" : "light");
@@ -50,7 +50,7 @@ export function NativeLooks() {
   useEffect(() => {
     const go = (href: string) => router.push(href);
     const ios = window.KolamIOS?.init({
-      appName: "MyDiary",
+      appName: "My Diary",
       uaTokens: ["MyDiary-iOS", "Daybook-iOS"],
       tint: { light: "#993399", dark: "#C77DC7" },
       tabs: [
@@ -72,7 +72,7 @@ export function NativeLooks() {
       mode.current = "android";
       m3.current = window.KolamM3.init({
         primary: "#993399",
-        title: "MyDiary",
+        title: "My Diary",
         home: "/my-space",
         destinations: [
           ...TABS.map((t) => ({ id: t.id, label: t.label, icon: t.m3, onSelect: () => go(t.href) })),

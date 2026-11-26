@@ -1,6 +1,6 @@
 {
-  "name": "MyDiary \u2014 Personal AI Dashboard",
-  "short_name": "MyDiary",
+  "name": "My Diary \u2014 Personal AI Dashboard",
+  "short_name": "My Diary",
   "start_url": "/my-space",
   "display": "standalone",
   "background_color": "#FFFFFF",

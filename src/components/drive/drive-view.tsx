@@ -398,7 +398,7 @@ export function DriveView() {
     const folderCount = list.filter((e) => e.type === "folder").length;
     const ok = await confirm({
       title: list.length === 1 ? `Delete “${entryName(list[0]!)}” forever?` : `Delete ${list.length} items forever?`,
-      body: `${folderCount ? "Folders are deleted with everything inside them. " : ""}This can't be undone. Files used elsewhere in MyDiary (journal, memories…) stay there.`,
+      body: `${folderCount ? "Folders are deleted with everything inside them. " : ""}This can't be undone. Files used elsewhere in My Diary (journal, memories…) stay there.`,
       destructive: true,
       confirmLabel: "Delete forever",
     });
@@ -474,7 +474,7 @@ export function DriveView() {
     const url = `${window.location.origin}/drive?${e.type === "folder" ? `folder=${e.folder.id}` : `file=${e.file.id}`}`;
     try {
       await navigator.clipboard.writeText(url);
-      toast.success("Link copied — it only works for you, signed in to MyDiary");
+      toast.success("Link copied — it only works for you, signed in to My Diary");
     } catch {
       toast.error("Couldn't copy the link");
     }

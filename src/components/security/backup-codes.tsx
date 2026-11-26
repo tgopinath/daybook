@@ -5,7 +5,7 @@ import { toast } from "@/components/ui/toast";
 
 /** One-time display of backup codes, with copy and download. The codes are never shown again. */
 export function BackupCodesList({ codes }: { codes: string[] }) {
-  const text = `MyDiary backup codes\nEach code can be used once to sign in if you don't have your authenticator app.\n\n${codes.join("\n")}\n`;
+  const text = `My Diary backup codes\nEach code can be used once to sign in if you don't have your authenticator app.\n\n${codes.join("\n")}\n`;
 
   async function copy() {
     try {

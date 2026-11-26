@@ -279,8 +279,10 @@ function PageSection({ id, title, description, open, onToggle, children }: { id:
   );
 }
 
-const quickCls =
-  "inline-flex h-10 items-center gap-2 rounded-[10px] border border-line bg-surface px-3.5 text-[13.5px] font-medium text-fg transition-colors hover:bg-surface-2 outline-none focus-visible:ring-3 focus-visible:ring-primary/30";
+/** Quick actions: each its own pastel tone (globals.css) with the label in body text for contrast. */
+const quickBase =
+  "inline-flex h-10 items-center gap-2 rounded-[10px] bg-[var(--tone-soft)] px-3.5 text-[13.5px] font-medium text-fg transition-[filter] hover:brightness-[.96] dark:hover:brightness-110 outline-none focus-visible:ring-3 focus-visible:ring-primary/30 [&>svg]:text-[var(--tone)]";
+const quick = (tone: string) => `${quickBase} ${tone}`;
 
 function Header({ data, onCustomize, moodHere }: { data?: MySpaceData; onCustomize?: () => void; moodHere?: boolean }) {
   const router = useRouter();
@@ -324,25 +326,25 @@ function Header({ data, onCustomize, moodHere }: { data?: MySpaceData; onCustomi
       </div>
       {onCustomize && (
         <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Quick actions">
-          <button type="button" className={quickCls} onClick={() => openTaskDialog(t ? { dueDate: t.key } : undefined)}>
-            <ListPlus className="h-4 w-4 text-primary" aria-hidden /> Task
+          <button type="button" className={quick("tone-indigo")} onClick={() => openTaskDialog(t ? { dueDate: t.key } : undefined)}>
+            <ListPlus className="h-4 w-4" aria-hidden /> Task
           </button>
-          <Link href="/journal?new=1" className={quickCls}>
-            <NotebookPen className="h-4 w-4 text-primary" aria-hidden /> Write
+          <Link href="/journal?new=1" className={quick("tone-plum")}>
+            <NotebookPen className="h-4 w-4" aria-hidden /> Write
           </Link>
-          <button type="button" className={quickCls} onClick={mood}>
-            <Smile className="h-4 w-4 text-primary" aria-hidden /> Mood
+          <button type="button" className={quick("tone-amber")} onClick={mood}>
+            <Smile className="h-4 w-4" aria-hidden /> Mood
           </button>
           {isLive("/finance") && (
-            <button type="button" className={quickCls} onClick={() => openTxDialog({ preset: { type: "expense" } })}>
-              <Wallet className="h-4 w-4 text-primary" aria-hidden /> Expense
+            <button type="button" className={quick("tone-green")} onClick={() => openTxDialog({ preset: { type: "expense" } })}>
+              <Wallet className="h-4 w-4" aria-hidden /> Expense
             </button>
           )}
-          <Link href="/memories?new=1" className={quickCls}>
-            <ImagePlus className="h-4 w-4 text-primary" aria-hidden /> Memory
+          <Link href="/memories?new=1" className={quick("tone-sky")}>
+            <ImagePlus className="h-4 w-4" aria-hidden /> Memory
           </Link>
-          <button type="button" className={quickCls} onClick={() => openQuickCapture()} aria-keyshortcuts="Meta+K Control+K">
-            <Zap className="h-4 w-4 text-primary" aria-hidden /> Capture
+          <button type="button" className={quick("tone-rose")} onClick={() => openQuickCapture()} aria-keyshortcuts="Meta+K Control+K">
+            <Zap className="h-4 w-4" aria-hidden /> Capture
             <span className="hidden sm:inline-flex">
               <Kbd>⌘K</Kbd>
             </span>

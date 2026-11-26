@@ -155,7 +155,7 @@ function TwoStepCard({ data }: { data: SecurityOverview }) {
       icon={ShieldCheck}
       title="Two-step verification"
       status={on ? <Badge tone="success">On</Badge> : <Badge>Off</Badge>}
-      description="When you sign in with your email and password, MyDiary also asks for a 6-digit code from an authenticator app on your phone."
+      description="When you sign in with your email and password, My Diary also asks for a 6-digit code from an authenticator app on your phone."
     >
       {data.demo ? (
         <p className="text-[13px] text-fg-2">Two-step verification isn&apos;t available on demo accounts.</p>
@@ -177,7 +177,7 @@ function TwoStepCard({ data }: { data: SecurityOverview }) {
         </Button>
       )}
       <p className="mt-4 text-[12.5px] leading-relaxed text-fg-3">
-        Signing in with Google uses your Google account&apos;s security, so MyDiary doesn&apos;t ask for a code there.
+        Signing in with Google uses your Google account&apos;s security, so My Diary doesn&apos;t ask for a code there.
         {!data.hasPassword && data.google ? " Your account doesn't have a password yet, so this protects password sign-in if you add one later." : ""}
       </p>
       <SetupDialog open={dialog === "setup"} onOpenChange={(o) => setDialog(o ? "setup" : null)} hasPassword={data.hasPassword} />

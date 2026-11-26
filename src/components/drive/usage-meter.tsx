@@ -13,7 +13,7 @@ const KIND_META: Record<string, { label: string; color: string }> = {
   file: { label: "Documents & files", color: "#64748b" },
 };
 
-/** Storage used across MyDiary (everything you've uploaded), split by kind. Display only — no quota. */
+/** Storage used across My Diary (everything you've uploaded), split by kind. Display only — no quota. */
 export function UsageMeter({ compact }: { compact?: boolean }) {
   const { data, isLoading } = useApi<Usage>("/api/drive/usage");
   if (isLoading && !data) return <Skeleton className="h-16 w-full" />;
@@ -43,7 +43,7 @@ export function UsageMeter({ compact }: { compact?: boolean }) {
           {!data.kinds.length && <li className="text-[12px] text-fg-3">Nothing stored yet.</li>}
         </ul>
       )}
-      <p className="text-[11.5px] leading-snug text-fg-3">Includes photos and files from every part of MyDiary.</p>
+      <p className="text-[11.5px] leading-snug text-fg-3">Includes photos and files from every part of My Diary.</p>
     </section>
   );
 }

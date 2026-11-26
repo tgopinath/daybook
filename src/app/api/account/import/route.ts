@@ -27,8 +27,8 @@ const mediaIds = z.array(id).max(200).default([]);
 const mood = z.enum(MOOD_VALUES);
 
 const schema = z.object({
-  // "daybook" files come from before the rename to MyDiary and import the same way.
-  app: z.enum(["mydiary", "daybook"], { errorMap: () => ({ message: "This isn't a MyDiary export file" }) }),
+  // "daybook" files come from before the rename to My Diary and import the same way.
+  app: z.enum(["mydiary", "daybook"], { errorMap: () => ({ message: "This isn't a My Diary export file" }) }),
   version: z.literal(1, { errorMap: () => ({ message: "Unsupported export version" }) }),
   categories: arr(z.object({ id, name: str(80), color: color.optional(), kind: str(20).default("general") })),
   projects: arr(z.object({ id, name: str(80), color: color.optional(), archived: flag })),
@@ -295,7 +295,7 @@ function summarize(d: Input, vaultSkipped: number) {
 }
 
 /**
- * Imports a MyDiary export as new rows under the current user.
+ * Imports a My Diary export as new rows under the current user.
  * `?dryRun=1` validates and returns the summary without writing anything.
  */
 export const POST = route(async ({ req, user }) => {

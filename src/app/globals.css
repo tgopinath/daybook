@@ -3,7 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* MyDiary theme: Plum (accent), Parsley (success), Burgundy (danger), Sunshine (warning), Olive (secondary).
+  /* My Diary theme: Plum (accent), Parsley (success), Burgundy (danger), Sunshine (warning), Olive (secondary).
      --on-primary / --primary-text are recomputed for custom accents in app-shell (src/lib/accent.ts). */
   --primary: #993399;
   --primary-hover: color-mix(in oklab, var(--primary) 86%, black);
@@ -20,8 +20,9 @@
   /* All text tokens meet WCAG 2.2 AA (≥4.5:1) on white and on surface-2 */
   --text-2: #5f5952;
   --text-3: #6b645c;
-  --border: #ecebe7;
-  --border-strong: #dedcd6;
+  --border: #e6e4df;
+  --border-strong: #d4d0c8;
+  --card-border: #d4d0c8;
   --success: #13601f; /* Parsley */
   --success-soft: #e8f1e9;
   --warning-fill: #f9b21d; /* Sunshine: fills/highlights, dark text on top */
@@ -55,6 +56,7 @@
   --danger: #e27a7a;
   --border: #2f2b26;
   --border-strong: #3c3731;
+  --card-border: #48423b;
   --success-soft: #143328;
   --warning-soft: #3a2c14;
   --danger-soft: #3b1d1d;
@@ -92,12 +94,13 @@
   --color-secondary-text: var(--secondary-text);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
+  --color-card-line: var(--card-border);
   --shadow-card: var(--shadow-sm);
   --shadow-pop: var(--shadow-md);
   --shadow-modal: var(--shadow-lg);
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Lato", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   /* Page titles, greetings and journal headings */
-  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-display: "Lato", ui-sans-serif, system-ui, sans-serif;
   --radius-card: 14px;
 }
 
@@ -107,7 +110,6 @@ body {
   color: var(--text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  font-feature-settings: "cv11", "ss01";
 }
 
 * {
@@ -188,9 +190,32 @@ html.native-app .app-root main .pb-28 { padding-bottom: 1.5rem; }
 .dark .gsi-button:disabled:not([aria-busy="true"]) { background: rgba(19,19,20,.38); border-color: rgba(142,145,143,.3); color: rgba(227,227,227,.38); }
 
 /* Personal touches: serif display headings, softer type for writing */
-.font-display { font-family: var(--font-display); font-optical-sizing: auto; font-variation-settings: "SOFT" 50, "WONK" 0; letter-spacing: -0.01em; }
+.font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
 .prose-editor h1, .prose-editor h2, .prose-editor h3 { font-family: var(--font-display); font-weight: 600; }
 
 /* Accent as text uses --primary-text (≥4.5:1 for any accent, see src/lib/accent.ts).
    Unlayered, so it wins over the Tailwind utility. */
 .text-primary, .hover\:text-primary:hover, .group:hover .group-hover\:text-primary { color: var(--primary-text); }
+
+/* Pastel tones that tell modules apart (My space widgets, quick actions).
+   --tone is text/icon colour (≥4.5:1 on --tone-soft and on white); --tone-soft is the pastel fill. */
+.tone-plum { --tone: #7a2a7a; --tone-soft: #f6e9f6; --tone-faint: #fcf6fc; }
+.tone-indigo { --tone: #3b48b0; --tone-soft: #e9ecfd; --tone-faint: #f6f7ff; }
+.tone-sky { --tone: #0b5f86; --tone-soft: #e0f1fa; --tone-faint: #f3f9fd; }
+.tone-teal { --tone: #0f6b5c; --tone-soft: #dcf2ec; --tone-faint: #f2faf8; }
+.tone-green { --tone: #2f6b1f; --tone-soft: #e5f2e0; --tone-faint: #f5faf3; }
+.tone-amber { --tone: #8a5a00; --tone-soft: #fcefd3; --tone-faint: #fffaf0; }
+.tone-peach { --tone: #a2441c; --tone-soft: #fde8dd; --tone-faint: #fff7f3; }
+.tone-rose { --tone: #a42450; --tone-soft: #fce4eb; --tone-faint: #fff5f8; }
+.tone-lavender { --tone: #5b3aa8; --tone-soft: #eee8fb; --tone-faint: #f9f6fe; }
+.tone-slate { --tone: #3f4b5c; --tone-soft: #e8ecf1; --tone-faint: #f6f8fa; }
+.dark .tone-plum { --tone: #e2a9e2; --tone-soft: #3a2338; --tone-faint: #241b22; }
+.dark .tone-indigo { --tone: #aab4fb; --tone-soft: #262a46; --tone-faint: #1d1d27; }
+.dark .tone-sky { --tone: #8fd0f0; --tone-soft: #183140; --tone-faint: #182026; }
+.dark .tone-teal { --tone: #84d9c6; --tone-soft: #173631; --tone-faint: #182321; }
+.dark .tone-green { --tone: #a3d68f; --tone-soft: #22331b; --tone-faint: #1c221a; }
+.dark .tone-amber { --tone: #f5c869; --tone-soft: #3a2e14; --tone-faint: #241f16; }
+.dark .tone-peach { --tone: #f5b08f; --tone-soft: #3d261b; --tone-faint: #251d18; }
+.dark .tone-rose { --tone: #f3a0bb; --tone-soft: #3d1f29; --tone-faint: #251a1d; }
+.dark .tone-lavender { --tone: #c3b0f3; --tone-soft: #2e2645; --tone-faint: #201d27; }
+.dark .tone-slate { --tone: #b9c4d3; --tone-soft: #2a3038; --tone-faint: #1e2024; }

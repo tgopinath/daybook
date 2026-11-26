@@ -10,13 +10,13 @@ export default function PrivacyPage() {
       <article className="mx-auto max-w-[680px] text-[15px] leading-relaxed text-fg-2">
         <Link href="/login" className="mb-10 inline-flex items-center gap-2.5 text-fg no-underline">
           <img src="/icon.svg" alt="" className="h-8 w-8" />
-          <span className="text-[17px] font-semibold tracking-tight">MyDiary</span>
+          <span className="text-[17px] font-semibold tracking-tight">My Diary</span>
         </Link>
         <h1 className="text-[28px] font-semibold tracking-tight text-fg">Privacy policy</h1>
         <p className="mt-1 text-[13px] text-fg-3">Last updated {UPDATED}</p>
 
-        <Section title="What MyDiary is">
-          MyDiary is a personal organiser for tasks, goals, reminders, calendar events, habits, notes and personal information. It&apos;s a personal
+        <Section title="What My Diary is">
+          My Diary is a personal organiser for tasks, goals, reminders, calendar events, habits, notes and personal information. It&apos;s a personal
           project, not a commercial service. There are no ads and your data is never sold or shared for marketing.
         </Section>
 
@@ -29,8 +29,8 @@ export default function PrivacyPage() {
         </Section>
 
         <Section title="Signing in with Google">
-          If you choose Continue with Google, Google shares your name, email address, profile photo and a Google account ID with MyDiary. They&apos;re
-          used only to create and sign in to your account. MyDiary doesn&apos;t get your Google password and doesn&apos;t access any other Google data,
+          If you choose Continue with Google, Google shares your name, email address, profile photo and a Google account ID with My Diary. They&apos;re
+          used only to create and sign in to your account. My Diary doesn&apos;t get your Google password and doesn&apos;t access any other Google data,
           such as Gmail, Drive or Contacts.
         </Section>
 

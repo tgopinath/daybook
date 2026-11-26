@@ -9,7 +9,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
       <section className="relative hidden w-[46%] max-w-[640px] flex-col justify-between overflow-hidden border-r border-line bg-primary-soft p-12 lg:flex">
         <div className="flex items-center gap-2.5">
           <img src="/icon.svg" alt="" className="h-9 w-9" />
-          <span className="text-lg font-semibold tracking-tight">MyDiary</span>
+          <span className="text-lg font-semibold tracking-tight">My Diary</span>
         </div>
         <div className="relative z-10 max-w-[440px]">
           <DiaryIllustration />
@@ -24,7 +24,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         <div className="w-full max-w-[400px]">
           <div className="mb-8 flex items-center justify-center gap-2.5 lg:hidden">
             <img src="/icon.svg" alt="" className="h-9 w-9" />
-            <span className="text-lg font-semibold tracking-tight">MyDiary</span>
+            <span className="text-lg font-semibold tracking-tight">My Diary</span>
           </div>
           {children}
           <p className="mt-10 text-center text-[12px] text-fg-3">

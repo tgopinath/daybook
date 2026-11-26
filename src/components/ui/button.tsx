@@ -14,7 +14,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<Variant, string> = {
   primary: "bg-primary text-on-primary hover:bg-primary-hover shadow-[0_1px_2px_rgba(99,91,255,.25)]",
-  secondary: "bg-surface-2 text-fg hover:bg-line",
+  secondary: "bg-primary-soft text-primary hover:bg-[color-mix(in_oklab,var(--primary)_16%,var(--surface))]",
   outline: "border border-line bg-surface text-fg hover:bg-surface-2",
   ghost: "text-fg-2 hover:bg-surface-2 hover:text-fg",
   danger: "bg-danger text-white hover:opacity-90",

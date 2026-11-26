@@ -98,7 +98,7 @@ export async function exportToSheets(range: { from?: string; to?: string }, opts
     } catch {
       /* storage blocked: the user can press export again */
     }
-    toast.info("Connecting to Google so MyDiary can create the sheet…");
+    toast.info("Connecting to Google so My Diary can create the sheet…");
     window.location.href = `/api/google-drive/sheets/connect?return=${encodeURIComponent(opts.returnTo)}`;
     return null;
   }

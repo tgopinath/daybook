@@ -181,7 +181,7 @@ function LockScreen({ name, email, onUnlocked }: { name?: string; email?: string
           <Lock className="h-6 w-6" aria-hidden />
         </div>
         <h1 id="app-lock-title" className="font-display text-[26px] leading-tight font-semibold">
-          MyDiary is locked
+          My Diary is locked
         </h1>
         <p id="app-lock-desc" className="mt-1.5 text-[14px] text-fg-2">
           {name ? `Welcome back, ${name.split(" ")[0]}. ` : ""}Enter your PIN to continue.

@@ -206,7 +206,7 @@ export function RemindersWidget(p: P<"reminders">) {
           ))}
         </ul>
       ) : (
-        <WidgetEmpty>Let MyDiary remember the little things: water, calls, bills.</WidgetEmpty>
+        <WidgetEmpty>Let My Diary remember the little things: water, calls, bills.</WidgetEmpty>
       )}
     </WidgetCard>
   );

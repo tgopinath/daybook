@@ -208,7 +208,7 @@ function RemovePinDialog({ open, onClose }: { open: boolean; onClose: () => void
       onOpenChange={(o) => !o && onClose()}
       size="sm"
       title="Turn off app lock?"
-      description="MyDiary won't ask for a PIN on this account anymore."
+      description="My Diary won't ask for a PIN on this account anymore."
       footer={
         <>
           <Button variant="ghost" onClick={onClose}>

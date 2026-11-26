@@ -42,18 +42,18 @@ export async function GET(req: NextRequest) {
 /** The sample data is laid out around "today", so first ask the browser for its timezone. */
 function tzProbe(next: string) {
   const qs = (tz: string) => `?tz=${encodeURIComponent(tz)}&next=${encodeURIComponent(next)}`;
-  const html = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MyDiary demo</title>
-<p style="font:16px system-ui;padding:24px">Opening the MyDiary demo… <a href="/api/demo/start${qs("UTC")}">Continue</a></p>
+  const html = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Diary demo</title>
+<p style="font:16px system-ui;padding:24px">Opening the My Diary demo… <a href="/api/demo/start${qs("UTC")}">Continue</a></p>
 <script>var tz="UTC";try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"}catch(e){}location.replace("/api/demo/start?tz="+encodeURIComponent(tz)+"&next=${encodeURIComponent(next)}")</script>`;
   return new NextResponse(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
 }
 
 /** Shown instead of a redirect loop when the browser refuses the demo cookie (e.g. inside an embedded frame). */
 function cookiesBlocked(next: string) {
-  const html = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MyDiary demo</title>
+  const html = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Diary demo</title>
 <div style="font:15px/1.5 system-ui,sans-serif;color:#1d1d24;max-width:340px;margin:0 auto;padding:48px 24px;text-align:center">
 <p style="font-weight:600;font-size:17px;margin:0 0 8px">This browser blocked the demo's cookie here</p>
-<p style="margin:0 0 20px;color:#555">The MyDiary demo keeps your sample account in a cookie. Open it in its own tab to try it.</p>
-<a href="${next}" target="_blank" rel="noopener" style="display:inline-block;background:#993399;color:#fff;text-decoration:none;padding:10px 18px;border-radius:10px;font-weight:600">Open MyDiary in a new tab</a></div>`;
+<p style="margin:0 0 20px;color:#555">The My Diary demo keeps your sample account in a cookie. Open it in its own tab to try it.</p>
+<a href="${next}" target="_blank" rel="noopener" style="display:inline-block;background:#993399;color:#fff;text-decoration:none;padding:10px 18px;border-radius:10px;font-weight:600">Open My Diary in a new tab</a></div>`;
   return new NextResponse(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
 }

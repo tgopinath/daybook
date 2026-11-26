@@ -46,7 +46,7 @@ export function unsupportedReason(): string {
   if (!("Notification" in window) || !("PushManager" in window)) {
     const ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
     return ios
-      ? "On iPhone and iPad, add MyDiary to your Home Screen (Share → Add to Home Screen) and open it from there to enable notifications."
+      ? "On iPhone and iPad, add My Diary to your Home Screen (Share → Add to Home Screen) and open it from there to enable notifications."
       : "This browser doesn't support push notifications.";
   }
   return "";

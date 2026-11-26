@@ -28,9 +28,28 @@ export const WIDGET_ICONS: Record<MySpaceWidgetId, LucideIcon> = {
   security: ShieldCheck,
 };
 
-/** Primary quick action (button or link) in a widget footer: 40px tall for touch. */
+/** Each module's pastel tone (classes in globals.css) so widgets are easy to tell apart. */
+export const WIDGET_TONES: Record<MySpaceWidgetId, string> = {
+  tasks: "tone-indigo",
+  goals: "tone-peach",
+  calendar: "tone-sky",
+  reminders: "tone-amber",
+  habits: "tone-teal",
+  notes: "tone-lavender",
+  journal: "tone-plum",
+  gratitude: "tone-rose",
+  memories: "tone-sky",
+  bucket: "tone-indigo",
+  timeline: "tone-amber",
+  vault: "tone-slate",
+  finance: "tone-green",
+  storage: "tone-teal",
+  security: "tone-lavender",
+};
+
+/** Main quick action (soft accent, secondary style) (button or link) in a widget footer: 40px tall for touch. */
 export const actionCls =
-  "inline-flex h-10 items-center gap-1.5 rounded-[10px] bg-primary px-3.5 text-[13.5px] font-medium text-on-primary transition-colors hover:bg-primary-hover outline-none focus-visible:ring-3 focus-visible:ring-primary/30 disabled:opacity-60";
+  "inline-flex h-10 items-center gap-1.5 rounded-[10px] bg-[var(--tone-soft,var(--primary-soft))] px-3.5 text-[13.5px] font-medium text-[var(--tone,var(--primary-text))] transition-[filter] hover:brightness-[.96] dark:hover:brightness-110 outline-none focus-visible:ring-3 focus-visible:ring-primary/30 disabled:opacity-60";
 export const secondaryActionCls =
   "inline-flex h-10 items-center gap-1.5 rounded-[10px] border border-line bg-surface px-3.5 text-[13.5px] font-medium text-fg transition-colors hover:bg-surface-2 outline-none focus-visible:ring-3 focus-visible:ring-primary/30";
 
@@ -59,19 +78,19 @@ export function WidgetCard({
   const Icon = WIDGET_ICONS[id];
   const bodyId = `ms-${id}-body`;
   return (
-    <Card className={cn("flex min-w-0 flex-col p-4 md:p-5", size === "large" && "md:col-span-2")} aria-labelledby={`ms-${id}-title`} role="region">
+    <Card className={cn("flex min-w-0 flex-col p-4 md:p-5", WIDGET_TONES[id], size === "large" && "md:col-span-2")} aria-labelledby={`ms-${id}-title`} role="region">
       <div className="flex items-start gap-1">
         <Link
           href={meta.href}
           className="group -m-1.5 flex min-w-0 flex-1 items-center gap-3 rounded-[12px] p-1.5 outline-none hover:bg-surface-2 focus-visible:ring-3 focus-visible:ring-primary/30"
         >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[11px] bg-primary-soft text-primary" aria-hidden>
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[11px] bg-[var(--tone-soft)] text-[var(--tone)]" aria-hidden>
             <Icon className="h-[18px] w-[18px]" />
           </span>
           <span className="flex min-w-0 flex-1 flex-col">
             <span id={`ms-${id}-title`} className="font-display flex items-center gap-1.5 text-[17px] leading-tight font-semibold text-fg">
               <span className="truncate">{meta.label}</span>
-              <ArrowRight className="h-3.5 w-3.5 shrink-0 text-fg-3 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" aria-hidden />
+              <ArrowRight className="h-3.5 w-3.5 shrink-0 text-fg-3 transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--tone)]" aria-hidden />
             </span>
             <span className="mt-0.5 truncate text-[12.5px] text-fg-2">
               {state === "loading" ? <Skeleton className="mt-1 h-3 w-28" /> : state === "error" ? "Not available right now" : stat}
@@ -126,5 +145,5 @@ export function WidgetSkeleton() {
 
 /** Warm empty state inside a widget: one gentle line; the footer carries the primary action. */
 export function WidgetEmpty({ children }: { children: ReactNode }) {
-  return <p className="flex flex-1 items-center rounded-[12px] bg-surface-2 px-3.5 py-4 text-[13.5px] leading-relaxed text-fg-2">{children}</p>;
+  return <p className="flex flex-1 items-center rounded-[12px] bg-[var(--tone-faint,var(--surface-2))] px-3.5 py-4 text-[13.5px] leading-relaxed text-fg-2">{children}</p>;
 }

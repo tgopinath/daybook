@@ -188,7 +188,7 @@ export function FinanceView() {
                       <span>
                         <span className="block text-[13.5px] font-medium text-fg">Export to Google Sheets</span>
                         <span className="block text-[12px] text-fg-2">
-                          {!sheets ? "Checking…" : sheets.available ? (sheets.connected ? "Creates a new spreadsheet in your Drive" : "You'll be asked to allow MyDiary to create a file") : sheets.message}
+                          {!sheets ? "Checking…" : sheets.available ? (sheets.connected ? "Creates a new spreadsheet in your Drive" : "You'll be asked to allow My Diary to create a file") : sheets.message}
                         </span>
                       </span>
                     </button>
