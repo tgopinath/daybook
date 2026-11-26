@@ -111,6 +111,7 @@ model User {
   driveFolders      DriveFolder[]
   driveFiles        DriveFile[]
   backupCodes       BackupCode[]
+  appLinks          AppLink[]
 }
 
 model Session {
@@ -166,6 +167,8 @@ model UserSettings {
   googleDriveTokenExpires  DateTime?
   // Money
   currency             String   @default("INR") // ISO 4217
+  portfolioUrl         String?  // the user's portfolio / personal website (https), shown on the My portfolio page
+  portfolioEditUrl     String?  // where the user edits it (e.g. github.dev/<owner>/<repo>), opened by "Edit portfolio"
   // App lock: a PIN asked after inactivity (bcrypt hash); 0 minutes = off
   appLockPinHash       String?
   appLockMinutes       Int      @default(0)
@@ -928,4 +931,21 @@ model BackupCode {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+
+// Links to the user's own apps and sites, shown and shared from "My portfolio & apps".
+model AppLink {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  url         String   // https only
+  description String?
+  emoji       String?  // optional single emoji used as the app's icon
+  sortOrder   Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, sortOrder])
 }

@@ -27,6 +27,21 @@ const schema = z
     notifyHabits: z.boolean(),
     notifyCalendar: z.boolean(),
     notifyAI: z.boolean(),
+    // Portfolio / personal website shown on the My portfolio page: https only, or null to clear.
+    portfolioUrl: z
+      .string()
+      .trim()
+      .max(500)
+      .url("Enter a full link starting with https://")
+      .refine((u) => u.startsWith("https://"), "Use a secure link that starts with https://")
+      .nullable(),
+    portfolioEditUrl: z
+      .string()
+      .trim()
+      .max(500)
+      .url("Enter a full link starting with https://")
+      .refine((u) => u.startsWith("https://"), "Use a secure link that starts with https://")
+      .nullable(),
   })
   .partial()
   .strict();
