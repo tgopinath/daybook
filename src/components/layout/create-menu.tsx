@@ -2,7 +2,7 @@
 import type { ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Bell, BookOpen, Briefcase, CalendarDays, CheckSquare, Heart, History, Images, Mountain, Repeat, Smile, StickyNote, Target, Upload, Wallet, Zap,
+  AppWindow, Bell, BookOpen, Briefcase, CalendarDays, CheckSquare, Heart, History, Images, Mountain, Repeat, Smile, StickyNote, Target, Upload, Wallet, Zap,
   type LucideIcon,
 } from "lucide-react";
 import { Menu, type MenuItem } from "@/components/ui/menu";
@@ -63,7 +63,7 @@ export function CreateMenu({ trigger, align = "start", onNavigate }: { trigger: 
     { label: "Upload a file", icon: Upload, page: "/drive", href: "/drive?upload=1", inPlace: true },
     { label: "Mood check-in", icon: Smile, page: "/mood", href: "/mood" },
     { label: "Gratitude", icon: Heart, page: "/gratitude", href: "/gratitude" },
-    { label: "App link", icon: Briefcase, page: "/portfolio", href: "/portfolio" },
+    { label: "App link", icon: AppWindow, page: "/apps", href: "/apps?new=1" },
   ];
 
   const items: MenuItem[] = [

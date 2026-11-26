@@ -142,14 +142,15 @@ export function AppShell({ children, demo = false }: { children: React.ReactNode
   return (
     <SWRConfig value={{ errorRetryCount: 2 }}>
       <NativeLooks />
-      <div className="app-root flex h-dvh overflow-hidden">
+      {/* relative: absolutely-positioned descendants (e.g. sr-only labels) must not stretch the document and scroll the whole frame */}
+      <div className="app-root relative flex h-dvh overflow-hidden">
         <div className="hidden lg:block">
           <Sidebar />
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
           {demo && <DemoBanner />}
           <Topbar />
-          <main id="main" className="min-h-0 flex-1 overflow-y-auto scroll-thin">
+          <main id="main" className="relative min-h-0 flex-1 overflow-y-auto scroll-thin">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={pathname}

@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
-import { ArrowDown, ArrowUp, Check, Copy, ExternalLink, Globe, Link2, Mail, MessageCircle, MoreHorizontal, Pencil, Plus, Share2, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowDown, ArrowUp, Check, Copy, ExternalLink, Globe, Link2, ListPlus, Mail, MessageCircle, MoreHorizontal, Pencil, Plus, Share2, Trash2, X } from "lucide-react";
+import { parseAppLinks, type ParsedLink } from "@/lib/parse-app-links";
 import type { AppLink } from "@prisma/client";
 import { api, refresh, useApi, type Wire } from "@/lib/client";
 import { useMe } from "@/lib/use-me";
@@ -282,12 +283,119 @@ function AppDialog({ open, onOpenChange, initial }: { open: boolean; onOpenChang
   );
 }
 
+function BulkAddDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+  const [text, setText] = useState("");
+  const [rows, setRows] = useState<ParsedLink[] | null>(null);
+  const [busy, setBusy] = useState(false);
+  const valid = (rows ?? []).filter((r) => r.name.trim() && /^https:\/\/\S+\.\S+/.test(r.url.trim()));
+
+  const update = (i: number, patch: Partial<ParsedLink>) =>
+    setRows((rs) => rs!.map((r, j) => (j === i ? { ...r, ...patch, error: undefined } : r)));
+
+  const add = async () => {
+    setBusy(true);
+    try {
+      const res = await api.post<{ added: number; skipped: number }>("/api/links/bulk", {
+        items: valid.map((r) => ({ name: r.name.trim(), url: r.url.trim(), description: r.description.trim() || null })),
+      });
+      await refresh("/api/links");
+      toast.success(res.skipped ? `Added ${res.added} apps · ${res.skipped} already saved` : `Added ${res.added} apps`);
+      onOpenChange(false);
+    } catch (err) {
+      toastError(err);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (o) {
+          setText("");
+          setRows(null);
+        }
+        onOpenChange(o);
+      }}
+      size="lg"
+      title="Add several apps"
+      description={rows ? "Check the names and links, then add them all." : "Paste one app per line. Any of these work: “Name - link”, “link Name”, “Name | link | description”, or just the link."}
+      footer={
+        rows ? (
+          <>
+            <Button variant="ghost" onClick={() => setRows(null)}>
+              Back
+            </Button>
+            <Button onClick={add} loading={busy} disabled={!valid.length}>
+              Add {valid.length} {valid.length === 1 ? "app" : "apps"}
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button variant="ghost" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => setRows(parseAppLinks(text).slice(0, 50))} disabled={!text.trim()}>
+              Review
+            </Button>
+          </>
+        )
+      }
+    >
+      {!rows ? (
+        <Textarea
+          rows={10}
+          autoFocus
+          aria-label="Apps, one per line"
+          placeholder={"Word Wonders - https://example.com/word-wonders\nhttps://example.com/money-master Money Master\nhttps://example.com/kaadu"}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          className="font-mono text-[13px]"
+        />
+      ) : rows.length === 0 ? (
+        <p className="text-[13.5px] text-fg-2">Nothing to add. Go back and paste some links.</p>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {rows.map((r, i) => {
+            const bad = !r.name.trim() || !/^https:\/\/\S+\.\S+/.test(r.url.trim());
+            return (
+              <li key={i} className="rounded-xl border border-line p-3">
+                <div className="flex items-start gap-2">
+                  <div className="grid min-w-0 flex-1 gap-2 sm:grid-cols-[1fr_1.4fr]">
+                    <Input value={r.name} maxLength={80} aria-label={`Name ${i + 1}`} placeholder="Name" onChange={(e) => update(i, { name: e.target.value })} />
+                    <Input value={r.url} type="url" aria-label={`Link ${i + 1}`} placeholder="https://…" onChange={(e) => update(i, { url: e.target.value })} />
+                  </div>
+                  <Button size="icon-sm" variant="ghost" aria-label={`Remove ${r.name || "row"}`} onClick={() => setRows((rs) => rs!.filter((_, j) => j !== i))}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                {bad && <p className="mt-1.5 text-[12px] text-danger">{r.error ?? "Needs a name and a secure link starting with https://"}</p>}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </Dialog>
+  );
+}
+
 function AppsSection() {
   const { data, isLoading } = useApi<{ items: Link[] }>("/api/links");
   const { data: me } = useMe();
   const [dialog, setDialog] = useState<{ open: boolean; item: Link | null }>({ open: false, item: null });
   const [copiedAll, setCopiedAll] = useState(false);
+  const [bulkOpen, setBulkOpen] = useState(false);
   const items = data?.items ?? [];
+  // "New → App link" lands here with ?new=1
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get("new") === "1") {
+      setDialog({ open: true, item: null });
+      sp.delete("new");
+      window.history.replaceState(null, "", window.location.pathname + (sp.toString() ? `?${sp}` : ""));
+    }
+  }, []);
 
   const move = async (index: number, dir: -1 | 1) => {
     const next = [...items];
@@ -335,14 +443,8 @@ function AppsSection() {
   };
 
   return (
-    <section aria-labelledby="apps-title" className="mt-8">
-      <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 id="apps-title" className="font-display text-[19px] font-semibold">
-            My apps
-          </h2>
-          <p className="text-[13.5px] text-fg-2">Open, copy or share links to the apps and sites you&apos;ve made.</p>
-        </div>
+    <section aria-label="My apps">
+      <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
         <div className="flex flex-wrap gap-2">
           {items.length > 1 && (
             <>
@@ -354,6 +456,9 @@ function AppsSection() {
               </Button>
             </>
           )}
+          <Button size="sm" variant="outline" onClick={() => setBulkOpen(true)}>
+            <ListPlus className="h-4 w-4" /> Add several
+          </Button>
           <Button size="sm" onClick={() => setDialog({ open: true, item: null })}>
             <Plus className="h-4 w-4" /> Add app
           </Button>
@@ -368,7 +473,15 @@ function AppsSection() {
         </div>
       ) : items.length === 0 ? (
         <Card>
-          <EmptyState icon={Link2} title="Add the apps you've built" description="Keep every link in one place, ready to open or share with anyone." action={<Button onClick={() => setDialog({ open: true, item: null })}>Add your first app</Button>} />
+          <EmptyState icon={Link2} title="Add the apps you've built" description="Keep every link in one place, ready to open or share with anyone." action={
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button onClick={() => setDialog({ open: true, item: null })}>Add your first app</Button>
+                <Button variant="outline" onClick={() => setBulkOpen(true)}>
+                  <ListPlus className="h-4 w-4" /> Paste several
+                </Button>
+              </div>
+            }
+          />
         </Card>
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -414,6 +527,7 @@ function AppsSection() {
         </ul>
       )}
       <AppDialog open={dialog.open} onOpenChange={(open) => setDialog((d) => ({ ...d, open }))} initial={dialog.item} />
+      <BulkAddDialog open={bulkOpen} onOpenChange={setBulkOpen} />
     </section>
   );
 }
@@ -421,8 +535,16 @@ function AppsSection() {
 export function PortfolioView() {
   return (
     <div>
-      <PageHeader title="My portfolio & apps" description="Your portfolio and everything you've built, ready to open, edit or share." />
+      <PageHeader title="My portfolio" description="Open, preview, edit and share your portfolio." />
       <PortfolioCard />
+    </div>
+  );
+}
+
+export function AppsView() {
+  return (
+    <div>
+      <PageHeader title="My apps" description="Open, copy or share links to the apps and sites you've made." />
       <AppsSection />
     </div>
   );

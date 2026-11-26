@@ -1,6 +1,6 @@
 import {
   LayoutGrid, CheckSquare, Target, CalendarDays, Bell, Repeat, StickyNote, Shield,
-  Briefcase, CalendarClock, Zap, BarChart3, Archive, Trash2, Settings, BookOpen, Heart, Smile,
+  Briefcase, AppWindow, CalendarClock, Zap, BarChart3, Archive, Trash2, Settings, BookOpen, Heart, Smile,
   Images, Mountain, History, Camera, ClipboardCheck, Wallet, Cloud, ShieldCheck, type LucideIcon,
 } from "lucide-react";
 
@@ -53,6 +53,7 @@ const ALL_NAV: NavGroup[] = [
     items: [
       { label: "Photo Diary", href: "/photos", icon: Camera },
       { label: "My portfolio", href: "/portfolio", icon: Briefcase },
+      { label: "My apps", href: "/apps", icon: AppWindow },
     ],
   },
   {
