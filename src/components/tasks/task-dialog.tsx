@@ -589,7 +589,7 @@ function SubtaskItem({ item, onChange, onRemove }: { item: SubItem; onChange: (p
         }}
         aria-label="Subtask title"
         maxLength={300}
-        className={cn("h-8 min-w-0 flex-1 bg-transparent text-[13.5px] outline-none", item.done && "text-fg-3 line-through")}
+        className={cn("h-8 min-w-0 flex-1 bg-transparent text-[14px] outline-none", item.done && "text-fg-3 line-through")}
       />
       <button type="button" onClick={onRemove} aria-label="Delete subtask" className="rounded p-1 text-fg-3 opacity-0 group-hover/sub:opacity-100 hover:bg-line hover:text-danger focus-visible:opacity-100">
         <X className="h-3.5 w-3.5" />
@@ -717,7 +717,7 @@ function FileRow({ name, size, note, children }: { name: string; size: number; n
   return (
     <li className="flex h-9 items-center gap-2 rounded-lg border border-line px-2.5">
       <Paperclip className="h-3.5 w-3.5 shrink-0 text-fg-3" />
-      <span className="min-w-0 flex-1 truncate text-[13px]">{name}</span>
+      <span className="min-w-0 flex-1 truncate text-[14px]">{name}</span>
       <span className="shrink-0 text-[11.5px] text-fg-3">{note ?? fmtBytes(size)}</span>
       {children}
     </li>

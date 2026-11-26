@@ -25,7 +25,7 @@ export function PriorityView({
         <section key={p} aria-label={`${PRIORITY_META[p].label} priority`}>
           <header className="mb-2 flex items-center gap-2 px-1">
             <PriorityFlag priority={p as Priority} />
-            <h3 className="text-[13.5px] font-semibold">{PRIORITY_META[p].label}</h3>
+            <h3 className="text-[14px] font-semibold">{PRIORITY_META[p].label}</h3>
             <span className="text-[12px] text-fg-3 tabular-nums">{list.length}</span>
             <button
               type="button"

@@ -171,7 +171,7 @@ export function MemoriesView() {
                   value={albumId ?? ""}
                   onChange={(e) => setAlbumId(e.target.value || null)}
                   aria-label="Filter by album"
-                  className="h-8 rounded-lg border border-line bg-surface px-2 text-[13px] text-fg"
+                  className="h-8 rounded-lg border border-line bg-surface px-2 text-[14px] text-fg"
                 >
                   <option value="">All albums</option>
                   {albums.items.map((a) => (
@@ -244,7 +244,7 @@ function FilterChip({ active, onClick, icon: Icon, label }: { active: boolean; o
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-[13px] font-medium transition-colors",
+        "inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-[14px] font-medium transition-colors",
         active ? "border-primary bg-primary-soft text-primary" : "border-line bg-surface text-fg-2 hover:text-fg",
       )}
     >
@@ -304,7 +304,7 @@ function AlbumsGrid({ albums, loading, onOpen, onNew }: { albums?: AlbumItem[]; 
       <button
         type="button"
         onClick={onNew}
-        className="flex aspect-[4/3] flex-col items-center justify-center gap-1.5 rounded-[14px] border-2 border-dashed border-line-strong text-[13.5px] font-medium text-fg-2 hover:border-primary hover:text-primary"
+        className="flex aspect-[4/3] flex-col items-center justify-center gap-1.5 rounded-[14px] border-2 border-dashed border-line-strong text-[14px] font-medium text-fg-2 hover:border-primary hover:text-primary"
       >
         <Plus className="h-5 w-5" /> New album
       </button>

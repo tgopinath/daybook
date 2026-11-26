@@ -122,7 +122,7 @@ function Overview({ data, reviewed }: { data: SecurityOverview; reviewed: boolea
                   {i.done && <Check className="h-3 w-3" strokeWidth={3} />}
                 </span>
                 <span className="min-w-0">
-                  <span className={cn("text-[13.5px]", i.done ? "text-fg" : "text-fg-2")}>{i.label}</span>
+                  <span className={cn("text-[14px]", i.done ? "text-fg" : "text-fg-2")}>{i.label}</span>
                   <span className="sr-only">{i.done ? " (done)" : " (not yet)"}</span>
                   {i.hint && !i.done && <span className="block text-[12px] text-fg-3">{i.hint}</span>}
                 </span>
@@ -222,7 +222,7 @@ function VaultCard({ count }: { count: number }) {
       status={<Badge>{count === 1 ? "1 item" : `${count} items`}</Badge>}
       description="Your vault for details like emergency contacts, documents and insurance. Fields are encrypted at rest."
     >
-      <Link href="/vault" className="inline-flex items-center gap-1 text-[13.5px] font-medium text-primary hover:underline">
+      <Link href="/vault" className="inline-flex items-center gap-1 text-[14px] font-medium text-primary hover:underline">
         Open Personal Information <ChevronRight className="h-4 w-4" aria-hidden />
       </Link>
     </SecurityCard>
@@ -246,7 +246,7 @@ function PasswordCard({ data }: { data: SecurityOverview }) {
       {data.demo ? (
         <p className="text-[13px] text-fg-2">Demo accounts don&apos;t have a password.</p>
       ) : (
-        <Link href="/settings#profile" className="inline-flex items-center gap-1 text-[13.5px] font-medium text-primary hover:underline">
+        <Link href="/settings#profile" className="inline-flex items-center gap-1 text-[14px] font-medium text-primary hover:underline">
           {data.hasPassword ? "Change password" : "Add a password"} in Settings <ChevronRight className="h-4 w-4" aria-hidden />
         </Link>
       )}

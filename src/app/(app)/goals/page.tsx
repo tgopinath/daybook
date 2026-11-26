@@ -90,7 +90,7 @@ export default function GoalsPage() {
               ]}
             />
             <div className="flex gap-2">
-              <Select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Filter by category" className="h-8 min-w-[150px] text-[13px]">
+              <Select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Filter by category" className="h-8 min-w-[150px] text-[14px]">
                 <option value="">All categories</option>
                 {GOAL_CATEGORIES.map((c) => (
                   <option key={c.value} value={c.value}>
@@ -98,7 +98,7 @@ export default function GoalsPage() {
                   </option>
                 ))}
               </Select>
-              <Select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="Sort goals" className="h-8 min-w-[140px] text-[13px]">
+              <Select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="Sort goals" className="h-8 min-w-[140px] text-[14px]">
                 <option value="target">Target date</option>
                 <option value="progress">Progress</option>
                 <option value="updated">Recently updated</option>

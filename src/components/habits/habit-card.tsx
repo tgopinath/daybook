@@ -26,7 +26,7 @@ export function HabitCard({ habit, onOpen, onEdit }: { habit: HabitItem; onOpen:
           </span>
           <span className="min-w-0 flex-1">
             <span className="flex items-center gap-1.5">
-              <span className={cn("truncate text-[14.5px] font-medium", habit.doneToday && "text-fg-2")}>{habit.name}</span>
+              <span className={cn("truncate text-[14px] font-medium", habit.doneToday && "text-fg-2")}>{habit.name}</span>
               <DemoBadge show={habit.isDemo} />
             </span>
             <span className="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-fg-3">

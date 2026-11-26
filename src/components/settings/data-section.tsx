@@ -160,7 +160,7 @@ export function DataSection({ me }: { me: Me }) {
         }
       >
         {rows.length ? (
-          <div className="flex flex-col gap-3 text-[13.5px]">
+          <div className="flex flex-col gap-3 text-[14px]">
             <p className="text-fg-2">These will be added to your account as new items:</p>
             <ul className="grid grid-cols-2 gap-x-4 gap-y-1.5">
               {rows.map(([k, one, many]) => (
@@ -192,25 +192,51 @@ export function DataSection({ me }: { me: Me }) {
 function DeleteAccountDialog({ open, onOpenChange, email, needsPassword }: { open: boolean; onOpenChange: (o: boolean) => void; email: string; needsPassword: boolean }) {
   const [typed, setTyped] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
+  const [sending, setSending] = useState(false);
+  // null = checking; then whether an emailed code is needed, and whether one was sent.
+  const [otp, setOtp] = useState<{ required: boolean; to: string; sent: boolean } | null>(null);
   useEffect(() => {
-    if (open) {
-      setTyped("");
-      setPassword("");
-    }
+    if (!open) return;
+    setTyped("");
+    setPassword("");
+    setCode("");
+    setOtp(null);
+    api
+      .get<{ required: boolean; to: string }>("/api/account/delete/code")
+      .then((r) => setOtp({ ...r, sent: false }))
+      .catch(() => setOtp({ required: false, to: "", sent: false }));
   }, [open]);
   const matches = typed.trim().toLowerCase() === email.toLowerCase();
+  const detailsOk = matches && (!needsPassword || !!password);
+  const codeOk = !otp?.required || /^\d{6}$/.test(code.trim());
+  const sendCode = async () => {
+    setSending(true);
+    try {
+      const r = await api.post<{ required: boolean; to?: string }>("/api/account/delete/code", {});
+      setOtp((o) => ({ required: r.required, to: r.to ?? o?.to ?? "", sent: r.required }));
+      if (r.required) toast.success(`Code sent to ${r.to}`);
+    } catch (err) {
+      toastError(err);
+    } finally {
+      setSending(false);
+    }
+  };
   const submit = async () => {
-    if (!matches || (needsPassword && !password)) return;
+    if (!detailsOk || !otp) return;
+    if (otp.required && !otp.sent) return void sendCode();
+    if (!codeOk) return;
     setBusy(true);
     try {
-      await api.post("/api/account/delete", { email: typed.trim(), ...(needsPassword ? { password } : {}) });
+      await api.post("/api/account/delete", { email: typed.trim(), ...(needsPassword ? { password } : {}), ...(otp.required ? { code: code.trim() } : {}) });
       window.location.href = "/signup";
     } catch (err) {
       toastError(err);
       setBusy(false);
     }
   };
+  const needSend = !!otp?.required && !otp.sent;
   return (
     <Dialog
       open={open}
@@ -222,9 +248,15 @@ function DeleteAccountDialog({ open, onOpenChange, email, needsPassword }: { ope
           <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={busy}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={submit} loading={busy} disabled={!matches || (needsPassword && !password)}>
-            Delete account forever
-          </Button>
+          {needSend ? (
+            <Button variant="danger" onClick={sendCode} loading={sending} disabled={!detailsOk}>
+              Email me a code
+            </Button>
+          ) : (
+            <Button variant="danger" onClick={submit} loading={busy} disabled={!otp || !detailsOk || !codeOk}>
+              Delete account forever
+            </Button>
+          )}
         </>
       }
     >
@@ -235,17 +267,36 @@ function DeleteAccountDialog({ open, onOpenChange, email, needsPassword }: { ope
           void submit();
         }}
       >
-        <p className="text-[13.5px] leading-relaxed text-fg-2">
+        <p className="text-[14px] leading-relaxed text-fg-2">
           Every task, goal, reminder, event, habit, note, personal info item and conversation will be permanently deleted. Consider exporting your data first.
         </p>
         <Field label={`Type ${email} to confirm`}>
-          <Input value={typed} onChange={(e) => setTyped(e.target.value)} autoComplete="off" autoCapitalize="none" spellCheck={false} />
+          <Input value={typed} onChange={(e) => setTyped(e.target.value)} autoComplete="off" autoCapitalize="none" spellCheck={false} disabled={otp?.sent} />
         </Field>
         {needsPassword && (
           <Field label="Password">
-            <Input type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Input type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} disabled={otp?.sent} />
           </Field>
         )}
+        {otp?.required && otp.sent && (
+          <Field label={`Code sent to ${otp.to}`} hint="Check your inbox (and spam). The code works for 10 minutes.">
+            <Input
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              placeholder="6-digit code"
+              autoFocus
+              className="tracking-[0.3em] tabular-nums"
+            />
+          </Field>
+        )}
+        {otp?.required && otp.sent && (
+          <button type="button" onClick={sendCode} disabled={sending} className="self-start text-[14px] font-medium text-primary hover:underline disabled:opacity-60">
+            {sending ? "Sending…" : "Send a new code"}
+          </button>
+        )}
+        {otp?.required && !otp.sent && <p className="text-[13px] text-fg-3">To keep your account safe, we&apos;ll email a 6-digit code to {otp.to} before deleting.</p>}
       </form>
     </Dialog>
   );

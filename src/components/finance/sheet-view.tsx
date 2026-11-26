@@ -364,7 +364,7 @@ export function SheetView({ query }: { query: string }) {
       onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
         if (editingRef.current) void commit(e.target.value);
       },
-      className: "h-9 w-full rounded-none border-0 bg-surface px-2 text-[13px] text-fg outline-none ring-2 ring-primary ring-inset",
+      className: "h-9 w-full rounded-none border-0 bg-surface px-2 text-[14px] text-fg outline-none ring-2 ring-primary ring-inset",
     };
     const type = isNew(r) ? newRow.type : rows[r]!.type;
     if (c.kind === "date") return <input type="date" defaultValue={draft} {...common} />;
@@ -438,7 +438,7 @@ export function SheetView({ query }: { query: string }) {
             aria-label="Transactions sheet"
             aria-rowcount={total + 2}
             aria-colcount={COLS.length + 1}
-            className="w-full min-w-[1080px] border-collapse text-[13px]"
+            className="w-full min-w-[1080px] border-collapse text-[14px]"
             onKeyDown={onGridKey}
           >
             <thead>

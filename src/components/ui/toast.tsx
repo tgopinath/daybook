@@ -44,7 +44,7 @@ function ToastItem({ t }: { t: Toast }) {
       exit={{ opacity: 0, y: 6, scale: 0.97 }}
       transition={{ duration: 0.18 }}
       role={t.kind === "error" ? "alert" : "status"}
-      className="pointer-events-auto flex min-w-[280px] max-w-[420px] items-center gap-2.5 rounded-xl border border-line bg-surface py-2.5 pr-2 pl-3 text-[13px] shadow-pop"
+      className="pointer-events-auto flex min-w-[280px] max-w-[420px] items-center gap-2.5 rounded-xl border border-line bg-surface py-2.5 pr-2 pl-3 text-[14px] shadow-pop"
     >
       <Icon className={`h-4 w-4 shrink-0 ${color}`} />
       <span className="flex-1">{t.message}</span>
@@ -54,7 +54,7 @@ function ToastItem({ t }: { t: Toast }) {
             t.action!.onClick();
             toast.dismiss(t.id);
           }}
-          className="rounded-md px-2 py-1 text-[13px] font-semibold text-primary hover:bg-primary-soft"
+          className="rounded-md px-2 py-1 text-[14px] font-semibold text-primary hover:bg-primary-soft"
         >
           {t.action.label}
         </button>

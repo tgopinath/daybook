@@ -215,7 +215,7 @@ function DayForm({ date, prompt, entry }: { date: string; prompt: string; entry:
           <li key={i} className="flex items-center gap-3">
             <span
               aria-hidden
-              className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold", v.trim() ? "bg-primary text-on-primary" : "bg-surface-2 text-fg-2")}
+              className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[14px] font-semibold", v.trim() ? "bg-primary text-on-primary" : "bg-surface-2 text-fg-2")}
             >
               {i + 1}
             </span>
@@ -331,7 +331,7 @@ function StreakCard({ today, onOpen, selected }: { today: string; onOpen: (d: st
 
       <div className="mt-5">
         <div className="mb-2 flex items-baseline justify-between">
-          <h3 className="text-[13.5px] font-semibold">Last {HEATMAP_WEEKS} weeks</h3>
+          <h3 className="text-[14px] font-semibold">Last {HEATMAP_WEEKS} weeks</h3>
           <span className="text-[12px] text-fg-3">{filledDays} days filled</span>
         </div>
         {isLoading && !list ? (
@@ -471,7 +471,7 @@ function SummaryCard() {
                 {data.items.length > (range === "week" ? 21 : 30) && <li className="text-[12.5px] text-fg-3">and {data.items.length - (range === "week" ? 21 : 30)} more</li>}
               </ul>
             ) : (
-              <p className="text-[13.5px] text-fg-2">Nothing yet. Even one small thing counts.</p>
+              <p className="text-[14px] text-fg-2">Nothing yet. Even one small thing counts.</p>
             )}
           </div>
         </>
@@ -548,7 +548,7 @@ function HistoryPage({ cursor, first, last, current, onOpen, onMore }: { cursor:
             className={cn("w-full rounded-[14px] border bg-surface p-4 text-left shadow-card transition-colors hover:border-primary", current === e.date ? "border-primary" : "border-line")}
           >
             <div className="mb-1.5 flex items-center gap-2">
-              <span className="text-[13px] font-semibold">{fmt(e.date, { weekday: "short", month: "short", day: "numeric", year: "numeric" })}</span>
+              <span className="text-[14px] font-semibold">{fmt(e.date, { weekday: "short", month: "short", day: "numeric", year: "numeric" })}</span>
               <DemoBadge show={e.isDemo} />
             </div>
             <ul className="flex flex-col gap-1">

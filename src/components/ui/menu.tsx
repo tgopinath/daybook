@@ -35,7 +35,7 @@ export function Menu({ trigger, items, align = "end", className }: { trigger: Re
                 disabled={item.disabled}
                 onSelect={item.onSelect}
                 className={cn(
-                  "flex h-8 cursor-pointer items-center gap-2 rounded-lg px-2 text-[13px] outline-none select-none data-[disabled]:opacity-40 data-[highlighted]:bg-surface-2",
+                  "flex h-8 cursor-pointer items-center gap-2 rounded-lg px-2 text-[14px] outline-none select-none data-[disabled]:opacity-40 data-[highlighted]:bg-surface-2",
                   item.danger ? "text-danger" : "text-fg",
                 )}
               >

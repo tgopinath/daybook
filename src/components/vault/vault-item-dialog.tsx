@@ -138,7 +138,7 @@ export function VaultItemDialog({ open, onOpenChange, id, initialCategory }: { o
               return (
                 <div key={r.key} className="flex flex-col gap-1">
                   <div className="flex items-center gap-1.5">
-                    <Input value={r.label} onChange={(e) => update(r.key, { label: e.target.value })} placeholder="Label" aria-label="Field label" maxLength={60} className="w-[34%] min-w-0 text-[13px]" />
+                    <Input value={r.label} onChange={(e) => update(r.key, { label: e.target.value })} placeholder="Label" aria-label="Field label" maxLength={60} className="w-[34%] min-w-0 text-[14px]" />
                     <div className="relative min-w-0 flex-1">
                       <Input
                         value={r.value}
@@ -150,7 +150,7 @@ export function VaultItemDialog({ open, onOpenChange, id, initialCategory }: { o
                         autoComplete="off"
                         data-1p-ignore
                         data-lpignore="true"
-                        className={cn("text-[13px]", r.sensitive && "pr-8", warn && "border-danger focus:border-danger focus:ring-danger/15")}
+                        className={cn("text-[14px]", r.sensitive && "pr-8", warn && "border-danger focus:border-danger focus:ring-danger/15")}
                       />
                       {r.sensitive && (
                         <button

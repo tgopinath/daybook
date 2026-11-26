@@ -209,7 +209,7 @@ export function MySpace() {
           ) : (
             data && (
               <Card className="flex flex-col items-center gap-3 px-6 py-10 text-center">
-                <p className="text-[13.5px] text-fg-2">All your spaces are hidden. Bring back the ones you like.</p>
+                <p className="text-[14px] text-fg-2">All your spaces are hidden. Bring back the ones you like.</p>
                 <Button variant="outline" size="sm" onClick={() => setCustomizing(true)}>
                   <LayoutGrid className="h-3.5 w-3.5" /> Customise
                 </Button>
@@ -281,7 +281,7 @@ function PageSection({ id, title, description, open, onToggle, children }: { id:
 
 /** Quick actions: each its own pastel tone (globals.css) with the label in body text for contrast. */
 const quickBase =
-  "inline-flex h-10 items-center gap-2 rounded-[10px] bg-[var(--tone-soft)] px-3.5 text-[13.5px] font-medium text-fg transition-[filter] hover:brightness-[.96] dark:hover:brightness-110 outline-none focus-visible:ring-3 focus-visible:ring-primary/30 [&>svg]:text-[var(--tone)]";
+  "inline-flex h-10 items-center gap-2 rounded-[10px] bg-[var(--tone-soft)] px-3.5 text-[14px] font-medium text-fg transition-[filter] hover:brightness-[.96] dark:hover:brightness-110 outline-none focus-visible:ring-3 focus-visible:ring-primary/30 [&>svg]:text-[var(--tone)]";
 const quick = (tone: string) => `${quickBase} ${tone}`;
 
 function Header({ data, onCustomize, moodHere }: { data?: MySpaceData; onCustomize?: () => void; moodHere?: boolean }) {
@@ -307,7 +307,7 @@ function Header({ data, onCustomize, moodHere }: { data?: MySpaceData; onCustomi
                 {t.greeting}
                 {t.firstName ? `, ${t.firstName}` : ""}
               </h1>
-              {t.subtitle && <p className="mt-1 text-[13.5px] text-fg-2">{t.subtitle}</p>}
+              {t.subtitle && <p className="mt-1 text-[14px] text-fg-2">{t.subtitle}</p>}
             </>
           ) : (
             <>

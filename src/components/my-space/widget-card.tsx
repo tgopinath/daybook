@@ -49,9 +49,9 @@ export const WIDGET_TONES: Record<MySpaceWidgetId, string> = {
 
 /** Main quick action (soft accent, secondary style) (button or link) in a widget footer: 40px tall for touch. */
 export const actionCls =
-  "inline-flex h-10 items-center gap-1.5 rounded-[10px] bg-[var(--tone-soft,var(--primary-soft))] px-3.5 text-[13.5px] font-medium text-[var(--tone,var(--primary-text))] transition-[filter] hover:brightness-[.96] dark:hover:brightness-110 outline-none focus-visible:ring-3 focus-visible:ring-primary/30 disabled:opacity-60";
+  "inline-flex h-10 items-center gap-1.5 rounded-[10px] bg-[var(--tone-soft,var(--primary-soft))] px-3.5 text-[14px] font-medium text-[var(--tone,var(--primary-text))] transition-[filter] hover:brightness-[.96] dark:hover:brightness-110 outline-none focus-visible:ring-3 focus-visible:ring-primary/30 disabled:opacity-60";
 export const secondaryActionCls =
-  "inline-flex h-10 items-center gap-1.5 rounded-[10px] border border-line bg-surface px-3.5 text-[13.5px] font-medium text-fg transition-colors hover:bg-surface-2 outline-none focus-visible:ring-3 focus-visible:ring-primary/30";
+  "inline-flex h-10 items-center gap-1.5 rounded-[10px] border border-line bg-surface px-3.5 text-[14px] font-medium text-fg transition-colors hover:bg-surface-2 outline-none focus-visible:ring-3 focus-visible:ring-primary/30";
 
 export function WidgetCard({
   id,
@@ -145,5 +145,5 @@ export function WidgetSkeleton() {
 
 /** Warm empty state inside a widget: one gentle line; the footer carries the primary action. */
 export function WidgetEmpty({ children }: { children: ReactNode }) {
-  return <p className="flex flex-1 items-center rounded-[12px] bg-[var(--tone-faint,var(--surface-2))] px-3.5 py-4 text-[13.5px] leading-relaxed text-fg-2">{children}</p>;
+  return <p className="flex flex-1 items-center rounded-[12px] bg-[var(--tone-faint,var(--surface-2))] px-3.5 py-4 text-[14px] leading-relaxed text-fg-2">{children}</p>;
 }

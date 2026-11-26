@@ -47,7 +47,7 @@ export function MoodTrends() {
       <section>
         {header}
         <Card className="flex flex-col items-center gap-3 px-6 py-10 text-center">
-          <p className="text-[13.5px] text-fg-2">Couldn&apos;t load your trends. {error instanceof Error ? error.message : ""}</p>
+          <p className="text-[14px] text-fg-2">Couldn&apos;t load your trends. {error instanceof Error ? error.message : ""}</p>
           <Button variant="outline" size="sm" onClick={() => void mutate()}>
             <RotateCw className="h-3.5 w-3.5" /> Retry
           </Button>
@@ -170,7 +170,7 @@ export function MoodTrends() {
                   const m = moodMeta(f.mood)!;
                   return (
                     <li key={f.mood} className="flex items-center gap-3 py-2">
-                      <span className="w-24 shrink-0 text-[13px] font-medium text-fg">
+                      <span className="w-24 shrink-0 text-[14px] font-medium text-fg">
                         <span aria-hidden>{m.emoji}</span> {m.label}
                       </span>
                       <span className="flex min-w-0 flex-wrap gap-1.5">

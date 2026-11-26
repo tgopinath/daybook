@@ -309,7 +309,7 @@ export function GoogleDriveImport({ folderId, onImported, compact }: { folderId:
           )
         }
       >
-        <div className="space-y-3 text-[13.5px] text-fg-2" aria-live="polite">
+        <div className="space-y-3 text-[14px] text-fg-2" aria-live="polite">
           {note && (
             <p className="flex items-start gap-2 rounded-[10px] bg-danger-soft px-3 py-2 text-danger">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />

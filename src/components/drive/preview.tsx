@@ -55,11 +55,11 @@ export function FileCardPreview({ file, onOpenChange }: { file: DriveFileDTO | n
     >
       {file && textual ? (
         !ready ? (
-          <p className="flex items-center gap-2 py-8 text-[13.5px] text-fg-2" aria-live="polite">
+          <p className="flex items-center gap-2 py-8 text-[14px] text-fg-2" aria-live="polite">
             <Loader2 className="h-4 w-4 animate-spin text-primary" /> Loading preview…
           </p>
         ) : "error" in ready ? (
-          <p className="py-6 text-[13.5px] text-danger">{ready.error}</p>
+          <p className="py-6 text-[14px] text-danger">{ready.error}</p>
         ) : (
           <>
             <pre className="max-h-[60dvh] overflow-auto rounded-[10px] border border-line bg-surface-2 p-3 font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap break-words text-fg scroll-thin">{ready.text || "(This file is empty)"}</pre>
@@ -71,7 +71,7 @@ export function FileCardPreview({ file, onOpenChange }: { file: DriveFileDTO | n
           <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-2">
             <FileTypeIcon mimeType={file.media.mimeType} kind={file.media.kind} className="h-8 w-8" />
           </span>
-          <p className="max-w-xs text-[13.5px] text-fg-2">There&apos;s no preview for this kind of file. Download it to open it on your device.</p>
+          <p className="max-w-xs text-[14px] text-fg-2">There&apos;s no preview for this kind of file. Download it to open it on your device.</p>
         </div>
       ) : null}
     </Dialog>

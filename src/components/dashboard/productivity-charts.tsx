@@ -39,7 +39,7 @@ export function ProductivityOverview() {
       <section>
         {header}
         <Card className="flex flex-col items-center gap-3 px-6 py-10 text-center">
-          <p className="text-[13.5px] text-fg-2">Couldn&apos;t load charts. {error instanceof Error ? error.message : ""}</p>
+          <p className="text-[14px] text-fg-2">Couldn&apos;t load charts. {error instanceof Error ? error.message : ""}</p>
           <Button variant="outline" size="sm" onClick={() => void mutate()}>
             <RotateCw className="h-3.5 w-3.5" /> Retry
           </Button>

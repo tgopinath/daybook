@@ -34,7 +34,7 @@ export function AppearanceSection({ me }: { me: Me }) {
               aria-checked={s.theme === t.value}
               onClick={() => save({ theme: t.value })}
               className={cn(
-                "flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3 text-[13px] font-medium transition-colors",
+                "flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3 text-[14px] font-medium transition-colors",
                 s.theme === t.value ? "border-primary bg-primary-soft text-primary" : "border-line text-fg-2 hover:border-line-strong hover:text-fg",
               )}
             >

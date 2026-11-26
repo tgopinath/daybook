@@ -216,7 +216,7 @@ function LockScreen({ name, email, onUnlocked }: { name?: string; email?: string
           </Button>
         </form>
 
-        <button type="button" onClick={signOut} disabled={leaving} className="mt-5 text-[13px] font-medium text-primary hover:underline disabled:cursor-wait">
+        <button type="button" onClick={signOut} disabled={leaving} className="mt-5 text-[14px] font-medium text-primary hover:underline disabled:cursor-wait">
           {leaving ? "Signing out…" : "Forgot your PIN? Sign out"}
         </button>
         <p className="mt-8 text-[12px] leading-relaxed text-fg-3">

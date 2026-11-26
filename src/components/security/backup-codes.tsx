@@ -30,7 +30,7 @@ export function BackupCodesList({ codes }: { codes: string[] }) {
       <p className="rounded-[10px] bg-warning-soft px-3 py-2.5 text-[13px] leading-snug text-warning-text">
         Save these codes somewhere safe, like a password manager. Each one works once, and you won&apos;t see them again.
       </p>
-      <ul aria-label="Backup codes" className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 rounded-[12px] border border-line bg-surface-2 p-4 font-mono text-[14.5px] tracking-wide text-fg select-all">
+      <ul aria-label="Backup codes" className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 rounded-[12px] border border-line bg-surface-2 p-4 font-mono text-[14px] tracking-wide text-fg select-all">
         {codes.map((c) => (
           <li key={c}>{c}</li>
         ))}

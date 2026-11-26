@@ -62,7 +62,7 @@ export function ToolCallCard({ call, onDecide, compact }: { call: ToolCallRecord
 
   if (call.status === "done") {
     return (
-      <div className="flex items-center gap-2.5 rounded-xl border border-success/25 bg-success-soft/60 px-3 py-2.5 text-[13px]">
+      <div className="flex items-center gap-2.5 rounded-xl border border-success/25 bg-success-soft/60 px-3 py-2.5 text-[14px]">
         <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />
         <span className="min-w-0 flex-1 truncate">{call.summary ?? `${d.label} · ${d.primary}`}</span>
         <ResultLink call={call} />
@@ -88,7 +88,7 @@ export function ToolCallCard({ call, onDecide, compact }: { call: ToolCallRecord
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-[11.5px] font-medium tracking-wide text-fg-3 uppercase">{d.label}</p>
-          <p className="mt-0.5 text-[13.5px] leading-snug font-medium break-words">{d.primary}</p>
+          <p className="mt-0.5 text-[14px] leading-snug font-medium break-words">{d.primary}</p>
           {d.meta.length > 0 && <p className="mt-0.5 text-[12px] text-fg-2">{d.meta.join(" · ")}</p>}
           {d.items && !editing && (
             <ul className="mt-2 flex flex-col gap-1 border-l-2 border-line pl-2.5">

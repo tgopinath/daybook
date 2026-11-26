@@ -115,7 +115,7 @@ export function PlannerView() {
                 aria-label="Pick a day"
                 value={day}
                 onChange={(e) => e.target.value && setDate(e.target.value)}
-                className="h-9 w-[132px] bg-transparent text-center text-[13px] outline-none"
+                className="h-9 w-[132px] bg-transparent text-center text-[14px] outline-none"
               />
               <Button size="icon" variant="ghost" aria-label="Next day" onClick={() => setDate(addDaysKey(day, 1))}>
                 <ChevronRight className="h-4 w-4" />
@@ -389,7 +389,7 @@ function PlanPanel({ plan, onAcceptAll, onAccept, onRemove, onDiscard }: { plan:
                 {formatHHMM(b.start)}–{formatHHMM(b.end)}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[13px] font-medium">
+                <p className="truncate text-[14px] font-medium">
                   {b.title}
                   {!b.taskId && <span className="ml-1.5 text-[11px] font-normal text-fg-3">(new task)</span>}
                 </p>
@@ -450,7 +450,7 @@ function Sidebar({ data, isPast, onSchedule }: { data: DaySchedule; isPast: bool
           <h2 className="text-[15px] font-semibold">Free time</h2>
         </div>
         {data.freeSlots.length ? (
-          <ul className="flex flex-col gap-1 text-[13px]">
+          <ul className="flex flex-col gap-1 text-[14px]">
             {data.freeSlots.map((s) => (
               <li key={s.start} className="flex justify-between">
                 <span className="tabular-nums">
@@ -510,7 +510,7 @@ function TaskChip({ task, draggable, overlay }: { task: Unscheduled; draggable?:
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-[10px] border border-line bg-surface px-2 py-2 text-[13px]",
+        "flex items-center gap-2 rounded-[10px] border border-line bg-surface px-2 py-2 text-[14px]",
         draggable && "cursor-grab touch-none active:cursor-grabbing",
         overlay && "shadow-pop",
       )}

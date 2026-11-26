@@ -85,7 +85,7 @@ export function TasksWidget(p: P<"tasks">) {
                 <Checkbox checked={false} onChange={() => void complete(t)} label={`Complete ${t.title}`} size={20} />
               </span>
               <button type="button" onClick={() => openTaskDialog({ id: t.id })} className="min-w-0 flex-1 rounded-md text-left outline-none focus-visible:ring-3 focus-visible:ring-primary/30">
-                <span className="block truncate text-[13.5px] text-fg">{t.title}</span>
+                <span className="block truncate text-[14px] text-fg">{t.title}</span>
                 <span className={cn("block text-[12px]", t.overdue ? "font-medium text-danger" : "text-fg-2")}>{t.dueLabel}</span>
               </button>
               {t.priority === "HIGH" && <Badge tone="danger">{PRIORITY_META.HIGH.label}</Badge>}
@@ -119,7 +119,7 @@ export function GoalsWidget(p: P<"goals">) {
           {d.items.slice(0, limit).map((g) => (
             <li key={g.id} className="min-w-0">
               <div className="mb-1.5 flex items-baseline justify-between gap-2">
-                <span className="truncate text-[13.5px] font-medium text-fg">{g.title}</span>
+                <span className="truncate text-[14px] font-medium text-fg">{g.title}</span>
                 <span className="shrink-0 text-[12.5px] font-semibold text-fg tabular-nums">{g.progress}%</span>
               </div>
               <Progress value={g.progress} color={g.color} />
@@ -156,7 +156,7 @@ export function CalendarWidget(p: P<"calendar">) {
               <button type="button" onClick={() => openEventDialog({ id: e.id })} className={cn(rowLink, "w-full text-left")}>
                 <span className="h-8 w-1 shrink-0 rounded-full" style={{ background: e.color ?? "var(--primary)" }} aria-hidden />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[13.5px] text-fg">{e.title}</span>
+                  <span className="block truncate text-[14px] text-fg">{e.title}</span>
                   <span className="block truncate text-[12px] text-fg-2">
                     {e.dayLabel}
                     {e.time ? ` · ${e.time}` : " · All day"}
@@ -196,7 +196,7 @@ export function RemindersWidget(p: P<"reminders">) {
             <li key={r.key} className="flex min-h-11 items-center gap-3 border-b border-line py-1.5 last:border-0">
               <span className="w-16 shrink-0 text-[12.5px] font-semibold text-fg tabular-nums">{r.time}</span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13.5px] text-fg">{r.title}</span>
+                <span className="block truncate text-[14px] text-fg">{r.title}</span>
                 <span className="block text-[12px] text-fg-2">
                   {r.dayLabel}
                   {r.repeats ? " · Repeats" : ""}
@@ -272,7 +272,7 @@ export function HabitsWidget(p: P<"habits">) {
                   {h.done && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
                 </span>
                 <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: h.color }} aria-hidden />
-                <span className="min-w-0 flex-1 truncate text-[13.5px] text-fg">{h.name}</span>
+                <span className="min-w-0 flex-1 truncate text-[14px] text-fg">{h.name}</span>
                 {h.streak >= 2 && <span className="shrink-0 text-[12px] font-medium text-fg-2">{h.streak}-day streak</span>}
                 <span className="sr-only">{h.done ? ", done today" : ", not done yet"}</span>
               </button>
@@ -307,7 +307,7 @@ export function NotesWidget(p: P<"notes">) {
             <li key={n.id}>
               <Link href={`/notes?id=${n.id}`} className={rowLink}>
                 <span className="min-w-0 flex-1">
-                  <span className="flex items-center gap-1.5 text-[13.5px] font-medium text-fg">
+                  <span className="flex items-center gap-1.5 text-[14px] font-medium text-fg">
                     {n.pinned && <Pin className="h-3 w-3 shrink-0 text-fg-2" aria-label="Pinned" />}
                     <span className="truncate">{n.title}</span>
                   </span>
@@ -443,7 +443,7 @@ export function GratitudeWidget(p: P<"gratitude">) {
       {d?.today ? (
         <ol className="flex flex-col gap-2">
           {d.today.items.map((it, i) => (
-            <li key={i} className="flex gap-2.5 text-[13.5px] leading-snug text-fg">
+            <li key={i} className="flex gap-2.5 text-[14px] leading-snug text-fg">
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success-soft text-[11px] font-semibold text-success">{i + 1}</span>
               <span className="min-w-0">{it}</span>
             </li>
@@ -474,7 +474,7 @@ export function MemoriesWidget(p: P<"memories">) {
       {d?.onThisDay.first && (
         <Link href={`/memories/${d.onThisDay.first.id}`} className="mb-3 flex min-h-11 items-center gap-2.5 rounded-[12px] bg-primary-soft px-3 py-2 outline-none focus-visible:ring-3 focus-visible:ring-primary/30">
           <Sparkles className="h-4 w-4 shrink-0 text-primary" aria-hidden />
-          <span className="min-w-0 flex-1 text-[13px] text-fg">
+          <span className="min-w-0 flex-1 text-[14px] text-fg">
             <span className="font-semibold">On this day</span> · {d.onThisDay.first.yearsAgo} {d.onThisDay.first.yearsAgo === 1 ? "year" : "years"} ago:{" "}
             <span className="truncate">{d.onThisDay.first.title}</span>
             {d.onThisDay.count > 1 ? ` and ${d.onThisDay.count - 1} more` : ""}
@@ -546,7 +546,7 @@ export function BucketWidget(p: P<"bucket">) {
                 {d.next.targetLabel && <span className="block text-[12px] text-fg-2">By {d.next.targetLabel}</span>}
               </Link>
             ) : (
-              <p className="text-[13.5px] text-fg">Every dream ticked off. Time to dream bigger.</p>
+              <p className="text-[14px] text-fg">Every dream ticked off. Time to dream bigger.</p>
             )}
           </div>
         </div>
@@ -637,7 +637,7 @@ export function StorageWidget(p: P<"storage">) {
           {d.recent.map((f) => (
             <li key={f.id} className="flex min-h-11 items-center gap-3 border-b border-line py-1.5 last:border-0">
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13.5px] text-fg">{f.name}</span>
+                <span className="block truncate text-[14px] text-fg">{f.name}</span>
                 <span className="block text-[12px] text-fg-2">
                   {f.sizeLabel} · {f.updatedLabel}
                 </span>
@@ -661,7 +661,7 @@ function StatusRow({ on, label, detail }: { on: boolean; label: string; detail: 
         {on ? <Check className="h-4 w-4" strokeWidth={2.5} /> : <KeyRound className="h-3.5 w-3.5" />}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-[13.5px] text-fg">{label}</span>
+        <span className="block text-[14px] text-fg">{label}</span>
         <span className={cn("block text-[12px]", on ? "text-fg-2" : "font-medium text-warning-text")}>{detail}</span>
       </span>
     </li>

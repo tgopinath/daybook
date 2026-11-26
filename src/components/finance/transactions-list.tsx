@@ -118,7 +118,7 @@ export function TransactionsList({ filters, query, onClearFilters }: { filters: 
           <section key={g.day || "all"} aria-label={g.day ? dayLabel(g.day, today, yesterday) : "Transactions"}>
             {g.day && (
               <div className="mb-1.5 flex items-baseline justify-between px-1">
-                <h3 className="text-[13px] font-semibold text-fg">{dayLabel(g.day, today, yesterday)}</h3>
+                <h3 className="text-[14px] font-semibold text-fg">{dayLabel(g.day, today, yesterday)}</h3>
                 {dt && (
                   <span className="flex gap-3 text-[12px] text-fg-2 tabular-nums">
                     {dt.income > 0 && <span className="text-success">+{fmt(dt.income)}</span>}

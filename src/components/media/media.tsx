@@ -81,7 +81,7 @@ export function MediaUploader({
           type="button"
           onClick={open}
           disabled={disabled || busy}
-          className="inline-flex h-9 items-center gap-2 rounded-[10px] border border-line bg-surface px-3 text-[13.5px] font-medium text-fg hover:bg-surface-2 disabled:opacity-60"
+          className="inline-flex h-9 items-center gap-2 rounded-[10px] border border-line bg-surface px-3 text-[14px] font-medium text-fg hover:bg-surface-2 disabled:opacity-60"
         >
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
           {busy ? `Uploading ${pending.length}…` : label}
@@ -107,7 +107,7 @@ export function MediaUploader({
           )}
         >
           <ImagePlus className="h-6 w-6 text-primary" />
-          <span className="text-[13.5px] font-medium text-fg">{label}</span>
+          <span className="text-[14px] font-medium text-fg">{label}</span>
           <span className="text-[12px] text-fg-3">{hint}</span>
         </button>
       )}

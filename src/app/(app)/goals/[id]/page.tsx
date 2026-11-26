@@ -193,7 +193,7 @@ export default function GoalDetailPage() {
           </Section>
           {goal.progressLogs.length > 0 && goal.progressMode === "value" && (
             <Section title="Progress log">
-              <ul className="flex flex-col divide-y divide-line text-[13px]">
+              <ul className="flex flex-col divide-y divide-line text-[14px]">
                 {[...goal.progressLogs].reverse().slice(0, 8).map((l) => (
                   <li key={l.id} className="flex justify-between py-2">
                     <span className="text-fg-2">{fmtDate(l.createdAt)}</span>

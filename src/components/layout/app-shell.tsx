@@ -96,7 +96,7 @@ function DemoBanner() {
     }
   }
   return (
-    <div role="note" className="demo-banner flex items-center gap-2 border-b border-line bg-primary-soft px-4 py-1.5 text-[13px] text-fg">
+    <div role="note" className="demo-banner flex items-center gap-2 border-b border-line bg-primary-soft px-4 py-1.5 text-[14px] text-fg">
       <span className="rounded bg-primary px-1.5 py-px text-[11px] font-semibold uppercase tracking-wide text-on-primary">Demo</span>
       <span className="min-w-0 flex-1 truncate sm:hidden">Sample data. Your changes are temporary.</span>
       <span className="hidden min-w-0 flex-1 sm:inline">
@@ -105,7 +105,7 @@ function DemoBanner() {
       <button
         onClick={exit}
         disabled={leaving}
-        className="shrink-0 rounded-md px-2 py-0.5 text-[13px] font-semibold text-primary hover:bg-primary/10 disabled:opacity-60"
+        className="shrink-0 rounded-md px-2 py-0.5 text-[14px] font-semibold text-primary hover:bg-primary/10 disabled:opacity-60"
       >
         {leaving ? "Leaving…" : "Exit demo"}
       </button>

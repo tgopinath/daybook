@@ -75,7 +75,7 @@ export function DueMenu({ value, onChange, trigger }: { value: string | null; on
                   onChange(q.key);
                   close();
                 }}
-                className={cn("flex h-8 items-center gap-2 rounded-lg px-2 text-left text-[13px] hover:bg-surface-2", value === q.key && "text-primary")}
+                className={cn("flex h-8 items-center gap-2 rounded-lg px-2 text-left text-[14px] hover:bg-surface-2", value === q.key && "text-primary")}
               >
                 <Icon className="h-4 w-4 opacity-70" />
                 <span className="flex-1">{q.label}</span>

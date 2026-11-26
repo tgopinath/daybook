@@ -90,7 +90,7 @@ export function InlineTaskAdd({
         placeholder={placeholder}
         aria-label={label ?? placeholder.replace(/…$/, "")}
         maxLength={300}
-        className={cn("h-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-fg-3", size === "sm" ? "text-[13px]" : "text-[13.5px]")}
+        className={cn("h-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-fg-3", size === "sm" ? "text-[14px]" : "text-[14px]")}
       />
       {options.length > 0 && milestoneId === undefined && (
         <>

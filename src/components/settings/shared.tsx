@@ -45,7 +45,7 @@ export function Row({ label, hint, children, className, stack }: { label: ReactN
   return (
     <div className={cn("flex gap-3 px-4 py-3.5 md:px-5", stack ? "flex-col" : "flex-col sm:flex-row sm:items-center sm:justify-between", className)}>
       <div className="min-w-0">
-        <div className="text-[13.5px] font-medium">{label}</div>
+        <div className="text-[14px] font-medium">{label}</div>
         {hint && <div className="mt-0.5 text-[12.5px] text-fg-3">{hint}</div>}
       </div>
       <div className="shrink-0">{children}</div>

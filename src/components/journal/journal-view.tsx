@@ -181,7 +181,7 @@ export function JournalView() {
                           </div>
                           <label className="flex flex-col gap-1.5">
                             <span className="text-[12.5px] font-medium text-fg-2">Tag</span>
-                            <Select value={tag} onChange={(e) => setTag(e.target.value)} className="h-8 text-[13px]">
+                            <Select value={tag} onChange={(e) => setTag(e.target.value)} className="h-8 text-[14px]">
                               <option value="">Any tag</option>
                               {meta?.tags.map((t) => (
                                 <option key={t.id} value={t.id}>
@@ -193,11 +193,11 @@ export function JournalView() {
                           <div className="grid grid-cols-2 gap-2">
                             <label className="flex flex-col gap-1.5">
                               <span className="text-[12.5px] font-medium text-fg-2">From</span>
-                              <Input type="date" value={from} max={to || undefined} onChange={(e) => setFrom(e.target.value)} className="h-8 px-2 text-[13px]" />
+                              <Input type="date" value={from} max={to || undefined} onChange={(e) => setFrom(e.target.value)} className="h-8 px-2 text-[14px]" />
                             </label>
                             <label className="flex flex-col gap-1.5">
                               <span className="text-[12.5px] font-medium text-fg-2">To</span>
-                              <Input type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} className="h-8 px-2 text-[13px]" />
+                              <Input type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} className="h-8 px-2 text-[14px]" />
                             </label>
                           </div>
                           <div className="flex justify-between">
@@ -245,7 +245,7 @@ export function JournalView() {
               <>
                 {mode === "calendar" && day && (
                   <div className="flex items-center justify-between gap-2 px-1 pb-2 md:px-2">
-                    <h3 className="text-[13.5px] font-semibold">{fmt(day, { weekday: "long", month: "long", day: "numeric" })}</h3>
+                    <h3 className="text-[14px] font-semibold">{fmt(day, { weekday: "long", month: "long", day: "numeric" })}</h3>
                     {day <= today && (
                       <Button size="sm" variant="outline" onClick={() => create(day)} loading={creating}>
                         {!creating && <Plus className="h-3.5 w-3.5" />} Write

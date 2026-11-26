@@ -258,7 +258,7 @@ function TimezonePicker({ value, onChange }: { value: string; onChange: (tz: str
                 aria-selected={z === value}
                 onMouseEnter={() => setActive(i)}
                 onClick={() => pick(z)}
-                className={cn("flex h-8 w-full items-center gap-2 rounded-lg px-2 text-left text-[13px]", i === active && "bg-surface-2")}
+                className={cn("flex h-8 w-full items-center gap-2 rounded-lg px-2 text-left text-[14px]", i === active && "bg-surface-2")}
               >
                 <span className="flex-1 truncate">{z.replace(/_/g, " ")}</span>
                 {z === value && <Check className="h-3.5 w-3.5 text-primary" />}

@@ -40,7 +40,7 @@ export function QuickAdd({ defaults, placeholder }: { defaults: object; placehol
         placeholder={placeholder}
         aria-label="Quick add task"
         maxLength={300}
-        className="h-full min-w-0 flex-1 bg-transparent text-[13.5px] outline-none placeholder:text-fg-3"
+        className="h-full min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-fg-3"
       />
       {title && (
         <span className="hidden items-center gap-1 text-[11px] text-fg-3 sm:inline-flex">

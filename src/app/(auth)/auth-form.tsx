@@ -109,7 +109,7 @@ export function AuthForm({ mode, googleEnabled, noDatabase }: { mode: "login" | 
   return (
     <div>
       <h1 className="font-display text-[30px] leading-tight font-semibold">{isLogin ? "Welcome to My Diary" : "Create your My Diary account"}</h1>
-      <p className="mt-1.5 text-[14.5px] text-fg-2">{isLogin ? "Sign in to organise your day." : "Plan your days, track your goals and keep your notes in one place."}</p>
+      <p className="mt-1.5 text-[14px] text-fg-2">{isLogin ? "Sign in to organise your day." : "Plan your days, track your goals and keep your notes in one place."}</p>
 
       {expired && <Notice>Your session has ended. Please sign in again.</Notice>}
       {error && (
@@ -255,7 +255,7 @@ function CodeStep({ ticket, email, onDone, onBack }: { ticket: string; email: st
         <ShieldCheck className="h-5 w-5" aria-hidden />
       </div>
       <h1 className="font-display text-[30px] leading-tight font-semibold">Two-step verification</h1>
-      <p className="mt-1.5 text-[14.5px] text-fg-2">
+      <p className="mt-1.5 text-[14px] text-fg-2">
         {backup ? "Enter one of the backup codes you saved when you turned on two-step verification." : "Enter the 6-digit code from your authenticator app."}
       </p>
       {email && <p className="mt-1 text-[13px] text-fg-3">Signing in as {email}</p>}

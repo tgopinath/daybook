@@ -210,12 +210,12 @@ export function PhotosView() {
             type="button"
             onClick={() => setFavorite((v) => !v)}
             aria-pressed={favorite}
-            className={cn("inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-[13px] font-medium", favorite ? "border-primary bg-primary-soft text-primary" : "border-line bg-surface text-fg-2 hover:text-fg")}
+            className={cn("inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-[14px] font-medium", favorite ? "border-primary bg-primary-soft text-primary" : "border-line bg-surface text-fg-2 hover:text-fg")}
           >
             <Heart className="h-3.5 w-3.5" fill={favorite ? "currentColor" : "none"} /> Favourites
           </button>
           {tags.length > 0 && (
-            <select value={tag ?? ""} onChange={(e) => setTag(e.target.value || null)} aria-label="Filter by tag" className="h-8 rounded-lg border border-line bg-surface px-2 text-[13px] text-fg">
+            <select value={tag ?? ""} onChange={(e) => setTag(e.target.value || null)} aria-label="Filter by tag" className="h-8 rounded-lg border border-line bg-surface px-2 text-[14px] text-fg">
               <option value="">All tags</option>
               {tags.map((t) => (
                 <option key={t.tag} value={t.tag}>
@@ -262,7 +262,7 @@ export function PhotosView() {
         <div>
           {days.map((d) => (
             <section key={d.day} id={firstOfMonth.has(d.day) ? `ph-${d.day.slice(0, 7)}` : undefined} className="scroll-mt-2" aria-label={fmtDay(d.day, "EEEE d MMMM yyyy")}>
-              <h2 className="sticky top-0 z-10 -mx-1 mb-1.5 flex items-center justify-between bg-bg px-1 py-2 text-[13.5px] font-semibold text-fg">
+              <h2 className="sticky top-0 z-10 -mx-1 mb-1.5 flex items-center justify-between bg-bg px-1 py-2 text-[14px] font-semibold text-fg">
                 <span>
                   {fmtDay(d.day, "EEE, d MMM")} <span className="font-normal text-fg-2">{fmtDay(d.day, "yyyy")}</span>
                 </span>
@@ -323,7 +323,7 @@ export function PhotosView() {
       {selecting && (
         <div className="fixed inset-x-0 bottom-20 z-40 flex justify-center px-3 md:bottom-6" role="toolbar" aria-label="Selected photos">
           <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-1.5 shadow-modal scroll-thin">
-            <span className="px-2 text-[13px] font-medium whitespace-nowrap text-fg">{selected.size} selected</span>
+            <span className="px-2 text-[14px] font-medium whitespace-nowrap text-fg">{selected.size} selected</span>
             <Button variant="ghost" size="sm" onClick={() => setSelected(selected.size === photos.length ? new Set() : new Set(photos.map((p) => p.id)))}>
               {selected.size === photos.length ? "None" : "All"}
             </Button>
@@ -415,7 +415,7 @@ function CollectionChip({ active, onClick, label, count }: { active: boolean; on
       aria-selected={active}
       onClick={onClick}
       className={cn(
-        "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-[13px] font-medium whitespace-nowrap transition-colors",
+        "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-[14px] font-medium whitespace-nowrap transition-colors",
         active ? "border-primary bg-primary text-on-primary" : "border-line bg-surface text-fg-2 hover:text-fg",
       )}
     >

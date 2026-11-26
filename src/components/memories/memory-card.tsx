@@ -62,7 +62,7 @@ export function MemoryCard({ memory, onToggleFavorite, className }: { memory: Me
           <div className="px-4 pt-4 pb-3.5">
             <p className="text-[12px] text-fg-3">{fmtDay(memory.day)}</p>
             <h3 className="mt-1 font-display text-[17px] leading-snug font-semibold text-fg">{memory.title}</h3>
-            {memory.caption && <p className="mt-1.5 line-clamp-4 text-[13.5px] leading-relaxed text-fg-2">{memory.caption}</p>}
+            {memory.caption && <p className="mt-1.5 line-clamp-4 text-[14px] leading-relaxed text-fg-2">{memory.caption}</p>}
             {memory.location && (
               <p className="mt-2 flex items-center gap-1 text-[12px] text-fg-3">
                 <MapPin className="h-3 w-3" /> {memory.location}

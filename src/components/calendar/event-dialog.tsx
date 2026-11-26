@@ -449,7 +449,7 @@ function TaskLinker({ value, onChange, linked }: { value: string[]; onChange: (v
             <Popover.Content align="start" sideOffset={6} className="z-[70] w-[300px] rounded-xl border border-line bg-surface p-1.5 shadow-pop">
               <div className="relative mb-1">
                 <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-fg-3" />
-                <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search tasks" className="h-8 w-full rounded-lg bg-surface-2 pr-2 pl-8 text-[13px] outline-none" />
+                <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search tasks" className="h-8 w-full rounded-lg bg-surface-2 pr-2 pl-8 text-[14px] outline-none" />
               </div>
               <div className="max-h-[240px] overflow-y-auto scroll-thin">
                 {isLoading && !all.length ? (
@@ -466,7 +466,7 @@ function TaskLinker({ value, onChange, linked }: { value: string[]; onChange: (v
                         key={t.id}
                         type="button"
                         onClick={() => toggle(t.id)}
-                        className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] hover:bg-surface-2"
+                        className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[14px] hover:bg-surface-2"
                       >
                         <span className={cn("flex h-4 w-4 shrink-0 items-center justify-center rounded border", on ? "border-primary bg-primary text-on-primary" : "border-line-strong")}>
                           {on && <Check className="h-3 w-3" />}

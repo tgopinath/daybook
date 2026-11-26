@@ -291,7 +291,7 @@ function VaultCard({ item, highlight, onEdit }: { item: VaultItem; highlight: bo
             return (
               <div key={i} className="group flex items-center gap-3 py-1.5">
                 <dt className="w-[38%] shrink-0 truncate text-[12.5px] text-fg-3">{f.label}</dt>
-                <dd className={cn("min-w-0 flex-1 truncate text-[13px]", !f.hasValue && "text-fg-3")}>
+                <dd className={cn("min-w-0 flex-1 truncate text-[14px]", !f.hasValue && "text-fg-3")}>
                   {!f.hasValue ? "—" : shown ? value : <span className="tracking-[0.2em] text-fg-2" aria-label="Hidden value">••••••••</span>}
                 </dd>
                 {f.hasValue && (

@@ -34,7 +34,7 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
 
   const itemClass = (active: boolean) =>
     cn(
-      "group flex h-8 w-full items-center gap-2.5 rounded-lg px-2 text-[13.5px] transition-colors",
+      "group flex h-8 w-full items-center gap-2.5 rounded-lg px-2 text-[14px] transition-colors",
       active ? "bg-primary-soft text-primary font-medium" : "text-fg hover:bg-surface-2",
       collapsed && "justify-center px-0",
     );
@@ -96,7 +96,7 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
             <button
               type="button"
               className={cn(
-                "flex h-9 w-full items-center gap-2 rounded-[10px] bg-primary px-3 text-[13.5px] font-medium text-on-primary shadow-sm outline-none hover:bg-primary-hover focus-visible:ring-3 focus-visible:ring-primary/30",
+                "flex h-9 w-full items-center gap-2 rounded-[10px] bg-primary px-3 text-[14px] font-medium text-on-primary shadow-sm outline-none hover:bg-primary-hover focus-visible:ring-3 focus-visible:ring-primary/30",
                 collapsed && "justify-center px-0",
               )}
               title={collapsed ? "New…" : "Create a task, entry, event and more"}
@@ -126,7 +126,7 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
                   type="button"
                   onClick={() => toggleGroup(group.section)}
                   aria-expanded={open}
-                  className="group/h mb-1 flex w-full items-center gap-1 rounded-md px-2 py-0.5 text-left text-[11px] font-medium tracking-wide text-fg-3 uppercase hover:text-fg-2"
+                  className="group/h mb-1 flex w-full items-center gap-1 rounded-md px-2 py-0.5 text-left text-[11px] font-semibold tracking-wide text-primary uppercase hover:opacity-80"
                 >
                   <span className="flex-1">{group.section}</span>
                   <ChevronDown className={cn("h-3.5 w-3.5 opacity-0 transition-transform group-hover/h:opacity-100 focus-visible:opacity-100", !open && "-rotate-90 opacity-100")} />
@@ -155,7 +155,7 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
               {!collapsed && (
                 <>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-[13px] font-medium">{me?.user.name ?? "…"}</div>
+                    <div className="truncate text-[14px] font-medium">{me?.user.name ?? "…"}</div>
                     <div className="truncate text-[11.5px] text-fg-3">{me?.user.email}</div>
                   </div>
                   <ChevronsUpDown className="h-3.5 w-3.5 text-fg-3" />

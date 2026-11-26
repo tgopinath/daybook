@@ -207,7 +207,7 @@ function CaptureBody({ initial, onDone }: { initial: string; onDone: () => void 
                     setDebounced(ex);
                     inputRef.current?.focus();
                   }}
-                  className="flex items-center gap-2 rounded-lg px-2 py-2 text-left text-[13.5px] text-fg-2 hover:bg-surface-2 hover:text-fg"
+                  className="flex items-center gap-2 rounded-lg px-2 py-2 text-left text-[14px] text-fg-2 hover:bg-surface-2 hover:text-fg"
                 >
                   <CornerDownLeft className="h-3.5 w-3.5 text-fg-3" />
                   {ex}

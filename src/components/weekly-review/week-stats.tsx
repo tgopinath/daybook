@@ -65,7 +65,7 @@ export function WeekStatsView({ week, stats }: { week: WeekInfo; stats: WeekStat
           <ul className="flex flex-col gap-1.5">
             {s.attention.map((a) => (
               <li key={a.id}>
-                <Link href={a.href} className="flex items-center gap-2 rounded-[10px] bg-warning-soft px-3 py-2 text-[13px] text-fg hover:underline">
+                <Link href={a.href} className="flex items-center gap-2 rounded-[10px] bg-warning-soft px-3 py-2 text-[14px] text-fg hover:underline">
                   <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-warning" aria-hidden />
                   {a.text}
                 </Link>
@@ -81,7 +81,7 @@ export function WeekStatsView({ week, stats }: { week: WeekInfo; stats: WeekStat
             {s.achievements.map((a) => (
               <li key={a.id} className="flex items-center gap-2.5 py-2">
                 {a.type === "bucket" ? <Map className="h-4 w-4 shrink-0 text-success" /> : a.type === "goal" ? <Target className="h-4 w-4 shrink-0 text-success" /> : <Flag className="h-4 w-4 shrink-0 text-success" />}
-                <Link href={a.href} className="min-w-0 flex-1 truncate text-[13.5px] text-fg hover:underline">
+                <Link href={a.href} className="min-w-0 flex-1 truncate text-[14px] text-fg hover:underline">
                   {a.title}
                 </Link>
                 {a.detail && <span className="shrink-0 truncate text-[12px] text-fg-3">{a.detail}</span>}
@@ -96,7 +96,7 @@ export function WeekStatsView({ week, stats }: { week: WeekInfo; stats: WeekStat
           {s.tasks.top.length ? (
             <ul className="flex flex-col gap-1.5">
               {s.tasks.top.map((t) => (
-                <li key={t.id} className="flex items-center gap-2 text-[13.5px]">
+                <li key={t.id} className="flex items-center gap-2 text-[14px]">
                   <CheckCircle2 className="h-4 w-4 shrink-0 text-success" aria-hidden />
                   <span className="min-w-0 truncate text-fg">{t.title}</span>
                 </li>
@@ -112,12 +112,12 @@ export function WeekStatsView({ week, stats }: { week: WeekInfo; stats: WeekStat
           {s.goals.moved.length || s.goals.milestones.length || s.goals.completed.length ? (
             <ul className="flex flex-col gap-2">
               {s.goals.completed.map((g) => (
-                <li key={g.id} className="text-[13.5px] text-fg">
+                <li key={g.id} className="text-[14px] text-fg">
                   <span className="font-medium text-success">Completed:</span> {g.title}
                 </li>
               ))}
               {s.goals.moved.map((g) => (
-                <li key={g.id} className="flex items-center gap-2 text-[13.5px]">
+                <li key={g.id} className="flex items-center gap-2 text-[14px]">
                   <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: g.color }} aria-hidden />
                   <span className="min-w-0 flex-1 truncate text-fg">{g.title}</span>
                   <span className="shrink-0 text-[12px] text-fg-2 tabular-nums">
@@ -127,7 +127,7 @@ export function WeekStatsView({ week, stats }: { week: WeekInfo; stats: WeekStat
                 </li>
               ))}
               {s.goals.milestones.map((m) => (
-                <li key={m.id} className="flex items-center gap-2 text-[13.5px]">
+                <li key={m.id} className="flex items-center gap-2 text-[14px]">
                   <Flag className="h-3.5 w-3.5 shrink-0 text-success" aria-hidden />
                   <span className="min-w-0 truncate text-fg">{m.title}</span>
                   <span className="shrink-0 truncate text-[12px] text-fg-3">{m.goalTitle}</span>
@@ -144,7 +144,7 @@ export function WeekStatsView({ week, stats }: { week: WeekInfo; stats: WeekStat
             <ul className="flex flex-col gap-2.5">
               {s.habits.perHabit.map((h) => (
                 <li key={h.id}>
-                  <div className="mb-1 flex items-center justify-between gap-2 text-[13px]">
+                  <div className="mb-1 flex items-center justify-between gap-2 text-[14px]">
                     <span className="min-w-0 truncate text-fg">{h.name}</span>
                     <span className="shrink-0 text-[12px] text-fg-2 tabular-nums">{h.rate != null ? `${h.rate}%` : "—"}</span>
                   </div>
@@ -214,7 +214,7 @@ export function WeekStatsView({ week, stats }: { week: WeekInfo; stats: WeekStat
           {s.journal.items.length ? (
             <ul className="flex flex-col gap-1.5">
               {s.journal.items.slice(0, 7).map((j) => (
-                <li key={j.id} className="flex items-center gap-2 text-[13.5px]">
+                <li key={j.id} className="flex items-center gap-2 text-[14px]">
                   {j.isPrivate ? <Lock className="h-3.5 w-3.5 shrink-0 text-fg-3" aria-label="Private" /> : <BookOpen className="h-3.5 w-3.5 shrink-0 text-fg-3" aria-hidden />}
                   <Link href={`/journal?id=${j.id}`} className="min-w-0 flex-1 truncate text-fg hover:underline">
                     {j.title || "Untitled entry"}
@@ -229,7 +229,7 @@ export function WeekStatsView({ week, stats }: { week: WeekInfo; stats: WeekStat
         </Section>
 
         <Section icon={Heart} title="Life moments">
-          <ul className="flex flex-col gap-2 text-[13.5px]">
+          <ul className="flex flex-col gap-2 text-[14px]">
             <li className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 shrink-0 text-fg-3" aria-hidden />
               <span className="flex-1 text-fg">Gratitude on {s.gratitude.days} {s.gratitude.days === 1 ? "day" : "days"}</span>

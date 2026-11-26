@@ -57,7 +57,7 @@ export function EntryRow({ entry, onEdit, showDate }: { entry: MoodEntryDTO; onE
           </span>
           <DemoBadge show={entry.isDemo} />
         </div>
-        {entry.note && <p className="mt-1 text-[13.5px] leading-relaxed whitespace-pre-wrap text-fg-2">{entry.note}</p>}
+        {entry.note && <p className="mt-1 text-[14px] leading-relaxed whitespace-pre-wrap text-fg-2">{entry.note}</p>}
         {(entry.factors.length > 0 || entry.journalEntry) && (
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
             {entry.factors.map((f) => (

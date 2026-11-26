@@ -62,7 +62,7 @@ function HistoryList({ todayKey }: { todayKey: string }) {
   }, [data]);
 
   if (isLoading && !data) return <SkeletonList rows={6} />;
-  if (error && !data) return <Card className="px-5 py-8 text-center text-[13.5px] text-fg-2">Couldn&apos;t load your check-ins. {error instanceof Error ? error.message : ""}</Card>;
+  if (error && !data) return <Card className="px-5 py-8 text-center text-[14px] text-fg-2">Couldn&apos;t load your check-ins. {error instanceof Error ? error.message : ""}</Card>;
   if (!groups.length)
     return (
       <Card>

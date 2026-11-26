@@ -137,7 +137,7 @@ export function TimelineView() {
         }
       />
 
-      {error && !data && <Card className="p-6 text-center text-[13.5px] text-danger">Couldn&apos;t load your timeline. {error.message}</Card>}
+      {error && !data && <Card className="p-6 text-center text-[14px] text-danger">Couldn&apos;t load your timeline. {error.message}</Card>}
       {isLoading && !data && <TimelineSkeleton />}
 
       {data && events.length === 0 && !(showRelated && data.related?.length) && (
@@ -349,7 +349,7 @@ function EventItem({ event, side, highlight, onEdit, onDelete }: { event: Timeli
           </div>
           {event.description && (
             <>
-              <p ref={descRef} className={cn("mt-1.5 text-[13.5px] leading-relaxed whitespace-pre-line text-fg-2", !expanded && "line-clamp-4")}>
+              <p ref={descRef} className={cn("mt-1.5 text-[14px] leading-relaxed whitespace-pre-line text-fg-2", !expanded && "line-clamp-4")}>
                 {event.description}
               </p>
               {(clamped || expanded) && (
@@ -393,7 +393,7 @@ function RelatedItem({ entry, side }: { entry: RelatedEntry; side: "left" | "rig
         >
           <Icon className={cn("h-4 w-4 shrink-0", isMemory ? "text-fg-2" : "text-success")} />
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-[13.5px] font-medium">{entry.title}</span>
+            <span className="block truncate text-[14px] font-medium">{entry.title}</span>
             <span className="block truncate text-[12px] text-fg-3">
               {isMemory ? "Memory" : "Bucket list · done"} · {formatTimelineDate(entry.dateKey, "day", true)}
               {entry.subtitle && isMemory ? ` · ${entry.subtitle}` : ""}

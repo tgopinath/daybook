@@ -27,7 +27,7 @@ export function BulkBar({ ids, onClear }: { ids: string[]; onClear: () => void }
           aria-label="Bulk actions"
           className="fixed inset-x-3 bottom-[76px] z-40 mx-auto flex max-w-[640px] items-center gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-1.5 shadow-modal md:bottom-6 scroll-thin"
         >
-          <span className="px-2 text-[13px] font-medium whitespace-nowrap tabular-nums">{ids.length} selected</span>
+          <span className="px-2 text-[14px] font-medium whitespace-nowrap tabular-nums">{ids.length} selected</span>
           <div className="mx-1 h-5 w-px shrink-0 bg-line" />
           <Button variant="ghost" size="sm" onClick={() => void run("complete")}>
             <CheckCircle2 className="h-4 w-4" /> <span className="hidden sm:inline">Complete</span>

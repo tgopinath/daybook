@@ -37,7 +37,7 @@ function TrashDialog() {
                   {formatDay(t.date, { year: true })} · {t.category}
                 </span>
               </span>
-              <span className={cn("text-[13.5px] font-semibold tabular-nums", amountClass(t.type))}>{signedAmount(fmt, t)}</span>
+              <span className={cn("text-[14px] font-semibold tabular-nums", amountClass(t.type))}>{signedAmount(fmt, t)}</span>
               <Button variant="ghost" size="icon-sm" aria-label={`Restore ${t.title}`} onClick={() => void restoreTx(t.id)}>
                 <RotateCcw className="h-4 w-4" />
               </Button>

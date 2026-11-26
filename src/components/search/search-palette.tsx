@@ -286,7 +286,7 @@ function Palette({ onClose }: { onClose: () => void }) {
             <p className="text-[14px] font-medium">No results for &ldquo;{dq}&rdquo;</p>
             <p className="mt-1 text-[13px] text-fg-3">{filter ? "Try searching all categories." : "Try a different word or check the spelling."}</p>
             {filter && (
-              <button onClick={() => setFilter("")} className="mt-3 text-[13px] font-medium text-primary hover:underline">
+              <button onClick={() => setFilter("")} className="mt-3 text-[14px] font-medium text-primary hover:underline">
                 Search everything
               </button>
             )}
@@ -322,7 +322,7 @@ function Palette({ onClose }: { onClose: () => void }) {
                     <Icon className="h-3.5 w-3.5" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-[13.5px]">{e.title}</div>
+                    <div className="truncate text-[14px]">{e.title}</div>
                     {e.subtitle && <div className="truncate text-[12px] text-fg-3">{e.subtitle}</div>}
                   </div>
                   {idx === active && (

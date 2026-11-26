@@ -33,7 +33,7 @@ function Row({ pref, onChange }: { pref: MySpacePref; onChange: (p: MySpacePref)
       </button>
       <Icon className="h-4 w-4 shrink-0 text-primary" aria-hidden />
       <div className="min-w-0 flex-1">
-        <div className="text-[13.5px] font-medium text-fg">{meta.label}</div>
+        <div className="text-[14px] font-medium text-fg">{meta.label}</div>
         <div className="truncate text-[12px] text-fg-2">{meta.description}</div>
       </div>
       {meta.resizable && pref.visible && (
@@ -115,7 +115,7 @@ export function CustomizeMySpace({
         {PAGE_SECTIONS.map((sec) => (
           <li key={sec.id} className="flex items-center gap-3 rounded-[12px] border border-line bg-surface px-3 py-2.5">
             <div className="min-w-0 flex-1">
-              <div className="text-[13.5px] font-medium text-fg">{sec.label}</div>
+              <div className="text-[14px] font-medium text-fg">{sec.label}</div>
               <div className="truncate text-[12px] text-fg-2">{sec.description}</div>
             </div>
             <Switch checked={sections[sec.id]} onChange={(v) => setSections((s) => ({ ...s, [sec.id]: v }))} label={`Show ${sec.label}`} />

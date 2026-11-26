@@ -170,11 +170,11 @@ function PortfolioCard() {
         <div className="min-w-0 flex-1">
           <h2 className="font-display text-[19px] font-semibold">My portfolio</h2>
           {url ? (
-            <a href={url} target="_blank" rel="noopener noreferrer" className="text-[13.5px] break-all text-primary hover:underline">
+            <a href={url} target="_blank" rel="noopener noreferrer" className="text-[14px] break-all text-primary hover:underline">
               {host(url)}
             </a>
           ) : (
-            <p className="text-[13.5px] text-fg-2">Add your portfolio or personal website to open, share and edit it from here.</p>
+            <p className="text-[14px] text-fg-2">Add your portfolio or personal website to open, share and edit it from here.</p>
           )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -184,7 +184,7 @@ function PortfolioCard() {
                 <ExternalLink className="h-4 w-4" /> Open
               </a>
               {editUrl ? (
-                <a href={editUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line bg-surface px-3 text-[13px] font-medium text-fg hover:bg-surface-2">
+                <a href={editUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line bg-surface px-3 text-[14px] font-medium text-fg hover:bg-surface-2">
                   <Pencil className="h-4 w-4" /> Edit portfolio
                 </a>
               ) : null}
@@ -436,10 +436,10 @@ function BulkAddDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o
           placeholder={"Word Wonders - https://example.com/word-wonders\nhttps://example.com/money-master Money Master\nhttps://example.com/kaadu"}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="font-mono text-[13px]"
+          className="font-mono text-[14px]"
         />
       ) : rows.length === 0 ? (
-        <p className="text-[13.5px] text-fg-2">Nothing to add. Go back and paste some links.</p>
+        <p className="text-[14px] text-fg-2">Nothing to add. Go back and paste some links.</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {rows.map((r, i) => {
@@ -549,10 +549,10 @@ function ImportDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o:
           </Field>
         </form>
       ) : rows.length === 0 ? (
-        <p className="text-[13.5px] text-fg-2">No projects found on that page. Try a page that lists your apps with links, or use “Add several” to paste them.</p>
+        <p className="text-[14px] text-fg-2">No projects found on that page. Try a page that lists your apps with links, or use “Add several” to paste them.</p>
       ) : (
         <>
-          <div className="mb-2 flex items-center justify-between text-[13px]">
+          <div className="mb-2 flex items-center justify-between text-[14px]">
             <span className="text-fg-2">{picked.length} selected</span>
             <button
               type="button"

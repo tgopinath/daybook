@@ -76,7 +76,7 @@ export function AlbumDialog({ open, onOpenChange, album, onSaved }: { open: bool
         </Field>
         {album && (
           <div>
-            <p className="mb-1.5 text-[13px] font-medium text-fg">Cover</p>
+            <p className="mb-1.5 text-[14px] font-medium text-fg">Cover</p>
             {images.length === 0 ? (
               <p className="text-[12.5px] text-fg-2">Add memories with photos to this album to choose a cover. Until then, the newest memory&apos;s photo is used.</p>
             ) : (

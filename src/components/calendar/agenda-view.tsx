@@ -68,7 +68,7 @@ export function AgendaView({
       {groups.map((g) => (
         <section key={g.key} className="overflow-hidden rounded-[14px] border border-line bg-surface shadow-card">
           <header className="flex items-baseline gap-2 border-b border-line px-4 py-2.5">
-            <span className={cn("text-[13px] font-semibold", g.key === todayKey && "text-danger")}>
+            <span className={cn("text-[14px] font-semibold", g.key === todayKey && "text-danger")}>
               {g.key === todayKey ? "Today" : g.key === tomorrow ? "Tomorrow" : formatKey(g.key, { weekday: "long" })}
             </span>
             <span className="text-[12px] text-fg-3">{formatKey(g.key, { month: "long", day: "numeric", year: g.key.slice(0, 4) !== todayKey.slice(0, 4) ? "numeric" : undefined })}</span>
@@ -128,7 +128,7 @@ function AgendaRow({ item, tz, onOpen }: { item: CalItem; tz: string; onOpen: (i
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             {item.type === "event" && <KindIcon item={item} className="h-3.5 w-3.5 shrink-0" />}
-            <span className={cn("truncate text-[13.5px] font-medium", done && "text-fg-3 line-through")}>{item.title}</span>
+            <span className={cn("truncate text-[14px] font-medium", done && "text-fg-3 line-through")}>{item.title}</span>
             {item.type === "event" && item.event.recurrence !== "NONE" && <Repeat className="h-3 w-3 shrink-0 text-fg-3" />}
             <DemoBadge show={isDemo} />
           </div>

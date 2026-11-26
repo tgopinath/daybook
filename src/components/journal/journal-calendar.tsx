@@ -79,7 +79,7 @@ export function JournalCalendar({ month, onMonth, selected, onSelect, today }: {
                   onClick={() => onSelect(d)}
                   aria-label={`${d}${info ? `, ${info.count} ${info.count === 1 ? "entry" : "entries"}${mood ? `, ${mood.label}` : ""}` : ", no entries"}`}
                   className={cn(
-                    "relative flex aspect-square flex-col items-center justify-center rounded-[10px] text-[13px] tabular-nums transition-colors",
+                    "relative flex aspect-square flex-col items-center justify-center rounded-[10px] text-[14px] tabular-nums transition-colors",
                     isSel ? "bg-primary text-on-primary" : "hover:bg-surface-2",
                     !isSel && isToday && "font-semibold text-primary ring-1 ring-primary",
                     !isSel && !isToday && (info ? "text-fg" : "text-fg-2"),

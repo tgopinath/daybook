@@ -121,7 +121,7 @@ export function GoalCard({ goal, onEdit, tasks }: { goal: GoalListItem; onEdit: 
                 return (
                   <li key={t.id} className="flex min-h-9 items-center gap-2.5">
                     <TaskCheck done={t.status === "COMPLETED"} size={16} label={`Complete “${t.title}”`} onToggle={(v) => v && void completeWithUndo(t)} />
-                    <button type="button" onClick={() => openTaskDialog({ id: t.id })} className="min-w-0 flex-1 truncate rounded text-left text-[13px] text-fg hover:underline focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none">
+                    <button type="button" onClick={() => openTaskDialog({ id: t.id })} className="min-w-0 flex-1 truncate rounded text-left text-[14px] text-fg hover:underline focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none">
                       {t.title}
                     </button>
                     {due && <span className={cn("shrink-0 text-[11.5px] tabular-nums", due.overdue ? "font-medium text-danger" : "text-fg-3")}>{due.label}</span>}

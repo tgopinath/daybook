@@ -111,7 +111,7 @@ function Column({ status, ids, byId, onAdd }: { status: TaskStatus; ids: string[
     <section className="flex w-[82vw] max-w-[320px] shrink-0 snap-start flex-col md:w-auto md:max-w-none" aria-label={meta.label}>
       <header className="mb-2 flex items-center gap-2 px-1">
         <span className="h-2 w-2 rounded-full" style={{ background: meta.color }} />
-        <h3 className="text-[13px] font-semibold">{meta.label}</h3>
+        <h3 className="text-[14px] font-semibold">{meta.label}</h3>
         <span className="text-[12px] text-fg-3 tabular-nums">{ids.length}</span>
         <button type="button" onClick={onAdd} aria-label={`Add task to ${meta.label}`} className="ml-auto rounded-md p-1 text-fg-3 hover:bg-surface-2 hover:text-fg">
           <Plus className="h-4 w-4" />
@@ -164,7 +164,7 @@ function Card({ task, overlay }: { task: WireTask; overlay?: boolean }) {
         <span className="mt-[1px]">
           <TaskCheck done={done} size={16} onToggle={(v) => void setStatus(task, v ? "COMPLETED" : "NOT_STARTED")} />
         </span>
-        <p className={cn("min-w-0 flex-1 text-[13.5px] leading-snug", done || task.status === "CANCELLED" ? "text-fg-3 line-through" : "text-fg")}>{task.title}</p>
+        <p className={cn("min-w-0 flex-1 text-[14px] leading-snug", done || task.status === "CANCELLED" ? "text-fg-3 line-through" : "text-fg")}>{task.title}</p>
         <PriorityFlag priority={task.priority} className="mt-0.5 shrink-0" />
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 pl-6 text-[11.5px] text-fg-3">

@@ -11,7 +11,7 @@ export function AINotConfigured({ className, compact }: { className?: string; co
   useEffect(() => setDemo(document.documentElement.dataset.demo === "1"), []);
   if (demo)
     return (
-      <div role="status" className={cn("flex items-start gap-2.5 rounded-xl border border-dashed border-line-strong bg-surface-2/60 text-fg-2", compact ? "p-2.5 text-[12px]" : "p-3.5 text-[13px]", className)}>
+      <div role="status" className={cn("flex items-start gap-2.5 rounded-xl border border-dashed border-line-strong bg-surface-2/60 text-fg-2", compact ? "p-2.5 text-[12px]" : "p-3.5 text-[14px]", className)}>
         <KeyRound className={cn("mt-0.5 shrink-0 text-fg-3", compact ? "h-3.5 w-3.5" : "h-4 w-4")} />
         <div className="min-w-0">
           <p className="font-medium text-fg">AI is off in this demo</p>
@@ -20,7 +20,7 @@ export function AINotConfigured({ className, compact }: { className?: string; co
       </div>
     );
   return (
-    <div role="status" className={cn("flex items-start gap-2.5 rounded-xl border border-dashed border-line-strong bg-surface-2/60 text-fg-2", compact ? "p-2.5 text-[12px]" : "p-3.5 text-[13px]", className)}>
+    <div role="status" className={cn("flex items-start gap-2.5 rounded-xl border border-dashed border-line-strong bg-surface-2/60 text-fg-2", compact ? "p-2.5 text-[12px]" : "p-3.5 text-[14px]", className)}>
       <KeyRound className={cn("mt-0.5 shrink-0 text-fg-3", compact ? "h-3.5 w-3.5" : "h-4 w-4")} />
       <div className="min-w-0">
         <p className="font-medium text-fg">AI isn&apos;t configured</p>

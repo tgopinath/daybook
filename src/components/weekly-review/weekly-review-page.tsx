@@ -30,7 +30,7 @@ function PastWeeks({ current, onPick }: { current: string; onPick: (w: string) =
                 className={cn("flex w-full flex-col gap-0.5 rounded-[10px] px-2.5 py-2 text-left hover:bg-surface-2", r.weekStart === current && "bg-primary-soft")}
               >
                 <span className="flex items-center justify-between gap-2">
-                  <span className="text-[13.5px] font-medium text-fg">{r.label}</span>
+                  <span className="text-[14px] font-medium text-fg">{r.label}</span>
                   {r.rating != null && (
                     <span className="flex items-center gap-0.5 text-[12px] text-fg-2" aria-label={`Rated ${r.rating} of 5`}>
                       <Star className="h-3.5 w-3.5 fill-[var(--warning-fill)] text-warning" aria-hidden /> {r.rating}

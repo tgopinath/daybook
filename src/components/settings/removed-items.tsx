@@ -188,7 +188,7 @@ function Group({ type, mode, onState }: { type: TypeDef; mode: Mode; onState: (k
             <Icon className="h-4 w-4 shrink-0 text-fg-3" />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <span className="truncate text-[13.5px] font-medium">{i.title}</span>
+                <span className="truncate text-[14px] font-medium">{i.title}</span>
                 <DemoBadge show={i.isDemo} />
               </div>
               {i.at && (

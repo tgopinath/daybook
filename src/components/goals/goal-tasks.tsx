@@ -176,7 +176,7 @@ export function GoalTasks({ goalId, color, fallback, milestones, readOnly }: { g
             ) : (
               <ListChecks className="h-4 w-4 shrink-0 text-fg-3" aria-hidden />
             )}
-            <h3 className={cn("min-w-0 truncate text-[13.5px] font-semibold", m?.done && "text-fg-2")}>{m ? m.title : "Unassigned to a milestone"}</h3>
+            <h3 className={cn("min-w-0 truncate text-[14px] font-semibold", m?.done && "text-fg-2")}>{m ? m.title : "Unassigned to a milestone"}</h3>
             {dk && !m?.done && (
               <span className="inline-flex shrink-0 items-center gap-1 text-[11.5px] text-fg-3">
                 <CalendarDays className="h-3 w-3" aria-hidden />

@@ -15,7 +15,7 @@ export function Topbar() {
       </button>
       <button
         onClick={openSearch}
-        className="flex h-9 max-w-[420px] flex-1 items-center gap-2 rounded-[10px] border border-line bg-surface px-3 text-[13.5px] text-fg-3 transition-colors hover:border-line-strong"
+        className="flex h-9 max-w-[420px] flex-1 items-center gap-2 rounded-[10px] border border-line bg-surface px-3 text-[14px] text-fg-3 transition-colors hover:border-line-strong"
         aria-label="Search"
       >
         <Search className="h-4 w-4" />
@@ -27,7 +27,7 @@ export function Topbar() {
         <CreateMenu
           align="end"
           trigger={
-            <button type="button" className="hidden h-9 items-center gap-1.5 rounded-[10px] px-2.5 text-[13.5px] font-medium text-fg-2 outline-none hover:bg-surface-2 hover:text-fg focus-visible:ring-3 focus-visible:ring-primary/30 sm:flex" title="Create something new">
+            <button type="button" className="hidden h-9 items-center gap-1.5 rounded-[10px] px-2.5 text-[14px] font-medium text-fg-2 outline-none hover:bg-surface-2 hover:text-fg focus-visible:ring-3 focus-visible:ring-primary/30 sm:flex" title="Create something new">
               <Plus className="h-4 w-4" aria-hidden /> Add
             </button>
           }
@@ -35,7 +35,7 @@ export function Topbar() {
         <button
           onClick={() => toggleAIPanel()}
           className={cn(
-            "flex h-9 items-center gap-1.5 rounded-[10px] px-2.5 text-[13.5px] font-medium transition-colors",
+            "flex h-9 items-center gap-1.5 rounded-[10px] px-2.5 text-[14px] font-medium transition-colors",
             aiPanelOpen ? "bg-primary-soft text-primary" : "text-fg-2 hover:bg-surface-2 hover:text-fg",
           )}
           aria-pressed={aiPanelOpen}

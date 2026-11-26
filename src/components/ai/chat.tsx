@@ -130,7 +130,7 @@ export function MessageList({
         if (m.role === "USER")
           return (
             <div key={m.id} className="flex justify-end">
-              <div className={cn("max-w-[85%] rounded-2xl rounded-br-md bg-primary px-3.5 py-2 text-on-primary whitespace-pre-wrap", compact ? "text-[13px]" : "text-[13.5px]")}>{m.content}</div>
+              <div className={cn("max-w-[85%] rounded-2xl rounded-br-md bg-primary px-3.5 py-2 text-on-primary whitespace-pre-wrap", compact ? "text-[14px]" : "text-[14px]")}>{m.content}</div>
             </div>
           );
         if (m.role === "TOOL")
@@ -150,7 +150,7 @@ export function MessageList({
             )}
             <div className="flex min-w-0 flex-1 flex-col gap-2">
               <ToolActivity calls={calls} />
-              {m.content && <Markdown text={m.content} className={compact ? "text-[13px]" : undefined} />}
+              {m.content && <Markdown text={m.content} className={compact ? "text-[14px]" : undefined} />}
               {writes.map((c) => (
                 <ToolCallCard key={c.id} call={c} compact={compact} onDecide={(decision, input) => onDecide(m.id, c, decision, input)} />
               ))}
@@ -229,7 +229,7 @@ export function Composer({
           onKeyDown={onKey}
           placeholder={disabled ? (disabledReason ?? placeholder) : placeholder}
           aria-label="Message the assistant"
-          className={cn("max-h-40 min-h-[34px] flex-1 resize-none bg-transparent py-1.5 outline-none placeholder:text-fg-3 disabled:cursor-not-allowed", compact ? "text-[13px]" : "text-sm")}
+          className={cn("max-h-40 min-h-[34px] flex-1 resize-none bg-transparent py-1.5 outline-none placeholder:text-fg-3 disabled:cursor-not-allowed", compact ? "text-[14px]" : "text-sm")}
         />
         <Button size="icon" onClick={() => void submit()} disabled={disabled || !text.trim()} loading={sending} aria-label="Send">
           {!sending && <ArrowUp className="h-4 w-4" />}

@@ -207,7 +207,7 @@ export function BucketListView() {
       />
 
       {error && !data && (
-        <Card className="p-6 text-center text-[13.5px] text-danger">Couldn&apos;t load your bucket list. {error.message}</Card>
+        <Card className="p-6 text-center text-[14px] text-danger">Couldn&apos;t load your bucket list. {error.message}</Card>
       )}
 
       {isLoading && !data && <BucketSkeleton />}
@@ -257,7 +257,7 @@ export function BucketListView() {
                 ]}
               />
               {years.length > 0 && (
-                <Select aria-label="Target year" value={year} onChange={(e) => setYear(e.target.value)} className="h-8 w-[118px] text-[13px]">
+                <Select aria-label="Target year" value={year} onChange={(e) => setYear(e.target.value)} className="h-8 w-[118px] text-[14px]">
                   <option value="">Any year</option>
                   {years.map((y) => (
                     <option key={y} value={y}>
@@ -266,7 +266,7 @@ export function BucketListView() {
                   ))}
                 </Select>
               )}
-              <Select aria-label="Sort" value={sort} onChange={(e) => setSort(e.target.value as Sort)} className="h-8 w-[150px] text-[13px]">
+              <Select aria-label="Sort" value={sort} onChange={(e) => setSort(e.target.value as Sort)} className="h-8 w-[150px] text-[14px]">
                 <option value="manual">My order</option>
                 <option value="target">Target date</option>
                 <option value="newest">Newest first</option>

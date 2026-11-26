@@ -172,7 +172,7 @@ export function FinanceView() {
                     <button type="button" onClick={csv} className="flex w-full items-start gap-2.5 rounded-lg p-2 text-left hover:bg-surface-2 focus-visible:bg-surface-2 focus-visible:outline-none">
                       <Download className="mt-0.5 h-4 w-4 shrink-0 text-fg-2" aria-hidden />
                       <span>
-                        <span className="block text-[13.5px] font-medium text-fg">Download CSV</span>
+                        <span className="block text-[14px] font-medium text-fg">Download CSV</span>
                         <span className="block text-[12px] text-fg-2">Opens in Excel, Numbers or Sheets</span>
                       </span>
                     </button>
@@ -186,7 +186,7 @@ export function FinanceView() {
                     >
                       <FileSpreadsheet className="mt-0.5 h-4 w-4 shrink-0 text-fg-2" aria-hidden />
                       <span>
-                        <span className="block text-[13.5px] font-medium text-fg">Export to Google Sheets</span>
+                        <span className="block text-[14px] font-medium text-fg">Export to Google Sheets</span>
                         <span className="block text-[12px] text-fg-2">
                           {!sheets ? "Checking…" : sheets.available ? (sheets.connected ? "Creates a new spreadsheet in your Drive" : "You'll be asked to allow My Diary to create a file") : sheets.message}
                         </span>

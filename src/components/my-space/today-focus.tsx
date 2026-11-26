@@ -154,7 +154,7 @@ export function TodayFocus({ data, todayKey, patch }: { data: FocusSection; toda
                 <li key={t.id} className="flex items-center gap-2.5 rounded-[10px] border border-dashed border-line px-2.5 py-2">
                   <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: PRIORITY_META[t.priority].color }} />
                   <button className="min-w-0 flex-1 text-left" onClick={() => openTaskDialog({ id: t.id })}>
-                    <div className="truncate text-[13.5px] text-fg-2">{t.title}</div>
+                    <div className="truncate text-[14px] text-fg-2">{t.title}</div>
                     {t.dueLabel && <div className={cn("text-[11.5px]", t.overdue ? "text-danger" : "text-fg-3")}>{t.dueLabel}</div>}
                   </button>
                   <Button variant="ghost" size="sm" onClick={() => void pin(t)} aria-label={`Pin ${t.title} to Today's Focus`}>
@@ -182,7 +182,7 @@ export function TodayFocus({ data, todayKey, patch }: { data: FocusSection; toda
           <div className="mb-2 text-[11.5px] font-medium tracking-wide text-fg-3 uppercase">Coming up today</div>
           <ul className="flex flex-col gap-1.5">
             {data.reminders.map((r) => (
-              <li key={`${r.id}-${r.at}`} className="flex items-center gap-2.5 text-[13px]">
+              <li key={`${r.id}-${r.at}`} className="flex items-center gap-2.5 text-[14px]">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-warning-soft text-warning">
                   <Bell className="h-3.5 w-3.5" />
                 </span>
@@ -221,7 +221,7 @@ function SortableFocusRow({ task, rank, onToggle, onRemove }: { task: FocusTask;
       <span className="w-3 shrink-0 text-center text-[12px] font-semibold text-fg-3 tabular-nums">{rank}</span>
       <Checkbox checked={done} onChange={onToggle} label={done ? `Mark ${task.title} as not done` : `Complete ${task.title}`} color="var(--success)" />
       <button className="min-w-0 flex-1 px-1 text-left" onClick={() => openTaskDialog({ id: task.id })}>
-        <div className={cn("truncate text-[13.5px] font-medium transition-colors", done && "text-fg-3 line-through")}>{task.title}</div>
+        <div className={cn("truncate text-[14px] font-medium transition-colors", done && "text-fg-3 line-through")}>{task.title}</div>
         <div className="mt-0.5 flex items-center gap-1.5 text-[11.5px] text-fg-3">
           {task.dueLabel && <span className={cn(task.overdue && !done && "text-danger")}>{task.dueLabel}</span>}
           {task.category && (

@@ -253,7 +253,7 @@ function EditorInner({ note, onBack, onClosed, onSelect }: { note: NoteFull; onB
               <Select
                 aria-label="Category"
                 value={categoryId ?? ""}
-                className="h-8 text-[13px]"
+                className="h-8 text-[14px]"
                 onChange={(e) => {
                   if (e.target.value === "__new") return setNewCatOpen(true);
                   const v = e.target.value || null;

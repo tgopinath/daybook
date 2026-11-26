@@ -99,7 +99,7 @@ export function FactorChips({ value, onChange, known = [] }: { value: string[]; 
             aria-pressed={on}
             onClick={() => toggle(f)}
             className={cn(
-              "inline-flex h-9 items-center gap-1 rounded-full border px-3 text-[13px] font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-primary/25",
+              "inline-flex h-9 items-center gap-1 rounded-full border px-3 text-[14px] font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-primary/25",
               on ? "border-primary bg-primary-soft text-primary" : "border-line bg-surface text-fg-2 hover:bg-surface-2 hover:text-fg",
             )}
           >

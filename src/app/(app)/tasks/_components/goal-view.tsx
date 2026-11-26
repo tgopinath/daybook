@@ -194,7 +194,7 @@ export function GoalView({
       {data && activeGoals.length === 0 && (
         <Card className="flex flex-wrap items-center gap-3 px-4 py-3.5">
           <Target className="h-5 w-5 shrink-0 text-primary" aria-hidden />
-          <p className="min-w-0 flex-1 text-[13.5px] text-fg-2">Goals give your tasks a reason. Set one and group the steps that get you there.</p>
+          <p className="min-w-0 flex-1 text-[14px] text-fg-2">Goals give your tasks a reason. Set one and group the steps that get you there.</p>
           <Link href="/goals" className="inline-flex h-8 items-center rounded-[10px] bg-primary px-3 text-[13px] font-medium text-on-primary hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:outline-none">
             Set a goal
           </Link>
@@ -212,7 +212,7 @@ export function GoalView({
         <section aria-labelledby="sec-none">
           <header className="mb-2 flex items-center gap-2 px-1">
             <Inbox className="h-4 w-4 text-fg-3" aria-hidden />
-            <h3 id="sec-none" className="text-[13.5px] font-semibold text-fg">
+            <h3 id="sec-none" className="text-[14px] font-semibold text-fg">
               Not linked to a goal
             </h3>
             <span className="text-[12px] text-fg-3 tabular-nums">{groups[NONE]?.length ?? 0}</span>
@@ -256,7 +256,7 @@ function GoalSection({
         <header className="flex flex-col gap-2 border-b border-line px-4 py-3">
           <div className="flex min-w-0 items-center gap-2">
             <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: goal.color }} aria-hidden />
-            <h3 id={titleId} className="min-w-0 truncate text-[14.5px] font-semibold">
+            <h3 id={titleId} className="min-w-0 truncate text-[14px] font-semibold">
               <Link href={`/goals/${goal.id}`} className="rounded hover:underline focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none">
                 {goal.title}
               </Link>

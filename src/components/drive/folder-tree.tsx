@@ -108,7 +108,7 @@ export function FolderTree({ folders, currentId, active, onOpen, onMoveInto, onU
         {...root.props}
         aria-current={active && currentId === null ? "page" : undefined}
         className={cn(
-          "flex h-9 w-full items-center gap-2 rounded-[10px] px-2 text-left text-[13.5px] font-medium transition-colors",
+          "flex h-9 w-full items-center gap-2 rounded-[10px] px-2 text-left text-[14px] font-medium transition-colors",
           active && currentId === null ? "bg-primary-soft text-primary" : "text-fg hover:bg-surface-2",
           root.over && "ring-2 ring-primary",
         )}
@@ -169,7 +169,7 @@ function TreeNode({
         >
           <ChevronRight className={cn("h-3.5 w-3.5 transition-transform", open && "rotate-90")} />
         </button>
-        <button type="button" onClick={() => onOpen(folder.id)} className={cn("flex min-w-0 flex-1 items-center gap-2 text-left text-[13px]", current ? "font-medium text-primary" : "text-fg")} aria-current={current ? "page" : undefined}>
+        <button type="button" onClick={() => onOpen(folder.id)} className={cn("flex min-w-0 flex-1 items-center gap-2 text-left text-[14px]", current ? "font-medium text-primary" : "text-fg")} aria-current={current ? "page" : undefined}>
           <FolderIcon color={folder.color} className="h-4 w-4 shrink-0" />
           <span className="truncate">{folder.name}</span>
         </button>

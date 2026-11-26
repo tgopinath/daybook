@@ -21,7 +21,7 @@ function Shell({ tone, icon: Icon, title, children, action }: { tone: "primary" 
     <div className={cn("mb-5 flex flex-col gap-3 rounded-[14px] border px-4 py-3 sm:flex-row sm:items-center", tones[tone])} role="status">
       <Icon className={cn("hidden h-5 w-5 shrink-0 sm:block", iconTones[tone])} />
       <div className="min-w-0 flex-1">
-        <p className="text-[13.5px] font-semibold">{title}</p>
+        <p className="text-[14px] font-semibold">{title}</p>
         <div className="mt-0.5 text-[12.5px] leading-relaxed text-fg-2">{children}</div>
       </div>
       {action && <div className="flex shrink-0 flex-wrap gap-2">{action}</div>}

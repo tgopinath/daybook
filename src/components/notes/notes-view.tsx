@@ -182,7 +182,7 @@ export function NotesView() {
                     >
                       <div className="flex items-center gap-1.5">
                         {n.pinned && <Pin className="h-3 w-3 shrink-0 fill-current text-primary" aria-label="Pinned" />}
-                        <span className="min-w-0 flex-1 truncate text-[13.5px] font-medium">{n.title || "Untitled"}</span>
+                        <span className="min-w-0 flex-1 truncate text-[14px] font-medium">{n.title || "Untitled"}</span>
                         {n.favorite && <Star className="h-3 w-3 shrink-0 fill-current text-warning" aria-label="Favorite" />}
                         <span className="shrink-0 text-[11.5px] text-fg-3 tabular-nums">{when(n.updatedAt)}</span>
                       </div>

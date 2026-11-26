@@ -145,7 +145,7 @@ export function OverviewView({ range, onRange, onShowBudgets }: { range: Range; 
                           const Icon = categoryIcon(d.name);
                           const pct = t!.expense ? Math.round((d.value / t!.expense) * 100) : 0;
                           return (
-                            <li key={d.name} className="flex items-center gap-2 text-[13px]">
+                            <li key={d.name} className="flex items-center gap-2 text-[14px]">
                               <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: fills[i % fills.length] }} aria-hidden />
                               <Icon className="h-3.5 w-3.5 shrink-0 text-fg-3" aria-hidden />
                               <span className="min-w-0 flex-1 truncate text-fg">{d.name}</span>
@@ -274,10 +274,10 @@ function AccountsCard({ data }: { data?: OverviewData }) {
                     <Icon className="h-4 w-4" style={{ color: a.color }} />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[13.5px] font-medium text-fg">{a.name}</span>
+                    <span className="block truncate text-[14px] font-medium text-fg">{a.name}</span>
                     <span className="block text-[11.5px] text-fg-3">{ACCOUNT_TYPE_LABEL[a.type as AccountType] ?? a.type}</span>
                   </span>
-                  <span className={cn("text-[13.5px] font-semibold tabular-nums", a.balance < 0 ? "text-danger" : "text-fg")}>{fmt(a.balance)}</span>
+                  <span className={cn("text-[14px] font-semibold tabular-nums", a.balance < 0 ? "text-danger" : "text-fg")}>{fmt(a.balance)}</span>
                 </li>
               );
             })}
@@ -303,7 +303,7 @@ export function BudgetBar({ b }: { b: BudgetProgress }) {
   const Icon = b.category === ALL_CATEGORIES ? Wallet : categoryIcon(b.category);
   return (
     <div>
-      <div className="mb-1.5 flex items-center gap-2 text-[13px]">
+      <div className="mb-1.5 flex items-center gap-2 text-[14px]">
         <Icon className="h-3.5 w-3.5 shrink-0 text-fg-3" aria-hidden />
         <span className="min-w-0 flex-1 truncate font-medium text-fg">{name}</span>
         <span className="text-fg-2 tabular-nums">

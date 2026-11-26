@@ -138,7 +138,7 @@ export function BudgetsView() {
           <h3 className="mb-2 px-1 text-[13px] font-semibold text-fg-2">Other budgets (not active in {formatMonth(month)})</h3>
           <Card className="divide-y divide-line">
             {others.map((b) => (
-              <div key={b.id} className="flex items-center gap-3 px-4 py-2.5 text-[13px]">
+              <div key={b.id} className="flex items-center gap-3 px-4 py-2.5 text-[14px]">
                 <span className="min-w-0 flex-1 truncate text-fg">{b.category === ALL_CATEGORIES ? "All spending" : b.category}</span>
                 <span className="text-fg-2">{b.month === EVERY_MONTH ? "Every month (overridden this month)" : formatMonth(b.month)}</span>
                 <span className="font-medium tabular-nums">{fmt(b.limit)}</span>

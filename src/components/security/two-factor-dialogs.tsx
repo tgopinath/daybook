@@ -160,11 +160,11 @@ export function SetupDialog({ open, onOpenChange, hasPassword }: { open: boolean
             </Field>
           </form>
         )}
-        {step === "password" && !hasPassword && !error && <p className="text-[13.5px] text-fg-2">Preparing your setup key…</p>}
+        {step === "password" && !hasPassword && !error && <p className="text-[14px] text-fg-2">Preparing your setup key…</p>}
 
         {step === "scan" && setup && (
           <form id="tf-enable" onSubmit={enable} className="flex flex-col gap-5">
-            <ol className="flex list-decimal flex-col gap-1 pl-5 text-[13.5px] text-fg-2">
+            <ol className="flex list-decimal flex-col gap-1 pl-5 text-[14px] text-fg-2">
               <li>Open your authenticator app, such as Google Authenticator, Microsoft Authenticator or 1Password.</li>
               <li>Add an account and scan this QR code.</li>
               <li>Enter the 6-digit code the app shows.</li>
@@ -177,7 +177,7 @@ export function SetupDialog({ open, onOpenChange, hasPassword }: { open: boolean
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[13px] font-medium text-fg-2">Can&apos;t scan? Enter this key</p>
-                <p className="mt-1.5 rounded-[10px] bg-surface-2 px-3 py-2 font-mono text-[13.5px] leading-relaxed tracking-wide break-all text-fg select-all">{setup.secret}</p>
+                <p className="mt-1.5 rounded-[10px] bg-surface-2 px-3 py-2 font-mono text-[14px] leading-relaxed tracking-wide break-all text-fg select-all">{setup.secret}</p>
                 <Button variant="ghost" size="sm" className="mt-1.5 -ml-2" onClick={copySecret}>
                   <Copy className="h-3.5 w-3.5" aria-hidden /> Copy key
                 </Button>
@@ -263,7 +263,7 @@ export function DisableDialog({ open, onOpenChange, hasPassword }: { open: boole
           </Field>
         )}
         {hasPassword && (
-          <button type="button" onClick={() => setUseCode((v) => !v)} className="self-start text-[13px] font-medium text-primary hover:underline">
+          <button type="button" onClick={() => setUseCode((v) => !v)} className="self-start text-[14px] font-medium text-primary hover:underline">
             {useCode ? "Use your password instead" : "Use a code from the app instead"}
           </button>
         )}

@@ -257,7 +257,7 @@ export const FolderTile = forwardRef<HTMLDivElement, ItemProps>(function FolderT
       >
         <FolderIcon color={entry.folder.color} className="h-5 w-5 shrink-0" />
         <span className="min-w-0">
-          <span className="block truncate text-[13.5px] font-medium text-fg">{entry.folder.name}</span>
+          <span className="block truncate text-[14px] font-medium text-fg">{entry.folder.name}</span>
           {showPath && <span className="block truncate text-[11.5px] text-fg-3">{entry.folder.path || "My Storage"}</span>}
         </span>
       </button>
@@ -300,7 +300,7 @@ export const FileTile = forwardRef<HTMLDivElement, ItemProps>(function FileTile(
           )}
         </span>
         <span className="block px-2.5 pt-2 pr-10 pb-2.5">
-          <span className="block truncate text-[13px] font-medium text-fg">{f.name}</span>
+          <span className="block truncate text-[14px] font-medium text-fg">{f.name}</span>
           <span className="block truncate text-[11.5px] text-fg-3">{showPath ? f.path || "My Storage" : `${formatBytes(f.media.size)} · ${shortDate(f.createdAt)}`}</span>
         </span>
       </button>

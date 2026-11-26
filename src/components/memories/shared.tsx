@@ -64,7 +64,7 @@ export function LoadMoreSentinel({ onVisible, active, loading }: { onVisible: ()
   if (!active) return null;
   return (
     <div ref={ref} className="flex justify-center py-6">
-      <button type="button" onClick={onVisible} className="rounded-lg px-3 py-1.5 text-[13px] font-medium text-primary hover:bg-primary-soft">
+      <button type="button" onClick={onVisible} className="rounded-lg px-3 py-1.5 text-[14px] font-medium text-primary hover:bg-primary-soft">
         {loading ? "Loading…" : "Load more"}
       </button>
     </div>

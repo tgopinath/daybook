@@ -83,7 +83,7 @@ export function FinanceSettingsHost() {
           </Select>
         </Field>
         {changed && (
-          <div className="flex gap-2 rounded-[10px] bg-warning-soft p-3 text-[13px] text-fg" role="alert">
+          <div className="flex gap-2 rounded-[10px] bg-warning-soft p-3 text-[14px] text-fg" role="alert">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning-text" aria-hidden />
             <p>
               Changing the currency only changes the symbol. Existing amounts are <strong>not converted</strong> — {formatMoney(125050, data!.currency)} will show as {formatMoney(125050, currency)}.

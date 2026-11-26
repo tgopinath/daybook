@@ -186,7 +186,7 @@ export function BucketDialog({
 
         <div className="flex flex-col gap-3 rounded-[12px] bg-surface-2 p-3">
           <label className="flex items-center justify-between gap-3">
-            <span className="text-[13.5px] font-medium">I&apos;ve done this</span>
+            <span className="text-[14px] font-medium">I&apos;ve done this</span>
             <Switch checked={d.completed} onChange={(v) => set("completed", v)} label="Completed" />
           </label>
           {d.completed && (

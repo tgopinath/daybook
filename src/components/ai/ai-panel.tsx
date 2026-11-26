@@ -146,7 +146,7 @@ function Suggestions({ configured }: { configured: boolean }) {
         <ul className="flex flex-col gap-2">
           {state.items.map((s, i) => (
             <li key={i} className="rounded-xl border border-line bg-surface-2/50 p-2.5">
-              <p className="text-[13px] font-medium">{s.title}</p>
+              <p className="text-[14px] font-medium">{s.title}</p>
               {s.detail && <p className="mt-0.5 text-[12.5px] leading-relaxed text-fg-2">{s.detail}</p>}
             </li>
           ))}
@@ -205,7 +205,7 @@ function TaskRow({ t }: { t: InsightTask }) {
   return (
     <li className="group flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 hover:bg-surface-2">
       <Checkbox checked={done} onChange={() => !done && void toggle()} label={`Complete ${t.title}`} color={PRIORITY_META[t.priority].color} />
-      <button className={cn("min-w-0 flex-1 truncate text-left text-[13px]", done && "text-fg-3 line-through")} onClick={() => openTaskDialog({ id: t.id })}>
+      <button className={cn("min-w-0 flex-1 truncate text-left text-[14px]", done && "text-fg-3 line-through")} onClick={() => openTaskDialog({ id: t.id })}>
         {t.title}
       </button>
       {label && <span className={cn("shrink-0 text-[11.5px] tabular-nums", t.overdue ? "text-danger" : "text-fg-3")}>{label}</span>}
@@ -279,7 +279,7 @@ function Reminders({ items }: { items: Insights["reminders"] }) {
       {items.length ? (
         <ul className="flex flex-col gap-1">
           {items.map((r) => (
-            <li key={r.id} className="flex items-center gap-2.5 px-1.5 py-1 text-[13px]">
+            <li key={r.id} className="flex items-center gap-2.5 px-1.5 py-1 text-[14px]">
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
               <span className="min-w-0 flex-1 truncate">{r.title}</span>
               <span className="shrink-0 text-[11.5px] text-fg-3 tabular-nums">{fmt(r.at)}</span>

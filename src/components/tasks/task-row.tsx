@@ -325,7 +325,7 @@ export function TaskRow({ task: raw, onToggle, compact, selected, selectionMode,
             }}
             title={compact ? task.title : "Click to rename"}
             className={cn(
-              "min-w-0 truncate text-[13.5px] transition-colors duration-300",
+              "min-w-0 truncate text-[14px] transition-colors duration-300",
               done ? "text-fg-3 line-through decoration-fg-3/60" : "text-fg",
               !compact && !coarse && "cursor-text",
             )}
@@ -442,7 +442,7 @@ function InlineTitle({ initial, onDone }: { initial: string; onDone: (title: str
       onBlur={() => finish(v.trim() || null)}
       aria-label="Task title"
       maxLength={300}
-      className="h-7 min-w-0 flex-1 rounded-md border border-primary bg-surface px-1.5 text-[13.5px] outline-none ring-3 ring-primary/15"
+      className="h-7 min-w-0 flex-1 rounded-md border border-primary bg-surface px-1.5 text-[14px] outline-none ring-3 ring-primary/15"
     />
   );
 }

@@ -227,7 +227,7 @@ function ConversationList({
                   onClick={() => onSelect(c.id)}
                   className={cn("flex w-full flex-col rounded-[10px] px-2.5 py-2 pr-9 text-left transition-colors", c.id === activeId ? "bg-primary-soft" : "hover:bg-surface-2")}
                 >
-                  <span className={cn("truncate text-[13px] font-medium", c.id === activeId && "text-primary")}>{c.title}</span>
+                  <span className={cn("truncate text-[14px] font-medium", c.id === activeId && "text-primary")}>{c.title}</span>
                   <span className="truncate text-[11.5px] text-fg-3">{relative(c.updatedAt)}</span>
                 </button>
                 <div className="absolute top-1/2 right-1 -translate-y-1/2 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100">

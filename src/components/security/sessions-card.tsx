@@ -65,7 +65,7 @@ export function SessionsCard({ reviewed, onReviewed }: { reviewed: boolean; onRe
                 <li key={s.id} className="flex items-center gap-3 px-3.5 py-3">
                   <Icon className="h-5 w-5 shrink-0 text-fg-3" aria-hidden />
                   <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2 text-[13.5px] font-medium">
+                    <div className="flex flex-wrap items-center gap-2 text-[14px] font-medium">
                       <span className="truncate">{s.label}</span>
                       {s.current && <Badge tone="success">This device</Badge>}
                     </div>

@@ -65,7 +65,7 @@ export function SettingsView() {
               }}
               aria-current={active === s.id ? "true" : undefined}
               className={cn(
-                "flex h-8 shrink-0 items-center gap-2 rounded-lg px-2.5 text-[13px] font-medium transition-colors",
+                "flex h-8 shrink-0 items-center gap-2 rounded-lg px-2.5 text-[14px] font-medium transition-colors",
                 active === s.id ? "bg-surface-2 text-fg" : "text-fg-2 hover:bg-surface-2 hover:text-fg",
               )}
             >

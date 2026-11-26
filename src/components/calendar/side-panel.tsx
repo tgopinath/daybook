@@ -42,7 +42,7 @@ export function LayerToggles({ layers, onChange, compact }: { layers: Layers; on
   return (
     <div className="flex flex-col gap-0.5" role="group" aria-label="Show layers">
       {LAYER_META.map((l) => (
-        <label key={l.key} className="flex h-8 cursor-pointer items-center gap-2.5 rounded-lg px-2 text-[13px] hover:bg-surface-2">
+        <label key={l.key} className="flex h-8 cursor-pointer items-center gap-2.5 rounded-lg px-2 text-[14px] hover:bg-surface-2">
           <input type="checkbox" className="h-3.5 w-3.5 accent-[var(--primary)]" checked={layers[l.key]} onChange={() => onChange({ ...layers, [l.key]: !layers[l.key] })} />
           <span className={cn("flex-1", !layers[l.key] && "text-fg-3")}>{l.label}</span>
           {l.swatch}
@@ -93,7 +93,7 @@ export function SidePanel({
 
       <div className="rounded-[14px] border border-line bg-surface p-3 shadow-card">
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-[13px] font-semibold">Birthdays &amp; important dates</h2>
+          <h2 className="text-[14px] font-semibold">Birthdays &amp; important dates</h2>
           <span className="text-[11px] text-fg-3">60 days</span>
         </div>
         {isLoading && !data ? (

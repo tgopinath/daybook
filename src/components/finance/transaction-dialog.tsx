@@ -424,7 +424,7 @@ export function TransactionDialogHost() {
                     <FileText className="h-5 w-5" aria-hidden />
                   </span>
                 )}
-                <a href={d.receipt.url} target="_blank" rel="noreferrer" className="min-w-0 flex-1 truncate text-[13px] text-fg underline-offset-2 hover:underline">
+                <a href={d.receipt.url} target="_blank" rel="noreferrer" className="min-w-0 flex-1 truncate text-[14px] text-fg underline-offset-2 hover:underline">
                   {d.receipt.originalName ?? "Receipt"}
                 </a>
                 <Button variant="ghost" size="icon-sm" aria-label="Remove receipt" onClick={() => set("receipt", null)}>

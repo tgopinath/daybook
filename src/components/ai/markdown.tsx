@@ -97,7 +97,7 @@ function parseBlocks(src: string): Block[] {
 export function Markdown({ text, className }: { text: string; className?: string }) {
   const blocks = parseBlocks(text);
   return (
-    <div className={cn("flex flex-col gap-2 text-[13.5px] leading-relaxed break-words", className)}>
+    <div className={cn("flex flex-col gap-2 text-[14px] leading-relaxed break-words", className)}>
       {blocks.map((b, i) => {
         const k = `b${i}`;
         switch (b.type) {

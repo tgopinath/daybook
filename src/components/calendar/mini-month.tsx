@@ -29,7 +29,7 @@ export function MiniMonth({
   return (
     <div className="select-none">
       <div className="mb-1.5 flex items-center justify-between pl-1">
-        <span className="text-[13px] font-semibold">{formatKey(month, { month: "long", year: "numeric" })}</span>
+        <span className="text-[14px] font-semibold">{formatKey(month, { month: "long", year: "numeric" })}</span>
         <div className="flex">
           <button type="button" aria-label="Previous month" onClick={() => setMonth(addMonthsKey(month, -1))} className="rounded-md p-1 text-fg-3 hover:bg-surface-2 hover:text-fg">
             <ChevronLeft className="h-4 w-4" />

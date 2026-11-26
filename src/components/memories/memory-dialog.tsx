@@ -202,7 +202,7 @@ export function MemoryDialog({
           <Textarea value={caption} onChange={(e) => setCaption(e.target.value)} rows={4} placeholder="What made this moment special?" maxLength={5000} />
         </Field>
         <div>
-          <p className="mb-1.5 text-[13px] font-medium text-fg">Photos & videos</p>
+          <p className="mb-1.5 text-[14px] font-medium text-fg">Photos & videos</p>
           {media.length > 0 && (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
               <SortableContext items={media.map((m) => m.id)} strategy={rectSortingStrategy}>

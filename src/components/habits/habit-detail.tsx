@@ -56,7 +56,7 @@ export function HabitDetail({ habit, open, onOpenChange, onEdit }: { habit: Habi
     >
       <div className="flex flex-col gap-5">
         {h.description && <p className="text-sm whitespace-pre-line text-fg-2">{h.description}</p>}
-        <p className="rounded-[10px] px-3 py-2 text-[13.5px]" style={{ background: tint(h.color, 0.09) }}>
+        <p className="rounded-[10px] px-3 py-2 text-[14px]" style={{ background: tint(h.color, 0.09) }}>
           {habitMessage(h, target)}
         </p>
 
@@ -69,7 +69,7 @@ export function HabitDetail({ habit, open, onOpenChange, onEdit }: { habit: Habi
 
         <section>
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-            <h3 className="text-[13.5px] font-semibold">Last 20 weeks</h3>
+            <h3 className="text-[14px] font-semibold">Last 20 weeks</h3>
             <HeatLegend color={h.color} />
           </div>
           <Heatmap
@@ -97,7 +97,7 @@ export function HabitDetail({ habit, open, onOpenChange, onEdit }: { habit: Habi
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <section>
-            <h3 className="mb-2 text-[13.5px] font-semibold">Monthly completion</h3>
+            <h3 className="mb-2 text-[14px] font-semibold">Monthly completion</h3>
             {!stats ? (
               <Skeleton className="h-[110px]" />
             ) : (
@@ -115,7 +115,7 @@ export function HabitDetail({ habit, open, onOpenChange, onEdit }: { habit: Habi
             )}
           </section>
           <section>
-            <h3 className="mb-2 text-[13.5px] font-semibold">By weekday · 12 weeks</h3>
+            <h3 className="mb-2 text-[14px] font-semibold">By weekday · 12 weeks</h3>
             {!stats ? (
               <Skeleton className="h-[110px]" />
             ) : (

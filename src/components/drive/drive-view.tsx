@@ -763,7 +763,7 @@ export function DriveView() {
           </div>
 
           {/* Breadcrumbs / location */}
-          <div className="mb-3 flex min-h-8 items-center gap-1 overflow-x-auto text-[13.5px] scroll-thin" aria-label="Location">
+          <div className="mb-3 flex min-h-8 items-center gap-1 overflow-x-auto text-[14px] scroll-thin" aria-label="Location">
             {browsing ? (
               <nav aria-label="Breadcrumb">
                 <ol className="flex items-center gap-1">
@@ -787,7 +787,7 @@ export function DriveView() {
               <Button variant="ghost" size="icon" onClick={clearSelection} aria-label="Clear selection">
                 <X className="h-4 w-4" />
               </Button>
-              <span className="mr-auto px-1 text-[13.5px] font-medium text-fg" aria-live="polite">
+              <span className="mr-auto px-1 text-[14px] font-medium text-fg" aria-live="polite">
                 {selected.size} selected
               </span>
               {trash ? (
@@ -822,7 +822,7 @@ export function DriveView() {
           {uploads.length > 0 && (
             <div className="mb-3 rounded-[12px] border border-line bg-surface p-3" aria-live="polite">
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-[13px] font-medium text-fg">
+                <span className="text-[14px] font-medium text-fg">
                   {uploads.some((u) => u.status === "uploading" || u.status === "queued") ? `Uploading ${uploads.filter((u) => u.status === "done").length} of ${uploads.length}…` : "Uploads"}
                 </span>
                 {!uploads.some((u) => u.status === "uploading" || u.status === "queued") && (
@@ -988,7 +988,7 @@ function FilterLink({ f, active, onClick, onDropItems }: { f: (typeof FILTERS)[n
       {...(onDropItems ? drop.props : {})}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "flex h-9 w-full items-center gap-2 rounded-[10px] px-2 text-left text-[13.5px] transition-colors",
+        "flex h-9 w-full items-center gap-2 rounded-[10px] px-2 text-left text-[14px] transition-colors",
         active ? "bg-primary-soft font-medium text-primary" : "text-fg hover:bg-surface-2",
         onDropItems && drop.over && "ring-2 ring-danger",
       )}

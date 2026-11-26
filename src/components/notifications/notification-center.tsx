@@ -88,7 +88,7 @@ function NotificationItem({ n, tz, onOpen }: { n: WireNotification; tz: string; 
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5">
-            <span className={cn("truncate text-[13.5px]", unread ? "font-semibold text-fg" : "font-medium text-fg-2")}>{n.title}</span>
+            <span className={cn("truncate text-[14px]", unread ? "font-semibold text-fg" : "font-medium text-fg-2")}>{n.title}</span>
             {unread && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-label="Unread" />}
           </span>
           {n.body && <span className="mt-0.5 line-clamp-2 block text-[12.5px] text-fg-2">{n.body}</span>}
@@ -242,7 +242,7 @@ export function NotificationBell() {
                 <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 text-fg-3">
                   <BellOff className="h-[18px] w-[18px]" />
                 </span>
-                <p className="text-[13.5px] font-medium">{tab === "unread" ? "You're all caught up" : "No notifications yet"}</p>
+                <p className="text-[14px] font-medium">{tab === "unread" ? "You're all caught up" : "No notifications yet"}</p>
                 <p className="mt-1 text-[12.5px] text-fg-3">Reminders, overdue tasks, calendar alerts and suggestions show up here.</p>
               </div>
             ) : (

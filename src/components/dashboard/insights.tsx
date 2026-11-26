@@ -310,7 +310,7 @@ export function Insights() {
                       <li key={g.id}>
                         <Link href={`/goals/${g.id}`} className="group block">
                           <div className="mb-1.5 flex items-center gap-2">
-                            <span className="min-w-0 flex-1 truncate text-[13px] font-medium group-hover:text-primary">{g.title}</span>
+                            <span className="min-w-0 flex-1 truncate text-[14px] font-medium group-hover:text-primary">{g.title}</span>
                             <Badge tone={s.tone}>{s.label}</Badge>
                           </div>
                           <div className="relative h-2 rounded-full bg-surface-2">

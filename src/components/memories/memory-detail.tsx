@@ -80,7 +80,7 @@ export function MemoryDetail({ id }: { id: string }) {
         title={error.message.includes("not found") ? "This memory isn't here" : "Couldn't load this memory"}
         description={error.message}
         action={
-          <Link href="/memories" className="text-[13.5px] font-medium text-primary hover:underline">
+          <Link href="/memories" className="text-[14px] font-medium text-primary hover:underline">
             Back to Memories
           </Link>
         }
@@ -120,7 +120,7 @@ export function MemoryDetail({ id }: { id: string }) {
       </Link>
 
       {(m.deletedAt || m.archivedAt) && (
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[12px] border border-line bg-surface-2 px-3 py-2 text-[13px] text-fg">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[12px] border border-line bg-surface-2 px-3 py-2 text-[14px] text-fg">
           <span>{m.deletedAt ? "This memory is in the Trash." : "This memory is archived — it's hidden from your timeline."}</span>
           <Button size="sm" variant="outline" onClick={() => void patch(m.deletedAt ? { deletedAt: null } : { archived: false }, m.deletedAt ? "Memory restored" : "Memory unarchived")}>
             {m.deletedAt ? "Restore" : "Unarchive"}
@@ -216,7 +216,7 @@ export function MemoryDetail({ id }: { id: string }) {
         {!m.deletedAt && <GooglePhotosImport target="memory" memoryId={m.id} returnPath={`/memories/${m.id}`} size="sm" label="Add from Google Photos" onImported={() => void sync()} />}
         {items.length > 0 && <Badge>{items.length} {items.length === 1 ? "item" : "items"}</Badge>}
         {!items.length && (
-          <button type="button" onClick={() => setEditing(true)} className="text-[13px] font-medium text-primary hover:underline">
+          <button type="button" onClick={() => setEditing(true)} className="text-[14px] font-medium text-primary hover:underline">
             Add photos or videos
           </button>
         )}
