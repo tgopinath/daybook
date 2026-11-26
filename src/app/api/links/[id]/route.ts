@@ -13,6 +13,8 @@ export const PATCH = route<{ id: string }>(async ({ req, user, params }) => {
       ...(input.url !== undefined ? { url: input.url } : {}),
       ...(input.description !== undefined ? { description: input.description || null } : {}),
       ...(input.emoji !== undefined ? { emoji: input.emoji || null } : {}),
+      ...(input.imageUrl !== undefined ? { imageUrl: input.imageUrl || null } : {}),
+      ...(input.url !== undefined && input.imageUrl === undefined ? { imageUrl: null } : {}),
     },
   });
   return { item };

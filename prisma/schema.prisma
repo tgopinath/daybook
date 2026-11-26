@@ -942,6 +942,7 @@ model AppLink {
   url         String   // https only
   description String?
   emoji       String?  // optional single emoji used as the app's icon
+  imageUrl    String?  // thumbnail (screenshot, share image or app icon); "" = looked, none found
   sortOrder   Float    @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

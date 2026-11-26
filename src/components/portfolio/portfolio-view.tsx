@@ -465,7 +465,7 @@ function BulkAddDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o
   );
 }
 
-type ImportRow = { name: string; url: string; description: string; saved: boolean; pick: boolean };
+type ImportRow = { name: string; url: string; description: string; image: string | null; saved: boolean; pick: boolean };
 
 /** Paste a projects or portfolio page link; every project card on it becomes an app you can pick. */
 function ImportDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
@@ -490,10 +490,11 @@ function ImportDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o:
     setBusy(true);
     try {
       const res = await api.post<{ added: number; skipped: number }>("/api/links/bulk", {
-        items: picked.map((r) => ({ name: r.name, url: r.url, description: r.description || null })),
+        // Already-saved apps ride along so they can pick up the page's screenshot as their thumbnail.
+        items: [...picked, ...(rows ?? []).filter((r) => r.saved && r.image)].map((r) => ({ name: r.name, url: r.url, description: r.description || null, imageUrl: r.image })),
       });
       await refresh("/api/links");
-      toast.success(res.skipped ? `Added ${res.added} apps · ${res.skipped} already saved` : `Added ${res.added} apps`);
+      toast.success(`Added ${res.added} ${res.added === 1 ? "app" : "apps"}`);
       onOpenChange(false);
     } catch (err) {
       toastError(err);
@@ -591,6 +592,26 @@ function ImportDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o:
   );
 }
 
+/** An app's picture: a screenshot or share image fills the frame; an app icon sits centred; else its emoji. */
+function AppThumb({ item }: { item: Link }) {
+  const [failed, setFailed] = useState(false);
+  const src = item.imageUrl && !failed ? item.imageUrl : null;
+  const isIcon = !!src && /icon|favicon|logo|\.svg(\?|$)/i.test(src);
+  return (
+    <div className="relative flex aspect-[16/9] items-center justify-center overflow-hidden rounded-[10px] border border-line bg-surface-2" aria-hidden>
+      {src ? (
+        isIcon ? (
+          <img src={src} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setFailed(true)} className="h-16 w-16 rounded-2xl object-contain shadow-sm" />
+        ) : (
+          <img src={src} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setFailed(true)} className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]" />
+        )
+      ) : (
+        <span className="text-[40px]">{item.emoji || "🔗"}</span>
+      )}
+    </div>
+  );
+}
+
 function AppsSection() {
   const { data, isLoading } = useApi<{ items: Link[] }>("/api/links");
   const { data: me } = useMe();
@@ -598,7 +619,25 @@ function AppsSection() {
   const [copiedAll, setCopiedAll] = useState(false);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [emailOne, setEmailOne] = useState<Link | null>(null);
   const [emailAllOpen, setEmailAllOpen] = useState(false);
+  // Apps saved without a picture get one looked up in the background (share image or app icon), a batch at a time.
+  const missingThumbs = (data?.items ?? []).filter((l) => l.imageUrl === null).length;
+  const [thumbRuns, setThumbRuns] = useState(0);
+  useEffect(() => {
+    if (!missingThumbs || thumbRuns >= 6) return;
+    let live = true;
+    api
+      .post<{ checked: number }>("/api/links/thumbnails", {})
+      .then(async (r) => {
+        if (live && r.checked) await refresh("/api/links");
+      })
+      .catch(() => {})
+      .finally(() => live && setThumbRuns((n) => n + 1));
+    return () => {
+      live = false;
+    };
+  }, [missingThumbs, thumbRuns]);
   const items = data?.items ?? [];
   // "New → App link" lands here with ?new=1
   useEffect(() => {
@@ -709,40 +748,48 @@ function AppsSection() {
         <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {items.map((item, i) => (
             <li key={item.id}>
-              <Card className="flex h-full flex-col p-4">
-                <div className="flex items-start gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-[22px]" aria-hidden>
-                    {item.emoji || "🔗"}
-                  </span>
+              <Card className="group relative flex h-full flex-col overflow-hidden p-3 pb-4 transition-colors hover:border-primary/40 focus-within:border-primary/40">
+                <AppThumb item={item} />
+                <div className="mt-3 flex items-start gap-3 px-1">
                   <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-[15px] font-semibold">{item.name}</h3>
+                    {/* The whole card opens the app; the link's ::after stretches over it. */}
+                    <h3 className="truncate text-[15px] font-semibold">
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="outline-none after:absolute after:inset-0 after:rounded-[14px] after:content-[''] group-hover:text-primary focus-visible:after:ring-3 focus-visible:after:ring-primary/30"
+                      >
+                        {item.name}
+                        <span className="sr-only"> (opens in a new tab)</span>
+                      </a>
+                    </h3>
                     <p className="truncate text-[12.5px] text-fg-2">{host(item.url)}</p>
                   </div>
-                  <Menu
-                    trigger={
-                      <Button size="icon-sm" variant="ghost" aria-label={`More for ${item.name}`}>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    }
-                    items={[
-                      { label: "Edit", icon: Pencil, onSelect: () => setDialog({ open: true, item }) },
-                      { label: "Move up", icon: ArrowUp, onSelect: () => void move(i, -1), disabled: i === 0 },
-                      { label: "Move down", icon: ArrowDown, onSelect: () => void move(i, 1), disabled: i === items.length - 1 },
-                      { type: "separator" },
-                      { label: "Remove", icon: Trash2, onSelect: () => void remove(item), danger: true },
-                    ]}
-                  />
+                  <div className="relative z-10">
+                    <Menu
+                      trigger={
+                        <Button size="icon-sm" variant="ghost" aria-label={`More for ${item.name}`}>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      }
+                      items={[
+                        { label: "Open", icon: ExternalLink, onSelect: () => window.open(item.url, "_blank", "noopener") },
+                        { label: "Copy link", icon: Copy, onSelect: () => void copyText(item.url) },
+                        { label: "Share…", icon: Share2, onSelect: () => void shareLink(item.name, item.url, item.description ?? undefined) },
+                        { label: "WhatsApp", icon: MessageCircle, onSelect: () => window.open(`https://wa.me/?text=${encodeURIComponent(`${item.description ?? item.name}\n${item.url}`)}`, "_blank", "noopener") },
+                        { label: "Email…", icon: Mail, onSelect: () => setEmailOne(item) },
+                        { type: "separator" },
+                        { label: "Edit", icon: Pencil, onSelect: () => setDialog({ open: true, item }) },
+                        { label: "Move up", icon: ArrowUp, onSelect: () => void move(i, -1), disabled: i === 0 },
+                        { label: "Move down", icon: ArrowDown, onSelect: () => void move(i, 1), disabled: i === items.length - 1 },
+                        { type: "separator" },
+                        { label: "Remove", icon: Trash2, onSelect: () => void remove(item), danger: true },
+                      ]}
+                    />
+                  </div>
                 </div>
-                {item.description && <p className="mt-2 line-clamp-2 text-[13px] text-fg-2">{item.description}</p>}
-                <div className="mt-auto flex flex-wrap gap-2 pt-3">
-                  <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-[13px] font-medium text-on-primary hover:bg-primary-hover">
-                    <ExternalLink className="h-4 w-4" /> Open
-                  </a>
-                  <Button size="sm" variant="ghost" onClick={() => void copyText(item.url)}>
-                    <Copy className="h-4 w-4" /> Copy
-                  </Button>
-                  <ShareMenu title={item.name} url={item.url} text={item.description ?? undefined} />
-                </div>
+                {item.description && <p className="mt-1.5 line-clamp-2 px-1 text-[13px] text-fg-2">{item.description}</p>}
               </Card>
             </li>
           ))}
@@ -751,6 +798,12 @@ function AppsSection() {
       <AppDialog open={dialog.open} onOpenChange={(open) => setDialog((d) => ({ ...d, open }))} initial={dialog.item} />
       <BulkAddDialog open={bulkOpen} onOpenChange={setBulkOpen} />
       <ImportDialog open={importOpen} onOpenChange={setImportOpen} />
+      <EmailComposeDialog
+        open={!!emailOne}
+        onOpenChange={(o) => !o && setEmailOne(null)}
+        subject={emailOne?.name ?? ""}
+        body={emailOne ? `Hi,\n\nI'd love for you to take a look at ${emailOne.name}${emailOne.description ? ` — ${emailOne.description.replace(/\.$/, "")}` : ""}:\n${emailOne.url}` : ""}
+      />
       <EmailComposeDialog
         open={emailAllOpen}
         onOpenChange={setEmailAllOpen}

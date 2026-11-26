@@ -12,6 +12,7 @@ export const linkInput = z.object({
   url: httpsUrl,
   description: z.string().trim().max(240).nullish(),
   emoji: z.string().trim().max(8).nullish(),
+  imageUrl: z.union([httpsUrl.pipe(z.string().max(1000)), z.literal("")]).nullish(),
 });
 
 export const linkPatch = linkInput.partial();
