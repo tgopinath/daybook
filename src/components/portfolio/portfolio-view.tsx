@@ -168,7 +168,7 @@ function PortfolioCard() {
           <Globe className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="font-display text-[19px] font-semibold">My portfolio</h2>
+          <h1 className="font-display text-[22px] leading-tight font-semibold">My portfolio</h1>
           {url ? (
             <a href={url} target="_blank" rel="noopener noreferrer" className="text-[14px] break-all text-primary hover:underline">
               {host(url)}
@@ -816,8 +816,7 @@ function AppsSection() {
 
 export function PortfolioView() {
   return (
-    <div>
-      <PageHeader title="My portfolio" description="Open, preview, edit and share your portfolio." />
+    <div className="pt-2">
       <PortfolioCard />
     </div>
   );
@@ -826,7 +825,7 @@ export function PortfolioView() {
 export function AppsView() {
   return (
     <div>
-      <PageHeader title="My apps" description="Open, copy or share links to the apps and sites you've made." />
+      <PageHeader title="My apps" description="Open, share and keep track of the apps and sites you've made." />
       <AppsSection />
     </div>
   );
