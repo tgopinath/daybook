@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, EmptyState, PageHeader, Segmented, SkeletonList } from "@/components/ui/misc";
 import { toast, toastError } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
+import { useCreateParam } from "@/lib/use-create-param";
 import type { WireNotification } from "@/components/notifications/notification-center";
 import { PermissionBanner } from "./_components/permission-banner";
 import { ReminderDialog, refreshReminders } from "./_components/reminder-dialog";
@@ -111,6 +112,8 @@ export default function RemindersPage() {
 
   const openNew = (initial?: Partial<Draft>) => setDialog({ open: true, reminder: null, initial });
   const openEdit = (r: WireReminder) => setDialog({ open: true, reminder: r });
+  // /reminders?new=1 (the "New" menu, My space) opens a blank reminder.
+  useCreateParam("new", () => openNew());
 
   const quickCreate = async (p: (typeof PRESETS)[number]) => {
     const draft = { ...emptyDraft(tz), ...p.draft(tz) };

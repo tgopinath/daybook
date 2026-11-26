@@ -4,12 +4,12 @@ import { Bell, Cake, CalendarDays, CheckCircle2, Heart, Star, Users, CalendarClo
 import { Card, Skeleton } from "@/components/ui/misc";
 import { openTaskDialog } from "@/components/tasks/task-dialog";
 import { cn } from "@/lib/utils";
-import type { DashboardData, UpcomingItem, UpcomingType } from "./types";
+import type { UpcomingDay, UpcomingItem, UpcomingType } from "@/components/dashboard/types";
 
 const TYPE_META: Record<UpcomingType, { icon: LucideIcon; color: string; label: string }> = {
   task: { icon: CheckCircle2, color: "var(--primary)", label: "Task" },
-  meeting: { icon: Users, color: "#3b9be9", label: "Meeting" },
-  event: { icon: CalendarDays, color: "#3b9be9", label: "Event" },
+  meeting: { icon: Users, color: "var(--secondary-text)", label: "Meeting" },
+  event: { icon: CalendarDays, color: "var(--secondary-text)", label: "Event" },
   personal: { icon: Heart, color: "var(--success)", label: "Personal" },
   reminder: { icon: Bell, color: "var(--warning)", label: "Reminder" },
   date: { icon: Star, color: "var(--danger)", label: "Important date" },
@@ -20,9 +20,10 @@ function iconFor(it: UpcomingItem) {
   return TYPE_META[it.type].icon;
 }
 
-export function Upcoming({ data, className }: { data: DashboardData; className?: string }) {
+/** The next seven days as a timeline: tasks, events and reminders grouped by day. */
+export function Upcoming({ days, className }: { days: UpcomingDay[]; className?: string }) {
   const router = useRouter();
-  const total = data.upcoming.reduce((s, d) => s + d.items.length, 0);
+  const total = days.reduce((s, d) => s + d.items.length, 0);
 
   const open = (it: UpcomingItem) => {
     if (it.type === "task") openTaskDialog({ id: it.id });
@@ -31,13 +32,13 @@ export function Upcoming({ data, className }: { data: DashboardData; className?:
   };
 
   return (
-    <Card className={cn("flex min-w-0 flex-col p-4 md:p-5", className)}>
+    <Card className={cn("flex min-w-0 flex-col p-4 md:p-5", className)} role="region" aria-labelledby="upcoming-title">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="flex items-center gap-2 text-[15px] font-semibold">
-            <CalendarClock className="h-4 w-4 text-primary" /> Upcoming
-          </h2>
-          <p className="mt-0.5 text-[12px] text-fg-3">
+          <h3 id="upcoming-title" className="font-display flex items-center gap-2 text-[17px] font-semibold">
+            <CalendarClock className="h-4 w-4 text-primary" aria-hidden /> Upcoming
+          </h3>
+          <p className="mt-0.5 text-[12.5px] text-fg-2">
             Next 7 days{total ? ` · ${total} ${total === 1 ? "item" : "items"}` : ""}
           </p>
         </div>
@@ -50,8 +51,8 @@ export function Upcoming({ data, className }: { data: DashboardData; className?:
           <p className="mt-0.5 text-[12px] text-fg-3">Tasks with due dates, events and reminders show up here.</p>
         </div>
       ) : (
-        <div className="scroll-thin -mx-1 mt-3 max-h-[560px] flex-1 overflow-y-auto px-1 xl:max-h-none xl:min-h-0">
-          {data.upcoming.map((day) => (
+        <div className="scroll-thin -mx-1 mt-3 max-h-[440px] flex-1 overflow-y-auto px-1" tabIndex={0} aria-label="Upcoming items">
+          {days.map((day) => (
             <section key={day.key} className="mb-3 last:mb-0" aria-label={day.label}>
               <h3 className="sticky top-0 z-[1] bg-surface py-1.5 text-[12px] font-semibold text-fg-2">
                 {day.label}
@@ -68,7 +69,7 @@ export function Upcoming({ data, className }: { data: DashboardData; className?:
                       <span className="absolute top-[15px] -left-[4.5px] h-2 w-2 rounded-full ring-[3px] ring-surface" style={{ background: dot }} />
                       <button
                         onClick={() => open(it)}
-                        className="group ml-2.5 flex w-[calc(100%-10px)] items-center gap-2.5 rounded-[10px] px-2 py-2 text-left transition-colors hover:bg-surface-2"
+                        className="group ml-2.5 flex min-h-11 w-[calc(100%-10px)] items-center gap-2.5 rounded-[10px] px-2 py-2 text-left outline-none transition-colors hover:bg-surface-2 focus-visible:ring-3 focus-visible:ring-primary/30"
                       >
                         <span
                           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"

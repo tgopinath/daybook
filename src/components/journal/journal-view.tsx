@@ -86,7 +86,8 @@ export function JournalView() {
   // `/journal?new=1` (dashboard / search quick actions) starts today's entry straight away.
   const handledNew = useRef(false);
   useEffect(() => {
-    if (params.get("new") === "1" && !handledNew.current) {
+    if (params.get("new") !== "1") handledNew.current = false; // ready for the next ?new=1 (the "New" menu)
+    else if (!handledNew.current) {
       handledNew.current = true;
       void create();
     }

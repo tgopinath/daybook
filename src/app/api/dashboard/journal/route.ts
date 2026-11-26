@@ -21,7 +21,7 @@ function toDoc(text: string) {
   return { type: "doc", content };
 }
 
-/** Quick journal entry from the Overview: a finished (non-draft) entry dated today. */
+/** Quick journal entry from the My space Journal widget: a finished (non-draft) entry dated today. */
 export const POST = route(async ({ req, user }) => {
   const { content } = await body(req, input);
   const text = content.replace(/\r\n/g, "\n");

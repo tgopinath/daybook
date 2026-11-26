@@ -9,8 +9,8 @@ export const dynamic = "force-dynamic";
 
 /** Safe in-app path to continue to after the demo account is ready. */
 function nextPath(req: NextRequest) {
-  const next = req.nextUrl.searchParams.get("next") ?? "/overview";
-  return next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/api/") ? next : "/overview";
+  const next = req.nextUrl.searchParams.get("next") ?? "/my-space";
+  return next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/api/") ? next : "/my-space";
 }
 
 /**

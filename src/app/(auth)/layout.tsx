@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function AuthLayout({ children }: { children: React.ReactNode }) {
-  if (await getCurrentUser()) redirect("/overview");
+  if (await getCurrentUser()) redirect("/my-space");
   return (
     <main className="flex min-h-dvh bg-surface">
       {/* Brand panel — desktop only */}

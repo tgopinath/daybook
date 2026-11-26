@@ -1,7 +1,7 @@
 {
   "name": "MyDiary \u2014 Personal AI Dashboard",
   "short_name": "MyDiary",
-  "start_url": "/overview",
+  "start_url": "/my-space",
   "display": "standalone",
   "background_color": "#FFFFFF",
   "theme_color": "#635BFF",

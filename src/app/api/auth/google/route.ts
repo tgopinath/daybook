@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   if (!throttle(`google:${ip}`, 30)) return loginError(req, "too_many_attempts");
 
   const rawNext = req.nextUrl.searchParams.get("next") ?? "";
-  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") && !rawNext.startsWith("/api/") ? rawNext : "/overview";
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") && !rawNext.startsWith("/api/") ? rawNext : "/my-space";
   const rawTz = req.nextUrl.searchParams.get("tz") ?? "";
   const attempt = newOAuthAttempt(next, isValidTz(rawTz) ? rawTz : "UTC");
 

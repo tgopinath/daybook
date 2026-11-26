@@ -1,6 +1,6 @@
 import {
-  LayoutDashboard, LayoutGrid, CheckSquare, Target, CalendarDays, Bell, Repeat, StickyNote, Shield,
-  Sparkles, CalendarClock, Zap, BarChart3, Archive, Trash2, Settings, BookOpen, Heart, Smile,
+  LayoutGrid, CheckSquare, Target, CalendarDays, Bell, Repeat, StickyNote, Shield,
+  Briefcase, CalendarClock, Zap, BarChart3, Archive, Trash2, Settings, BookOpen, Heart, Smile,
   Images, Mountain, History, Camera, ClipboardCheck, Wallet, Cloud, ShieldCheck, type LucideIcon,
 } from "lucide-react";
 
@@ -43,19 +43,21 @@ const ALL_NAV: NavGroup[] = [
   {
     section: "Workspace",
     items: [
-      { label: "Overview", href: "/overview", icon: LayoutDashboard },
-      { label: "My space", href: "/my-space", icon: LayoutGrid, match: MY_SPACE_PAGES.map((i) => i.href!) },
+      // The home page (Overview was merged into it; /overview redirects here).
+      { label: "My space", href: "/my-space", icon: LayoutGrid, match: ["/overview", ...MY_SPACE_PAGES.map((i) => i.href!)] },
     ],
   },
   { section: "My space", hidden: true, items: MY_SPACE_PAGES },
   {
     section: "Personal Collections",
-    items: [{ label: "Photo Diary", href: "/photos", icon: Camera }],
+    items: [
+      { label: "Photo Diary", href: "/photos", icon: Camera },
+      { label: "My portfolio", href: "/portfolio", icon: Briefcase },
+    ],
   },
   {
     section: "Smart Tools",
     items: [
-      { label: "AI Assistant", href: "/assistant", icon: Sparkles },
       { label: "Daily Planner", href: "/planner", icon: CalendarClock },
       { label: "Weekly Review", href: "/weekly-review", icon: ClipboardCheck },
       { label: "Quick Capture", icon: Zap, action: "quick-capture", shortcut: "⌘K" },
@@ -74,7 +76,7 @@ const ALL_NAV: NavGroup[] = [
 
 /**
  * Every live destination. Pages still being built (`ready: false`) are left out so nothing links to an
- * unfinished page; the Overview's spaces cards and My space widgets use this to decide what to show.
+ * unfinished page; My space widgets use this to decide what to show.
  */
 export const NAV: NavGroup[] = ALL_NAV.map((g) => ({ ...g, items: g.items.filter((i) => i.ready !== false) })).filter((g) => g.items.length > 0);
 
@@ -99,8 +101,8 @@ export function mySpacePageAt(pathname: string): NavItem | undefined {
 }
 
 export const MOBILE_NAV: NavItem[] = [
-  { label: "Overview", href: "/overview", icon: LayoutDashboard },
-  { label: "My space", href: "/my-space", icon: LayoutGrid, match: MY_SPACE_PAGES.filter((i) => i.href !== "/calendar").map((i) => i.href!) },
+  { label: "My space", href: "/my-space", icon: LayoutGrid, match: MY_SPACE_PAGES.filter((i) => !["/calendar", "/tasks"].includes(i.href!)).map((i) => i.href!) },
+  { label: "Tasks", href: "/tasks", icon: CheckSquare },
   { label: "Capture", icon: Zap, action: "quick-capture" },
   { label: "Calendar", href: "/calendar", icon: CalendarDays },
 ];

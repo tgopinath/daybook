@@ -9,7 +9,7 @@ import { useMe } from "@/lib/use-me";
 import { cn, initials } from "@/lib/utils";
 import { Menu } from "@/components/ui/menu";
 import { api } from "@/lib/client";
-import { openTaskDialog } from "@/components/tasks/task-dialog";
+import { CreateMenu } from "./create-menu";
 
 export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -90,14 +90,28 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
       </div>
 
       <div className={cn("px-3 pb-2", collapsed && "px-2")}>
-        <button
-          onClick={() => { openTaskDialog(); onNavigate?.(); }}
-          className={cn("flex h-9 w-full items-center gap-2 rounded-[10px] bg-primary px-3 text-[13.5px] font-medium text-on-primary shadow-[0_1px_2px_rgba(99,91,255,.25)] hover:bg-primary-hover", collapsed && "justify-center px-0")}
-          title="New task (N)"
-        >
-          <Plus className="h-4 w-4" />
-          {!collapsed && <span>New task</span>}
-        </button>
+        <CreateMenu
+          onNavigate={onNavigate}
+          trigger={
+            <button
+              type="button"
+              className={cn(
+                "flex h-9 w-full items-center gap-2 rounded-[10px] bg-primary px-3 text-[13.5px] font-medium text-on-primary shadow-sm outline-none hover:bg-primary-hover focus-visible:ring-3 focus-visible:ring-primary/30",
+                collapsed && "justify-center px-0",
+              )}
+              title={collapsed ? "New…" : "Create a task, entry, event and more"}
+              aria-label={collapsed ? "New" : undefined}
+            >
+              <Plus className="h-4 w-4" aria-hidden />
+              {!collapsed && (
+                <>
+                  <span className="flex-1 text-left">New</span>
+                  <ChevronDown className="h-4 w-4" aria-hidden />
+                </>
+              )}
+            </button>
+          }
+        />
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 pb-3 scroll-thin" style={collapsed ? { paddingInline: 8 } : undefined}>

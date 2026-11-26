@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { Check, Heart, Image as ImageIcon, KeyRound, Lock, Pin, Plus, Sparkles, Upload } from "lucide-react";
-import { Checkbox } from "@/components/ui/input";
+import { Check, Heart, Image as ImageIcon, KeyRound, Lock, NotebookPen, Pin, Plus, Sparkles, Upload } from "lucide-react";
+import { Checkbox, Textarea } from "@/components/ui/input";
 import { Badge, PRIORITY_META, Progress } from "@/components/ui/misc";
 import { toast, toastError } from "@/components/ui/toast";
 import { MediaThumb } from "@/components/media/media";
@@ -11,10 +11,10 @@ import { completeWithUndo } from "@/components/tasks/actions";
 import { openEventDialog } from "@/components/calendar/event-dialog";
 import { openTxDialog } from "@/components/finance/transaction-dialog";
 import { api, refresh, SUMMARY_KEYS } from "@/lib/client";
-import { MOODS, moodMeta, type Mood } from "@/lib/moods";
+import { moodMeta } from "@/lib/moods";
 import { cn } from "@/lib/utils";
 import type { MySpaceWidgetId, WidgetSize } from "./registry";
-import type { MySpaceSections } from "./types";
+import type { MySpaceSections, SectionId } from "./types";
 import { WidgetCard, WidgetEmpty, actionCls, secondaryActionCls } from "./widget-card";
 
 export type Common = {
@@ -24,7 +24,7 @@ export type Common = {
   onRetry: () => void;
   todayKey: string;
   /** Optimistically patch this widget's section in the cached response. */
-  patch: <K extends MySpaceWidgetId>(id: K, fn: (s: NonNullable<MySpaceSections[K]>) => NonNullable<MySpaceSections[K]>) => void;
+  patch: <K extends SectionId>(id: K, fn: (s: NonNullable<MySpaceSections[K]>) => NonNullable<MySpaceSections[K]>) => void;
   /** Re-fetch just this widget's section. */
   reload: () => void;
 };
@@ -109,7 +109,7 @@ export function GoalsWidget(p: P<"goals">) {
       {...shell("goals", p)}
       stat={d ? (d.active ? `${plural(d.active, "active goal")} · ${d.avgProgress}% average` : "No active goals") : null}
       action={
-        <Link href="/goals" className={actionCls}>
+        <Link href="/goals?new=1" className={actionCls}>
           <Plus className="h-4 w-4" aria-hidden /> Goal
         </Link>
       }
@@ -185,7 +185,7 @@ export function RemindersWidget(p: P<"reminders">) {
       {...shell("reminders", p)}
       stat={d ? (next ? `Next: ${next.dayLabel === "Today" ? next.time : `${next.dayLabel}, ${next.time}`}` : d.active ? `${d.active} active` : "No reminders set") : null}
       action={
-        <Link href="/reminders" className={actionCls}>
+        <Link href="/reminders?new=1" className={actionCls}>
           <Plus className="h-4 w-4" aria-hidden /> Reminder
         </Link>
       }
@@ -246,7 +246,7 @@ export function HabitsWidget(p: P<"habits">) {
       {...shell("habits", p)}
       stat={d ? (d.scheduled ? `${d.done} of ${d.scheduled} done today` : "No habits today") : null}
       action={
-        <Link href="/habits" className={d?.items.length ? secondaryActionCls : actionCls}>
+        <Link href="/habits?new=1" className={d?.items.length ? secondaryActionCls : actionCls}>
           <Plus className="h-4 w-4" aria-hidden /> Habit
         </Link>
       }
@@ -333,18 +333,75 @@ export function JournalWidget(p: P<"journal">) {
   const d = p.data;
   const l = d?.latest;
   const m = moodMeta(l?.mood);
+  const [text, setText] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState<string | null>(null);
+
+  /** Quick write: a finished (non-draft) entry dated today. */
+  async function save() {
+    const content = text.trim();
+    if (!content) return;
+    setSaving(true);
+    try {
+      const { entry } = await api.post<{ entry: { id: string } }>("/api/dashboard/journal", { content });
+      setText("");
+      setSaved(entry.id);
+      p.patch("journal", (s) => ({ ...s, todayCount: s.todayCount + 1, total: s.total + 1 }));
+      toast.success("Saved to your journal");
+      refresh("/api/journal", "/api/weekly-review", ...SUMMARY_KEYS);
+    } catch (err) {
+      toastError(err);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <WidgetCard
       {...shell("journal", p)}
-      stat={d ? (d.todayCount ? "You've written today" : d.streak >= 2 ? `${d.streak}-day streak` : d.total ? plural(d.total, "entry", "entries") : "A fresh notebook") : null}
+      stat={d ? (d.todayCount ? `You've written today${d.streak >= 2 ? ` · ${d.streak}-day streak` : ""}` : d.streak >= 2 ? `${d.streak}-day streak` : d.total ? plural(d.total, "entry", "entries") : "A fresh notebook") : null}
       action={
-        <Link href="/journal?new=1" className={actionCls}>
-          <Sparkles className="h-4 w-4" aria-hidden /> {d?.todayCount ? "Write more" : "Write today"}
-        </Link>
+        <>
+          <button type="button" className={actionCls} onClick={() => void save()} disabled={saving || !text.trim()} aria-busy={saving || undefined}>
+            <NotebookPen className="h-4 w-4" aria-hidden /> {saving ? "Saving…" : "Save entry"}
+          </button>
+          <Link href="/journal?new=1" className={secondaryActionCls}>
+            <Sparkles className="h-4 w-4" aria-hidden /> Full editor
+          </Link>
+        </>
       }
     >
-      {l ? (
-        <Link href={`/journal?id=${l.id}`} className={cn(rowLink, "items-start")}>
+      <label htmlFor="ms-journal-quick" className="sr-only">
+        What&apos;s on your mind today?
+      </label>
+      <Textarea
+        id="ms-journal-quick"
+        value={text}
+        onChange={(e) => {
+          setText(e.target.value);
+          if (saved) setSaved(null);
+        }}
+        onKeyDown={(e) => {
+          if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+            e.preventDefault();
+            void save();
+          }
+        }}
+        placeholder="What's on your mind today?"
+        maxLength={20000}
+        className="min-h-[88px] resize-none"
+      />
+      <p className="mt-1.5 text-[12px] text-fg-2" aria-live="polite">
+        {saved ? (
+          <Link href={`/journal?id=${saved}`} className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
+            <Check className="h-3.5 w-3.5" aria-hidden /> Saved · Open in Journal
+          </Link>
+        ) : (
+          "Saved as today's entry. ⌘ + Enter to save."
+        )}
+      </p>
+      {l && (
+        <Link href={`/journal?id=${l.id}`} className={cn(rowLink, "mt-2 items-start")}>
           {m && (
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[20px]" style={{ background: `color-mix(in oklab, ${m.color} 22%, var(--surface))` }} aria-hidden>
               {m.emoji}
@@ -364,8 +421,6 @@ export function JournalWidget(p: P<"journal">) {
             {l.wordCount > 0 && <span className="block text-[12px] text-fg-2">{plural(l.wordCount, "word")}</span>}
           </span>
         </Link>
-      ) : (
-        <WidgetEmpty>What&apos;s on your mind today? A few lines is plenty.</WidgetEmpty>
       )}
     </WidgetCard>
   );
@@ -381,7 +436,7 @@ export function GratitudeWidget(p: P<"gratitude">) {
       stat={d ? (d.today ? (d.streak >= 2 ? `Done today · ${d.streak}-day streak` : "Done today") : d.streak ? `${d.streak}-day streak, keep it going` : "Not yet today") : null}
       action={
         <Link href="/gratitude" className={d?.today ? secondaryActionCls : actionCls}>
-          <Heart className="h-4 w-4" aria-hidden /> {d?.today ? "Edit today" : "Add three things"}
+          <Heart className="h-4 w-4" aria-hidden /> {d?.today ? "Edit today" : "Add today's gratitude"}
         </Link>
       }
     >
@@ -401,123 +456,6 @@ export function GratitudeWidget(p: P<"gratitude">) {
   );
 }
 
-// ------------------------------------------------------------------ mood
-
-export function MoodWidget(p: P<"mood">) {
-  const d = p.data;
-  const [busy, setBusy] = useState<Mood | null>(null);
-  const [again, setAgain] = useState(false);
-  const today = d?.today;
-  const m = moodMeta(today?.mood);
-
-  async function log(mood: Mood) {
-    setBusy(mood);
-    try {
-      const { item } = await api.post<{ item: { id: string; mood: Mood; loggedAt: string } }>("/api/mood", { mood, intensity: 3 });
-      const prev = d?.today ?? null;
-      p.patch("mood", (s) => ({
-        ...s,
-        today: { id: item.id, mood: item.mood, loggedAt: item.loggedAt, count: (s.today?.count ?? 0) + 1 },
-        week: s.week.map((w) => (w.day === p.todayKey ? { ...w, mood } : w)),
-      }));
-      setAgain(false);
-      toast.undo(`Logged: feeling ${moodMeta(mood)?.label.toLowerCase()}`, async () => {
-        try {
-          await api.delete(`/api/mood/${item.id}`);
-          p.patch("mood", (s) => ({ ...s, today: prev, week: s.week.map((w) => (w.day === p.todayKey ? { ...w, mood: prev?.mood ?? null } : w)) }));
-        } catch (err) {
-          toastError(err);
-        } finally {
-          refresh("/api/mood", "/api/weekly-review", ...SUMMARY_KEYS);
-        }
-      });
-      refresh("/api/mood", "/api/weekly-review", ...SUMMARY_KEYS);
-    } catch (err) {
-      toastError(err);
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  return (
-    <WidgetCard
-      {...shell("mood", p)}
-      stat={d ? (m ? `Feeling ${m.label.toLowerCase()} today` : d.streak ? `${d.streak}-day check-in streak` : "How are you feeling?") : null}
-      action={
-        <Link href="/mood" className={secondaryActionCls}>
-          Add details
-        </Link>
-      }
-    >
-      {today && m && !again ? (
-        <div className="flex items-center gap-3">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-[28px]" style={{ background: `color-mix(in oklab, ${m.color} 24%, var(--surface))` }} aria-hidden>
-            {m.emoji}
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="font-display text-[17px] font-semibold text-fg">Feeling {m.label.toLowerCase()}</p>
-            <p className="text-[12px] text-fg-2">
-              {new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" }).format(new Date(today.loggedAt))}
-              {today.count > 1 ? ` · ${today.count} check-ins today` : ""}
-            </p>
-          </div>
-          <button type="button" className={secondaryActionCls} onClick={() => setAgain(true)}>
-            Again
-          </button>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-4 gap-1.5" role="group" aria-label="Log your mood">
-            {MOODS.map((x) => (
-              <button
-                key={x.value}
-                type="button"
-                disabled={!!busy}
-                onClick={() => void log(x.value)}
-                aria-label={x.label}
-                className={cn(
-                  "flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-[12px] border border-line bg-surface outline-none transition-colors hover:bg-surface-2 focus-visible:ring-3 focus-visible:ring-primary/30 disabled:opacity-60",
-                  busy === x.value && "border-primary",
-                )}
-              >
-                <span className="text-[22px] leading-none" aria-hidden>
-                  {x.emoji}
-                </span>
-                <span className="text-[11px] font-medium text-fg-2">{x.label}</span>
-              </button>
-            ))}
-          </div>
-          {again && (
-            <button type="button" onClick={() => setAgain(false)} className="mt-2 min-h-9 self-start text-[12.5px] font-medium text-fg-2 hover:text-fg hover:underline">
-              Cancel
-            </button>
-          )}
-        </>
-      )}
-      {d && (
-        <ul className="mt-3 flex justify-between gap-1" aria-label="Last seven days">
-          {d.week.map((w) => {
-            const wm = moodMeta(w.mood);
-            return (
-              <li key={w.day} className="flex flex-1 flex-col items-center gap-0.5" title={`${w.label}: ${wm ? wm.label : "no check-in"}`}>
-                <span className={cn("flex h-7 w-7 items-center justify-center rounded-full text-[15px]", !wm && "bg-surface-2")} aria-hidden>
-                  {wm?.emoji ?? ""}
-                </span>
-                <span className="text-[10.5px] font-medium text-fg-2" aria-hidden>
-                  {w.label === "Today" ? "Today" : w.label.slice(0, 3)}
-                </span>
-                <span className="sr-only">
-                  {w.label}: {wm ? wm.label : "no check-in"}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </WidgetCard>
-  );
-}
-
 // ------------------------------------------------------------------ memories
 
 export function MemoriesWidget(p: P<"memories">) {
@@ -528,7 +466,7 @@ export function MemoriesWidget(p: P<"memories">) {
       {...shell("memories", p)}
       stat={d ? (d.total ? plural(d.total, "memory", "memories") : "No memories yet") : null}
       action={
-        <Link href="/memories" className={actionCls}>
+        <Link href="/memories?new=1" className={actionCls}>
           <Plus className="h-4 w-4" aria-hidden /> Memory
         </Link>
       }

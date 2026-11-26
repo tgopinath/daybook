@@ -22,7 +22,7 @@ const ERRORS: Record<string, string> = {
 };
 
 function safeNext(next: string | null) {
-  return next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/api/") ? next : "/overview";
+  return next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/api/") ? next : "/my-space";
 }
 
 /** Re-enable buttons when the page comes back from the back/forward cache after a redirect. */

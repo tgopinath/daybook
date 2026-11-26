@@ -3,7 +3,7 @@ import { Menu as MenuIcon, Search, Sparkles, Plus } from "lucide-react";
 import { ui, openSearch, toggleAIPanel } from "@/lib/ui-store";
 import { Kbd } from "@/components/ui/misc";
 import { NotificationBell } from "@/components/notifications/notification-center";
-import { openTaskDialog } from "@/components/tasks/task-dialog";
+import { CreateMenu } from "./create-menu";
 import { cn } from "@/lib/utils";
 
 export function Topbar() {
@@ -24,9 +24,14 @@ export function Topbar() {
       </button>
       <div className="ml-auto flex items-center gap-1">
         <NotificationBell />
-        <button onClick={() => openTaskDialog()} className="hidden h-9 items-center gap-1.5 rounded-[10px] px-2.5 text-[13.5px] font-medium text-fg-2 hover:bg-surface-2 hover:text-fg sm:flex" title="Quick add task (N)">
-          <Plus className="h-4 w-4" /> Add
-        </button>
+        <CreateMenu
+          align="end"
+          trigger={
+            <button type="button" className="hidden h-9 items-center gap-1.5 rounded-[10px] px-2.5 text-[13.5px] font-medium text-fg-2 outline-none hover:bg-surface-2 hover:text-fg focus-visible:ring-3 focus-visible:ring-primary/30 sm:flex" title="Create something new">
+              <Plus className="h-4 w-4" aria-hidden /> Add
+            </button>
+          }
+        />
         <button
           onClick={() => toggleAIPanel()}
           className={cn(

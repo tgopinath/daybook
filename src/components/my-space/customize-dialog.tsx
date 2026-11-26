@@ -9,7 +9,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/input";
 import { Segmented } from "@/components/ui/misc";
 import { cn } from "@/lib/utils";
-import { mySpaceMeta, type MySpacePref, type WidgetSize } from "./registry";
+import { PAGE_SECTIONS, mySpaceMeta, type MySpaceLayout, type MySpacePref, type SectionPrefs, type WidgetSize } from "./registry";
 import { WIDGET_ICONS } from "./widget-card";
 
 function Row({ pref, onChange }: { pref: MySpacePref; onChange: (p: MySpacePref) => void }) {
@@ -62,14 +62,18 @@ export function CustomizeMySpace({
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
-  layout: MySpacePref[];
+  layout: MySpaceLayout;
   saving: boolean;
-  onSave: (widgets: MySpacePref[]) => void;
+  onSave: (layout: MySpaceLayout) => void;
   onReset: () => void;
 }) {
-  const [items, setItems] = useState(layout);
+  const [items, setItems] = useState(layout.widgets);
+  const [sections, setSections] = useState<SectionPrefs>(layout.sections);
   useEffect(() => {
-    if (open) setItems(layout);
+    if (open) {
+      setItems(layout.widgets);
+      setSections(layout.sections);
+    }
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sensors = useSensors(
@@ -90,7 +94,7 @@ export function CustomizeMySpace({
       open={open}
       onOpenChange={onOpenChange}
       title="Customise My space"
-      description="Drag to reorder, choose a size, switch off what you don't need."
+      description="Choose the sections you want, then drag to reorder your spaces, pick a size and switch off what you don't need."
       size="md"
       footer={
         <>
@@ -100,12 +104,25 @@ export function CustomizeMySpace({
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button loading={saving} onClick={() => onSave(items)}>
+          <Button loading={saving} onClick={() => onSave({ sections, widgets: items })}>
             Save
           </Button>
         </>
       }
     >
+      <h3 className="mb-1.5 text-[12px] font-semibold tracking-wide text-fg-2 uppercase">Sections</h3>
+      <ul className="mb-5 flex flex-col gap-1.5">
+        {PAGE_SECTIONS.map((sec) => (
+          <li key={sec.id} className="flex items-center gap-3 rounded-[12px] border border-line bg-surface px-3 py-2.5">
+            <div className="min-w-0 flex-1">
+              <div className="text-[13.5px] font-medium text-fg">{sec.label}</div>
+              <div className="truncate text-[12px] text-fg-2">{sec.description}</div>
+            </div>
+            <Switch checked={sections[sec.id]} onChange={(v) => setSections((s) => ({ ...s, [sec.id]: v }))} label={`Show ${sec.label}`} />
+          </li>
+        ))}
+      </ul>
+      <h3 className="mb-1.5 text-[12px] font-semibold tracking-wide text-fg-2 uppercase">Your spaces</h3>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
         <SortableContext items={items.map((w) => w.id)} strategy={verticalListSortingStrategy}>
           <ul className="flex flex-col gap-1.5">

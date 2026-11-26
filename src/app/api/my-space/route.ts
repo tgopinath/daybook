@@ -1,13 +1,13 @@
 import { db } from "@/lib/db";
 import { route, tzOf } from "@/lib/api";
-import { addDaysKey, dayKey, dayRange } from "@/lib/time";
+import { addDaysKey, dayKey, dayRange, greeting } from "@/lib/time";
 import { checkinStreaks } from "@/lib/mood";
 import type { Mood } from "@/lib/moods";
 import { formatMoney } from "@/lib/money";
 import { budgetProgress } from "@/lib/finance";
-import { readWidgetStore } from "@/components/dashboard/widgets";
-import { MY_SPACE_IDS, normalizeMySpace, type MySpaceWidgetId } from "@/components/my-space/registry";
-import type { MediaLite, MySpaceData, MySpaceSections } from "@/components/my-space/types";
+import { readMySpaceLayout } from "@/components/my-space/registry";
+import { SECTION_IDS, type MediaLite, type MySpaceData, type MySpaceSections, type SectionId } from "@/components/my-space/types";
+import { focus, upcoming, week, type Ctx } from "./_lib/today";
 import {
   currentStreak,
   eventOccurrences,
@@ -27,8 +27,6 @@ import {
 const OPEN = ["NOT_STARTED", "IN_PROGRESS"] as const;
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const MONTHS_LONG = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-type Ctx = { userId: string; tz: string; now: Date; todayKey: string; todayStart: Date; todayEnd: Date };
 
 /** "25 Nov" (this year) or "25 Nov 2024". */
 function keyLabel(key: string, todayKey: string | null) {
@@ -402,7 +400,10 @@ async function finance({ userId, todayKey }: Ctx): Promise<MySpaceSections["fina
   };
 }
 
-const SECTIONS: { [K in MySpaceWidgetId]: (ctx: Ctx) => Promise<MySpaceSections[K]> } = {
+const SECTIONS: { [K in SectionId]: (ctx: Ctx) => Promise<MySpaceSections[K]> } = {
+  focus,
+  upcoming,
+  week,
   tasks,
   goals,
   calendar,
@@ -421,9 +422,25 @@ const SECTIONS: { [K in MySpaceWidgetId]: (ctx: Ctx) => Promise<MySpaceSections[
   finance,
 };
 
+/** Gentle one-liner under the greeting, from sections already loaded (nothing is computed twice). */
+function subtitleOf(s: Partial<MySpaceSections>): string | null {
+  const journalStreak = s.journal?.streak ?? 0;
+  const gratitudeStreak = s.gratitude?.streak ?? 0;
+  const moodStreak = s.mood?.streak ?? 0;
+  const doneToday = s.tasks?.completedToday ?? 0;
+  const best = (s.habits?.items ?? []).reduce<{ name: string; streak: number } | null>((b, h) => (h.streak > (b?.streak ?? 0) ? { name: h.name, streak: h.streak } : b), null);
+  if (journalStreak >= 2) return `You've journaled ${journalStreak} days in a row.`;
+  if (gratitudeStreak >= 2) return `${gratitudeStreak} days of gratitude in a row — lovely.`;
+  if (moodStreak >= 3) return `You've checked in with yourself ${moodStreak} days running.`;
+  if (doneToday > 0) return `${doneToday} ${doneToday === 1 ? "task" : "tasks"} done already today. Nice pace.`;
+  if (best && best.streak >= 3) return `${best.name} is on a ${best.streak}-day streak.`;
+  return "A fresh page — what would make today good?";
+}
+
 /**
- * Everything My space shows, in one request. Sections run in parallel and fail on their own (null),
- * so one broken module never blanks the page. `?only=tasks,habits` recomputes just those (used by retry).
+ * Everything My space shows (the home page), in one request: the greeting, Today (focus, mood, upcoming),
+ * the module widgets and This week. Sections run in parallel and fail on their own (null), so one broken
+ * module never blanks the page. `?only=focus,habits` recomputes just those (used by card retries).
  */
 export const GET = route(async ({ req, user }) => {
   const tz = tzOf(req);
@@ -433,7 +450,7 @@ export const GET = route(async ({ req, user }) => {
   const ctx: Ctx = { userId: user.id, tz, now, todayKey, todayStart, todayEnd };
 
   const only = req.nextUrl.searchParams.get("only");
-  const wanted = only ? MY_SPACE_IDS.filter((id) => only.split(",").includes(id)) : MY_SPACE_IDS;
+  const wanted = only ? SECTION_IDS.filter((id) => only.split(",").includes(id)) : SECTION_IDS;
 
   const [settings, ...results] = await Promise.all([
     db.userSettings.findUnique({ where: { userId: user.id }, select: { dashboardWidgets: true } }).catch(() => null),
@@ -447,11 +464,18 @@ export const GET = route(async ({ req, user }) => {
 
   const sections: Record<string, unknown> = {};
   wanted.forEach((id, i) => (sections[id] = results[i] ?? null));
+  const typed = sections as MySpaceData["sections"];
 
   const data: MySpaceData = {
-    today: { key: todayKey, label: longDayLabel(todayKey) },
-    layout: normalizeMySpace(readWidgetStore(settings?.dashboardWidgets).mySpace),
-    sections: sections as MySpaceData["sections"],
+    today: {
+      key: todayKey,
+      label: longDayLabel(todayKey),
+      greeting: greeting(now, tz),
+      firstName: user.name?.trim().split(/\s+/)[0] ?? "",
+      subtitle: only ? null : subtitleOf(typed),
+    },
+    layout: readMySpaceLayout(settings?.dashboardWidgets),
+    sections: typed,
   };
   return data;
 });

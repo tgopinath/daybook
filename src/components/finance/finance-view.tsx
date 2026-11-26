@@ -107,6 +107,16 @@ export function FinanceView() {
     [pathname, view],
   );
 
+  // /finance?add=expense|income (the "New" menu, My space) opens the transaction form.
+  const add = params.get("add");
+  useEffect(() => {
+    if (add !== "expense" && add !== "income") return;
+    const sp = new URLSearchParams(params.toString());
+    sp.delete("add");
+    router.replace(`${pathname}${sp.toString() ? `?${sp}` : ""}`, { scroll: false });
+    openTxDialog({ preset: { type: add } });
+  }, [add]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Back from Google's consent screen: ?gds=connected resumes the pending export.
   const handled = useRef(false);
   useEffect(() => {

@@ -42,7 +42,7 @@ function useShortcuts() {
       // "g" then a letter jumps to a section, like Linear.
       if (e.key.toLowerCase() === "g") { gPressed = Date.now(); return; }
       if (Date.now() - gPressed < 800) {
-        const map: Record<string, string> = { o: "/overview", m: "/my-space", t: "/tasks", g: "/goals", c: "/calendar", r: "/reminders", h: "/habits", n: "/notes", a: "/assistant", s: "/settings", i: "/insights", p: "/planner" };
+        const map: Record<string, string> = { o: "/my-space", m: "/my-space", t: "/tasks", g: "/goals", c: "/calendar", r: "/reminders", h: "/habits", n: "/notes", a: "/assistant", s: "/settings", i: "/insights", p: "/planner" };
         const to = map[e.key.toLowerCase()];
         if (to) { e.preventDefault(); router.push(to); }
         gPressed = 0;

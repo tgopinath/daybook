@@ -10,6 +10,7 @@ import { GoalDialog } from "@/components/goals/goal-dialog";
 import type { GoalListItem } from "@/components/goals/types";
 import { isDone, type TaskList, type WireTask } from "@/components/tasks/types";
 import { useApi } from "@/lib/client";
+import { useCreateParam } from "@/lib/use-create-param";
 import { GOAL_CATEGORIES } from "@/lib/goals";
 
 type StatusFilter = "ALL" | "ACTIVE" | "ON_HOLD" | "COMPLETED" | "ABANDONED";
@@ -22,6 +23,8 @@ export default function GoalsPage() {
   const [category, setCategory] = useState("");
   const [sort, setSort] = useState<Sort>("target");
   const [dialog, setDialog] = useState<{ open: boolean; goal: GoalListItem | null }>({ open: false, goal: null });
+  // /goals?new=1 (the "New" menu, My space) opens a blank goal.
+  useCreateParam("new", () => setDialog({ open: true, goal: null }));
   // Open tasks for the "next steps" on each card (one request, grouped here).
   const { data: taskData } = useApi<TaskList>("/api/tasks?view=active&counts=0");
   const tasksByGoal = useMemo(() => {

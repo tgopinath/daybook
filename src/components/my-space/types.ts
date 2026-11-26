@@ -1,7 +1,8 @@
 // Wire shape of GET /api/my-space. Every section is null when it failed to load
 // (the card then shows "Couldn't load" with a retry) — one broken module never blanks the page.
 import type { Mood } from "@/lib/moods";
-import type { MySpacePref, MySpaceWidgetId } from "./registry";
+import type { FocusTask, ReminderOccurrence, UpcomingDay } from "@/components/dashboard/types";
+import type { MySpaceLayout, MySpaceWidgetId } from "./registry";
 
 export type MediaLite = { id: string; kind: "image" | "video" | "audio" | "document"; url: string; originalName: string | null };
 
@@ -96,7 +97,34 @@ export interface FinanceSection {
   budget: { category: string; percent: number; state: "ok" | "warn" | "over"; spentLabel: string; limitLabel: string } | null;
 }
 
+export interface FocusSection {
+  tasks: FocusTask[];
+  suggested: FocusTask[];
+  /** Today's intention (belongs to the day it was written). */
+  statement: string | null;
+  reminders: ReminderOccurrence[];
+  /** Tasks due today (not cancelled) and how many of them are done. */
+  progress: { total: number; completed: number; percent: number };
+}
+export interface UpcomingSection {
+  days: UpcomingDay[];
+}
+export interface WeekSection {
+  start: string;
+  label: string;
+  tasksDone: number;
+  habitRate: number | null;
+  moodAvg: number | null;
+  moodDominant: Mood | null;
+  journalDays: number;
+  /** Days of the week so far, today included. */
+  elapsed: number;
+}
+
 export interface MySpaceSections {
+  focus: FocusSection | null;
+  upcoming: UpcomingSection | null;
+  week: WeekSection | null;
   tasks: TasksSection | null;
   goals: GoalsSection | null;
   calendar: CalendarSection | null;
@@ -116,9 +144,20 @@ export interface MySpaceSections {
 }
 
 export interface MySpaceData {
-  today: { key: string; label: string };
-  layout: MySpacePref[];
+  today: {
+    key: string;
+    label: string;
+    greeting: string;
+    firstName: string;
+    /** Gentle one-liner under the greeting, from the user's own data ("You've journaled 3 days in a row."). */
+    subtitle: string | null;
+  };
+  layout: MySpaceLayout;
   sections: Partial<MySpaceSections>;
 }
 
-export type SectionId = MySpaceWidgetId;
+/** Every independently loaded part of the page: the module widgets plus Today / This week / mood. */
+export type SectionId = keyof MySpaceSections;
+export const SECTION_IDS: SectionId[] = ["focus", "upcoming", "mood", "week", "tasks", "goals", "calendar", "reminders", "habits", "notes", "journal", "gratitude", "memories", "bucket", "timeline", "vault", "storage", "security", "finance"];
+/** Compile-time check that every widget has a section. */
+export type _WidgetsHaveSections = MySpaceWidgetId extends SectionId ? true : never;

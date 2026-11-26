@@ -39,6 +39,7 @@ import { MediaViewer } from "@/components/media/media";
 import { api, refresh, SUMMARY_KEYS, useApi } from "@/lib/client";
 import { uploadFile, type Media } from "@/lib/upload";
 import { cn } from "@/lib/utils";
+import { useCreateParam } from "@/lib/use-create-param";
 import { folderPath, isViewerKind, type DriveFileDTO, type DriveFilter, type DriveFolderDTO, type DriveSort, type SortDir } from "@/lib/drive";
 import { FolderTree, isFileDrag, useDropTarget, type DragPayload } from "./folder-tree";
 import { FileTile, FolderTile, ListHeader, ListRow, entryName, type Entry, type EntryHandlers } from "./entries";
@@ -314,6 +315,12 @@ export function DriveView() {
   const uploadTarget = browsing ? folderId : null;
   const fileInput = useRef<HTMLInputElement>(null);
   const pickFiles = () => fileInput.current?.click();
+  // /drive?upload=1 (the "New" menu): open the file picker. Browsers only allow that during a click, so after
+  // a page load we offer a one-tap "Choose files" instead; when the menu is used on this page, it opens straight away.
+  useCreateParam("upload", () => {
+    if (navigator.userActivation?.isActive) pickFiles();
+    else toast.info("Pick the files you'd like to upload.", { action: { label: "Choose files", onClick: pickFiles }, duration: 10000 });
+  });
 
   // Dropping files anywhere on the page uploads into the open folder.
   const [pageDrag, setPageDrag] = useState(false);

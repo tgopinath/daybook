@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   ArrowRight, Bell, BookOpen, CalendarDays, CheckSquare, ChevronDown, Cloud, Heart, History, Images, Mountain, Repeat, RotateCw, Shield,
-  ShieldCheck, Smile, StickyNote, Target, Wallet, type LucideIcon,
+  ShieldCheck, StickyNote, Target, Wallet, type LucideIcon,
 } from "lucide-react";
 import { Card, Skeleton } from "@/components/ui/misc";
 import { cn } from "@/lib/utils";
@@ -19,7 +19,6 @@ export const WIDGET_ICONS: Record<MySpaceWidgetId, LucideIcon> = {
   notes: StickyNote,
   journal: BookOpen,
   gratitude: Heart,
-  mood: Smile,
   memories: Images,
   bucket: Mountain,
   timeline: History,

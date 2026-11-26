@@ -61,7 +61,7 @@ Typography: page titles 22px semibold (use `PageHeader`), section titles 15px se
 - Uploads are refused for demo accounts and when no storage is configured (clear 403/503 messages) — surface the API error with `toastError`.
 
 ## Phase 1 data model
-See `prisma/schema.prisma` (section "Phase 1"): `JournalEntry` (+`JournalTag`, `JournalMedia`), `GratitudeEntry`, `MoodEntry`, `Album`, `Memory` (+`MemoryMedia`), `PhotoCollection`, `PhotoEntry`, `BucketItem`, `TimelineEvent` (+`TimelineMedia`), `WeeklyReview`; `UserSettings.dashboardWidgets` (Overview layout) and `googlePhotosTokenEnc/Expires`.
+See `prisma/schema.prisma` (section "Phase 1"): `JournalEntry` (+`JournalTag`, `JournalMedia`), `GratitudeEntry`, `MoodEntry`, `Album`, `Memory` (+`MemoryMedia`), `PhotoCollection`, `PhotoEntry`, `BucketItem`, `TimelineEvent` (+`TimelineMedia`), `WeeklyReview`; `UserSettings.dashboardWidgets` (My space layout: `{ mySpace: { v: 2, sections, widgets } }`, see `src/components/my-space/registry.ts`) and `googlePhotosTokenEnc/Expires`.
 Mood values everywhere: `happy | excited | calm | neutral | sad | anxious | stressed | angry` (shared metadata in `src/lib/moods.ts`). Day keys are `yyyy-MM-dd` in the user's timezone (`dayKey`/`tzOf`).
 Journal entries with `isPrivate` are excluded from global search previews and from anything sent to AI.
 

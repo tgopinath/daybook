@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
     const profile = await verifyIdToken(idToken, { clientId: cfg.clientId, nonce: attempt.nonce });
     const { user } = await upsertGoogleUser(profile, attempt.tz);
     await createSession(user.id);
-    return done(req, attempt.next || "/overview");
+    return done(req, attempt.next || "/my-space");
   } catch (err) {
     if (err instanceof GoogleAuthError) return fail(req, err.code === "email_unverified" ? "google_unverified" : "google_failed");
     console.error("[google] sign-in failed", err);

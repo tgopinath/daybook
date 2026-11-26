@@ -23,7 +23,7 @@ export function ProductivityOverview() {
   const header = (
     <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h2 className="text-[15px] font-semibold">Productivity overview</h2>
+        <h3 className="font-display text-[17px] font-semibold">Productivity overview</h3>
         <p className="mt-0.5 text-[12px] text-fg-3">
           {data
             ? `${data.totals.completed} tasks completed · ${data.totals.habitRate ?? 0}% habit consistency`

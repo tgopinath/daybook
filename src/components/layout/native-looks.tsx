@@ -20,7 +20,7 @@ declare global {
 }
 
 const TABS = [
-  { id: "overview", href: "/overview", label: "Overview", m3: "dashboard", ios: "square.grid.2x2" },
+  { id: "home", href: "/my-space", label: "My space", m3: "dashboard", ios: "square.grid.2x2" },
   { id: "tasks", href: "/tasks", label: "Tasks", m3: "task_alt", ios: "checkmark" },
   { id: "calendar", href: "/calendar", label: "Calendar", m3: "calendar_month", ios: "calendar" },
   { id: "habits", href: "/habits", label: "Habits", m3: "repeat", ios: "arrow.clockwise" },
@@ -57,7 +57,7 @@ export function NativeLooks() {
         ...TABS.map((t) => ({ id: t.id, label: t.label, icon: t.ios, href: t.href })),
         { id: "more", label: "More", icon: "ellipsis", href: "#more" },
       ],
-      currentTab: tabOf(location.pathname) ?? "overview",
+      currentTab: tabOf(location.pathname) ?? "home",
       onTabSelect: (id: string) => {
         const t = TABS.find((x) => x.id === id);
         if (t) go(t.href);
@@ -73,7 +73,7 @@ export function NativeLooks() {
       m3.current = window.KolamM3.init({
         primary: "#993399",
         title: "MyDiary",
-        home: "/overview",
+        home: "/my-space",
         destinations: [
           ...TABS.map((t) => ({ id: t.id, label: t.label, icon: t.m3, onSelect: () => go(t.href) })),
           { id: "more", label: "More", icon: "menu", onSelect: openMore },
@@ -104,14 +104,14 @@ export function NativeLooks() {
         { icon: "sparkles", label: "Assistant", onClick: () => toggleAIPanel() },
         { icon: "plus", label: "Quick capture", onClick: () => openQuickCapture() },
       ];
-      if (tab) K.navBar.set({ title, large: tab === "overview", actions });
-      else K.navBar.set({ title, back: { label: "Back", onClick: () => (history.length > 1 ? history.back() : router.push("/overview")) }, actions });
+      if (tab) K.navBar.set({ title, large: tab === "home", actions });
+      else K.navBar.set({ title, back: { label: "Back", onClick: () => (history.length > 1 ? history.back() : router.push("/my-space")) }, actions });
     } else if (m3.current) {
       const kit = m3.current;
       setTimeout(() => {
         kit.setTitle(title);
         kit.setActive(tab ?? "more");
-        kit.setBack(tab ? false : "/overview");
+        kit.setBack(tab ? false : "/my-space");
       });
     }
   }, [path, router]);

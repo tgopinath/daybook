@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import type { KeyedMutator } from "swr";
 import {
   DndContext,
   KeyboardSensor,
@@ -22,12 +21,16 @@ import { toast, toastError } from "@/components/ui/toast";
 import { openTaskDialog } from "@/components/tasks/task-dialog";
 import { api, refresh, SUMMARY_KEYS } from "@/lib/client";
 import { cn } from "@/lib/utils";
-import type { DashboardData, FocusTask, TaskStatusKey } from "./types";
+import type { FocusTask, TaskStatusKey } from "@/components/dashboard/types";
+import type { FocusSection } from "./types";
 
 const refreshAll = () => refresh("/api/dashboard", "/api/tasks", ...SUMMARY_KEYS);
 
-export function TodayFocus({ data, mutate }: { data: DashboardData; mutate: KeyedMutator<DashboardData> }) {
-  const focus = data.focus.tasks;
+type Patch = (fn: (f: FocusSection) => FocusSection) => void;
+
+/** Today's Focus: top three tasks (drag to reorder), today's intention and progress. */
+export function TodayFocus({ data, todayKey, patch }: { data: FocusSection; todayKey: string; patch: Patch }) {
+  const focus = data.tasks;
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 180, tolerance: 6 } }),
@@ -35,14 +38,14 @@ export function TodayFocus({ data, mutate }: { data: DashboardData; mutate: Keye
   );
 
   /** Persist a new focus list; optimistic, reverts on failure. */
-  async function saveFocus(next: FocusTask[], suggested = data.focus.suggested) {
+  async function saveFocus(next: FocusTask[], suggested = data.suggested) {
     const prev = data;
     const ranked = next.map((t, i) => ({ ...t, focusRank: i + 1 }));
-    await mutate({ ...data, focus: { ...data.focus, tasks: ranked, suggested } }, { revalidate: false });
+    patch((f) => ({ ...f, tasks: ranked, suggested }));
     try {
       await api.patch("/api/dashboard/focus", { taskIds: ranked.map((t) => t.id) });
     } catch (err) {
-      await mutate(prev, { revalidate: false });
+      patch(() => prev);
       toastError(err);
       return false;
     } finally {
@@ -64,7 +67,7 @@ export function TodayFocus({ data, mutate }: { data: DashboardData; mutate: Keye
     const before = focus;
     const ok = await saveFocus(
       focus.filter((t) => t.id !== task.id),
-      data.focus.suggested,
+      data.suggested,
     );
     if (ok) toast.undo("Removed from Today's Focus", () => void saveFocus(before));
   }
@@ -73,45 +76,44 @@ export function TodayFocus({ data, mutate }: { data: DashboardData; mutate: Keye
     if (focus.length >= 3) return toast.info("Today's Focus holds three tasks. Remove one first.");
     await saveFocus(
       [...focus, task],
-      data.focus.suggested.filter((t) => t.id !== task.id),
+      data.suggested.filter((t) => t.id !== task.id),
     );
   }
 
   async function setStatus(task: FocusTask, status: TaskStatusKey, prevStatus: TaskStatusKey, withUndo: boolean) {
-    const patch = (s: TaskStatusKey) => (d: DashboardData | undefined) =>
-      d && { ...d, focus: { ...d.focus, tasks: d.focus.tasks.map((t) => (t.id === task.id ? { ...t, status: s } : t)) } };
-    await mutate(patch(status), { revalidate: false });
+    const withStatus = (s: TaskStatusKey) => (f: FocusSection) => ({ ...f, tasks: f.tasks.map((t) => (t.id === task.id ? { ...t, status: s } : t)) });
+    patch(withStatus(status));
     try {
       await api.patch(`/api/tasks/${task.id}`, { status });
       if (withUndo && status === "COMPLETED") {
         toast.undo(`Completed “${task.title}”`, () => void setStatus(task, prevStatus, status, false));
       }
     } catch (err) {
-      await mutate(patch(prevStatus), { revalidate: false });
+      patch(withStatus(prevStatus));
       toastError(err);
     } finally {
       refreshAll();
     }
   }
 
-  const { tasks: todaySummary } = data;
-  const empty = focus.length === 0 && data.focus.suggested.length === 0;
+  const todaySummary = data.progress;
+  const empty = focus.length === 0 && data.suggested.length === 0;
 
   return (
-    <Card className="flex min-w-0 flex-col p-4 md:p-5">
+    <Card className="flex min-w-0 flex-col p-4 md:p-5" role="region" aria-labelledby="today-focus-title">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="flex items-center gap-2 text-[15px] font-semibold">
-            <Crosshair className="h-4 w-4 text-primary" /> Today&apos;s Focus
-          </h2>
-          <p className="mt-0.5 text-[12px] text-fg-3">Your top three priorities. Drag to reorder.</p>
+          <h3 id="today-focus-title" className="font-display flex items-center gap-2 text-[17px] font-semibold">
+            <Crosshair className="h-4 w-4 text-primary" aria-hidden /> Today&apos;s Focus
+          </h3>
+          <p className="mt-0.5 text-[12.5px] text-fg-2">Your top three priorities. Drag to reorder.</p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => openTaskDialog({ dueDate: data.today.key })}>
+        <Button variant="outline" size="sm" onClick={() => openTaskDialog({ dueDate: todayKey })}>
           <Plus className="h-3.5 w-3.5" /> Add task
         </Button>
       </div>
 
-      <FocusStatement statement={data.focus.statement} data={data} mutate={mutate} />
+      <FocusStatement statement={data.statement} patch={patch} />
 
       <div className="mt-4">
         <div className="mb-1.5 flex items-center justify-between text-[12px]">
@@ -142,13 +144,13 @@ export function TodayFocus({ data, mutate }: { data: DashboardData; mutate: Keye
           </DndContext>
         )}
 
-        {data.focus.suggested.length > 0 && (
+        {data.suggested.length > 0 && (
           <div className={cn(focus.length > 0 && "mt-4")}>
             <div className="mb-1.5 flex items-center gap-1.5 text-[11.5px] font-medium tracking-wide text-fg-3 uppercase">
               <Sparkles className="h-3 w-3" /> Suggested
             </div>
             <ul className="flex flex-col gap-1.5">
-              {data.focus.suggested.map((t) => (
+              {data.suggested.map((t) => (
                 <li key={t.id} className="flex items-center gap-2.5 rounded-[10px] border border-dashed border-line px-2.5 py-2">
                   <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: PRIORITY_META[t.priority].color }} />
                   <button className="min-w-0 flex-1 text-left" onClick={() => openTaskDialog({ id: t.id })}>
@@ -168,18 +170,18 @@ export function TodayFocus({ data, mutate }: { data: DashboardData; mutate: Keye
           <div className="flex flex-col items-center rounded-[10px] border border-dashed border-line px-4 py-6 text-center">
             <p className="text-[13px] text-fg-2">Nothing to focus on yet</p>
             <p className="mt-0.5 text-[12px] text-fg-3">Add a task for today and pin it here.</p>
-            <Button className="mt-3" size="sm" onClick={() => openTaskDialog({ dueDate: data.today.key })}>
+            <Button className="mt-3" size="sm" onClick={() => openTaskDialog({ dueDate: todayKey })}>
               <Plus className="h-3.5 w-3.5" /> Add task
             </Button>
           </div>
         )}
       </div>
 
-      {data.focus.reminders.length > 0 && (
+      {data.reminders.length > 0 && (
         <div className="mt-4 border-t border-line pt-3.5">
           <div className="mb-2 text-[11.5px] font-medium tracking-wide text-fg-3 uppercase">Coming up today</div>
           <ul className="flex flex-col gap-1.5">
-            {data.focus.reminders.map((r) => (
+            {data.reminders.map((r) => (
               <li key={`${r.id}-${r.at}`} className="flex items-center gap-2.5 text-[13px]">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-warning-soft text-warning">
                   <Bell className="h-3.5 w-3.5" />
@@ -247,7 +249,7 @@ function SortableFocusRow({ task, rank, onToggle, onRemove }: { task: FocusTask;
   );
 }
 
-function FocusStatement({ statement, data, mutate }: { statement: string | null; data: DashboardData; mutate: KeyedMutator<DashboardData> }) {
+function FocusStatement({ statement, patch }: { statement: string | null; patch: Patch }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(statement ?? "");
   const [saving, setSaving] = useState(false);
@@ -265,12 +267,12 @@ function FocusStatement({ statement, data, mutate }: { statement: string | null;
     setEditing(false);
     if (text === (statement ?? "")) return;
     setSaving(true);
-    const prev = data;
-    await mutate({ ...data, focus: { ...data.focus, statement: text || null } }, { revalidate: false });
+    const prev = statement;
+    patch((f) => ({ ...f, statement: text || null }));
     try {
       await api.put("/api/dashboard/focus-statement", { text });
     } catch (err) {
-      await mutate(prev, { revalidate: false });
+      patch((f) => ({ ...f, statement: prev }));
       toastError(err);
     } finally {
       setSaving(false);
@@ -322,7 +324,7 @@ function FocusStatement({ statement, data, mutate }: { statement: string | null;
             className="group flex w-full items-center gap-2 text-left"
             aria-label={statement ? `Edit today's focus statement: ${statement}` : "Write today's focus statement"}
           >
-            <span className={cn("min-w-0 flex-1 text-[15px] font-medium", statement ? "text-fg" : "text-fg-3", saving && "opacity-60")}>
+            <span className={cn("min-w-0 flex-1 text-[15px] font-medium", statement ? "text-fg" : "text-fg-3")} aria-busy={saving || undefined}>
               {statement || "What would make today a win?"}
             </span>
             <Pencil className="h-3.5 w-3.5 shrink-0 text-fg-3 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />

@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCreateParam } from "@/lib/use-create-param";
 import { ArrowLeft, BookImage, FolderPlus, Heart, MoreHorizontal, Pencil, Plus, Search, Sparkles, Trash2, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,8 @@ export function MemoriesView() {
   const [search, setSearch] = useState("");
   const q = useDebounced(search.trim());
   const [dialog, setDialog] = useState(false);
+  // /memories?new=1 (the "New" menu, My space) opens the new-memory dialog.
+  useCreateParam("new", () => setDialog(true));
   const [albumDialog, setAlbumDialog] = useState<{ open: boolean; album: AlbumItem | null }>({ open: false, album: null });
 
   const params = new URLSearchParams();

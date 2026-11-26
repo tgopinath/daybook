@@ -11,6 +11,7 @@ import { MonthGrid } from "@/components/habits/month-grid";
 import { HABITS_KEY } from "@/components/habits/use-habits";
 import type { HabitItem, HabitList } from "@/components/habits/types";
 import { useApi } from "@/lib/client";
+import { useCreateParam } from "@/lib/use-create-param";
 import { entryMap, isScheduled } from "@/lib/habits";
 import { useMe } from "@/lib/use-me";
 
@@ -21,6 +22,8 @@ export default function HabitsPage() {
   const { data: me } = useMe();
   const [view, setView] = useState<View>("today");
   const [dialog, setDialog] = useState<{ open: boolean; habit: HabitItem | null }>({ open: false, habit: null });
+  // /habits?new=1 (the "New" menu, My space) opens a blank habit.
+  useCreateParam("new", () => setDialog({ open: true, habit: null }));
   const [detailId, setDetailId] = useState<string | null>(null);
 
   const items = data?.items ?? [];

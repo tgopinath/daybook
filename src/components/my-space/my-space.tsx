@@ -1,17 +1,24 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import useSWR from "swr";
-import { LayoutGrid, RotateCw } from "lucide-react";
+import { ChevronDown, FlaskConical, ImagePlus, LayoutGrid, ListPlus, NotebookPen, RotateCw, Smile, Wallet, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, PageHeader } from "@/components/ui/misc";
+import { Card, Kbd, Skeleton } from "@/components/ui/misc";
 import { toast, toastError } from "@/components/ui/toast";
-import { TransactionDialogHost } from "@/components/finance/transaction-dialog";
+import { TransactionDialogHost, openTxDialog } from "@/components/finance/transaction-dialog";
+import { openTaskDialog } from "@/components/tasks/task-dialog";
 import { isLive } from "@/components/layout/nav";
 import { api } from "@/lib/client";
+import { openQuickCapture } from "@/lib/ui-store";
+import { useMe } from "@/lib/use-me";
 import { cn } from "@/lib/utils";
-import { DEFAULT_MY_SPACE, mySpaceMeta, type MySpacePref, type MySpaceWidgetId } from "./registry";
-import type { MySpaceData, MySpaceSections } from "./types";
+import { defaultLayout, mySpaceMeta, type MySpaceLayout, type MySpacePref, type MySpaceWidgetId } from "./registry";
+import type { MySpaceData, MySpaceSections, SectionId } from "./types";
 import { CustomizeMySpace } from "./customize-dialog";
+import { TodaySection } from "./today";
+import { ThisWeek } from "./this-week";
 import * as W from "./widgets";
 
 /**
@@ -31,7 +38,6 @@ const COMPONENTS: { [K in MySpaceWidgetId]: (p: W.Common & { data: MySpaceSectio
   notes: W.NotesWidget,
   journal: W.JournalWidget,
   gratitude: W.GratitudeWidget,
-  mood: W.MoodWidget,
   memories: W.MemoriesWidget,
   bucket: W.BucketWidget,
   timeline: W.TimelineWidget,
@@ -42,30 +48,37 @@ const COMPONENTS: { [K in MySpaceWidgetId]: (p: W.Common & { data: MySpaceSectio
 };
 
 /** Only widgets whose page is live (same `ready` flag the menu uses). */
-const available = (layout: MySpacePref[]) => layout.filter((w) => isLive(mySpaceMeta(w.id)!.href));
+const available = (widgets: MySpacePref[]) => widgets.filter((w) => isLive(mySpaceMeta(w.id)!.href));
 
-const COLLAPSE_KEY = "pad-myspace-collapsed";
+const COLLAPSE_KEY = "pad-myspace-collapsed"; // widgets (phones)
+const SECTION_COLLAPSE_KEY = "pad-myspace-sections"; // page sections (all sizes)
+
+function useStoredList(key: string) {
+  const [list, setList] = useState<string[]>([]);
+  useEffect(() => {
+    try {
+      const v = JSON.parse(localStorage.getItem(key) || "[]");
+      if (Array.isArray(v)) setList(v.filter((x): x is string => typeof x === "string"));
+    } catch {}
+  }, [key]);
+  const toggle = (id: string) =>
+    setList((prev) => {
+      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+      try {
+        localStorage.setItem(key, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  return [list, toggle] as const;
+}
 
 export function MySpace() {
   const { data, error, isLoading, mutate } = useSWR<MySpaceData>(MY_SPACE_KEY, fetchMySpace, { revalidateOnFocus: true, keepPreviousData: true, refreshInterval: 5 * 60_000 });
   const [customizing, setCustomizing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [retrying, setRetrying] = useState<Set<MySpaceWidgetId>>(new Set());
-  const [collapsed, setCollapsed] = useState<string[]>([]);
-
-  useEffect(() => {
-    try {
-      setCollapsed(JSON.parse(localStorage.getItem(COLLAPSE_KEY) || "[]"));
-    } catch {}
-  }, []);
-  const toggleCollapse = (id: string) =>
-    setCollapsed((prev) => {
-      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
-      try {
-        localStorage.setItem(COLLAPSE_KEY, JSON.stringify(next));
-      } catch {}
-      return next;
-    });
+  const [retrying, setRetrying] = useState<Set<SectionId>>(new Set());
+  const [collapsed, toggleCollapse] = useStoredList(COLLAPSE_KEY);
+  const [closedSections, toggleSection] = useStoredList(SECTION_COLLAPSE_KEY);
 
   const patch = useCallback<W.Common["patch"]>(
     (id, fn) => {
@@ -81,7 +94,7 @@ export function MySpace() {
   );
 
   const reload = useCallback(
-    async (id: MySpaceWidgetId) => {
+    async (id: SectionId) => {
       setRetrying((s) => new Set(s).add(id));
       try {
         const res = await api.get<MySpaceData>(`/api/my-space?only=${id}`);
@@ -100,14 +113,13 @@ export function MySpace() {
     [mutate],
   );
 
-  async function persist(body: { widgets: MySpacePref[] } | { reset: true }, message: string) {
+  async function persist(body: MySpaceLayout | null, message: string) {
     if (!data) return;
     setSaving(true);
     const prev = data;
-    const layout = "reset" in body ? DEFAULT_MY_SPACE.map((w) => ({ ...w })) : body.widgets;
-    await mutate({ ...data, layout }, { revalidate: false });
+    await mutate({ ...data, layout: body ?? defaultLayout() }, { revalidate: false });
     try {
-      const res = await api.put<{ layout: MySpacePref[] }>("/api/my-space/layout", body);
+      const res = await api.put<{ layout: MySpaceLayout }>("/api/my-space/layout", body ? { sections: body.sections, widgets: body.widgets } : { reset: true });
       await mutate((cur) => (cur ? { ...cur, layout: res.layout } : cur), { revalidate: false });
       toast.success(message);
       setCustomizing(false);
@@ -119,22 +131,10 @@ export function MySpace() {
     }
   }
 
-  const header = (
-    <PageHeader
-      title="My space"
-      description={data ? `${data.today.label} · everything in one place` : "Everything in one place"}
-      actions={
-        <Button variant="outline" size="sm" onClick={() => setCustomizing(true)} disabled={!data}>
-          <LayoutGrid className="h-3.5 w-3.5" /> Customise
-        </Button>
-      }
-    />
-  );
-
   if (error && !data) {
     return (
       <>
-        {header}
+        <Header />
         <Card className="flex flex-col items-center gap-3 px-6 py-14 text-center" role="alert">
           <h2 className="text-[15px] font-semibold">Couldn&apos;t load My space</h2>
           <p className="max-w-sm text-[13px] text-fg-2">{error instanceof Error ? error.message : "Something went wrong."}</p>
@@ -146,12 +146,22 @@ export function MySpace() {
     );
   }
 
-  const layout = available(data?.layout ?? DEFAULT_MY_SPACE).filter((w) => w.visible);
+  const layout = data?.layout ?? defaultLayout();
+  const widgets = available(layout.widgets).filter((w) => w.visible);
   const loading = isLoading && !data;
+  const slot = <K extends SectionId>(id: K) => ({
+    data: retrying.has(id) ? undefined : data ? (data.sections[id] ?? null) : undefined,
+    loading: loading || retrying.has(id),
+    onRetry: () => void reload(id),
+  });
+  const todayOpen = layout.sections.today && !closedSections.includes("today");
+  const nothingShown = !layout.sections.today && !layout.sections.week && widgets.length === 0;
 
   return (
     <div aria-busy={loading || undefined}>
-      {header}
+      <Header data={data} onCustomize={() => setCustomizing(true)} moodHere={todayOpen} />
+      <DemoBanner />
+
       {error && data && (
         <div className="mb-4 flex items-center justify-between gap-3 rounded-[10px] bg-danger-soft px-3.5 py-2 text-[12.5px] text-danger" role="status">
           <span>Couldn&apos;t refresh. Showing the last loaded data.</span>
@@ -161,47 +171,198 @@ export function MySpace() {
         </div>
       )}
 
-      <div className={cn("grid grid-flow-row-dense grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 xl:grid-cols-3 min-[1700px]:grid-cols-4")}>
-        {layout.map((w) => {
-          const Comp = COMPONENTS[w.id] as (p: W.Common & { data: unknown; loading: boolean }) => React.ReactElement;
-          const section = data ? (data.sections[w.id] ?? null) : undefined;
-          return (
-            <Comp
-              key={w.id}
-              data={retrying.has(w.id) ? undefined : section}
-              loading={loading || retrying.has(w.id)}
-              size={w.size}
-              collapsed={collapsed.includes(w.id)}
-              onToggleCollapse={() => toggleCollapse(w.id)}
-              onRetry={() => void reload(w.id)}
-              reload={() => void reload(w.id)}
-              todayKey={data?.today.key ?? ""}
-              patch={patch}
-            />
-          );
-        })}
+      <div className="flex flex-col gap-9">
+        {layout.sections.today && (
+          <PageSection id="today" title="Today" description="Your focus, how you feel and what's coming up." open={todayOpen} onToggle={() => toggleSection("today")}>
+            <TodaySection todayKey={data?.today.key ?? ""} focus={slot("focus")} mood={slot("mood")} upcoming={slot("upcoming")} patch={patch} />
+          </PageSection>
+        )}
+
+        <PageSection
+          id="spaces"
+          title="Your spaces"
+          description="Every part of your life, one tap away. Customise to reorder, resize or hide."
+          open={!closedSections.includes("spaces")}
+          onToggle={() => toggleSection("spaces")}
+        >
+          {widgets.length ? (
+            <div className="grid grid-flow-row-dense grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 xl:grid-cols-3 min-[1700px]:grid-cols-4">
+              {widgets.map((w) => {
+                const Comp = COMPONENTS[w.id] as (p: W.Common & { data: unknown; loading: boolean }) => React.ReactElement;
+                const s = slot(w.id);
+                return (
+                  <Comp
+                    key={w.id}
+                    data={s.data}
+                    loading={s.loading}
+                    size={w.size}
+                    collapsed={collapsed.includes(w.id)}
+                    onToggleCollapse={() => toggleCollapse(w.id)}
+                    onRetry={s.onRetry}
+                    reload={s.onRetry}
+                    todayKey={data?.today.key ?? ""}
+                    patch={patch}
+                  />
+                );
+              })}
+            </div>
+          ) : (
+            data && (
+              <Card className="flex flex-col items-center gap-3 px-6 py-10 text-center">
+                <p className="text-[13.5px] text-fg-2">All your spaces are hidden. Bring back the ones you like.</p>
+                <Button variant="outline" size="sm" onClick={() => setCustomizing(true)}>
+                  <LayoutGrid className="h-3.5 w-3.5" /> Customise
+                </Button>
+              </Card>
+            )
+          )}
+        </PageSection>
+
+        {layout.sections.week && (
+          <PageSection
+            id="week"
+            title="This week"
+            description="How the week is going, with charts over any range."
+            open={!closedSections.includes("week")}
+            onToggle={() => toggleSection("week")}
+          >
+            <ThisWeek {...slot("week")} />
+          </PageSection>
+        )}
       </div>
 
-      {data && layout.length === 0 && (
-        <Card className="flex flex-col items-center gap-3 px-6 py-12 text-center">
-          <p className="text-[13.5px] text-fg-2">All widgets are hidden. Bring back the ones you like.</p>
-          <Button variant="outline" size="sm" onClick={() => setCustomizing(true)}>
-            <LayoutGrid className="h-3.5 w-3.5" /> Customise
-          </Button>
-        </Card>
-      )}
+      {data && nothingShown && <p className="mt-4 text-center text-[13px] text-fg-2">Everything is switched off. Use Customise to bring sections back.</p>}
 
       {data && (
         <CustomizeMySpace
           open={customizing}
           onOpenChange={setCustomizing}
-          layout={available(data.layout)}
+          layout={{ sections: layout.sections, widgets: available(layout.widgets) }}
           saving={saving}
-          onSave={(widgets) => void persist({ widgets }, "My space saved")}
-          onReset={() => void persist({ reset: true }, "My space reset to default")}
+          onSave={(next) => void persist(next, "My space saved")}
+          onReset={() => void persist(null, "My space reset to default")}
         />
       )}
       {isLive("/finance") && <TransactionDialogHost />}
+    </div>
+  );
+}
+
+/** A titled page section with a remembered collapse toggle. */
+function PageSection({ id, title, description, open, onToggle, children }: { id: string; title: string; description: string; open: boolean; onToggle: () => void; children: ReactNode }) {
+  const bodyId = `ms-section-${id}`;
+  return (
+    <section aria-labelledby={`${bodyId}-title`}>
+      <div className="mb-3.5 flex items-end justify-between gap-3">
+        <div className="min-w-0">
+          <h2 id={`${bodyId}-title`} className="font-display text-[20px] leading-tight font-semibold text-fg">
+            {title}
+          </h2>
+          <p className="mt-0.5 text-[13px] text-fg-2">{description}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          aria-controls={bodyId}
+          className="inline-flex h-9 shrink-0 items-center gap-1 rounded-[10px] px-2.5 text-[12.5px] font-medium text-fg-2 outline-none hover:bg-surface-2 hover:text-fg focus-visible:ring-3 focus-visible:ring-primary/30"
+        >
+          <ChevronDown className={cn("h-4 w-4 transition-transform", !open && "-rotate-90")} aria-hidden />
+          {open ? "Hide" : "Show"}
+          <span className="sr-only"> {title}</span>
+        </button>
+      </div>
+      <div id={bodyId} hidden={!open}>
+        {open && children}
+      </div>
+    </section>
+  );
+}
+
+const quickCls =
+  "inline-flex h-10 items-center gap-2 rounded-[10px] border border-line bg-surface px-3.5 text-[13.5px] font-medium text-fg transition-colors hover:bg-surface-2 outline-none focus-visible:ring-3 focus-visible:ring-primary/30";
+
+function Header({ data, onCustomize, moodHere }: { data?: MySpaceData; onCustomize?: () => void; moodHere?: boolean }) {
+  const router = useRouter();
+  const t = data?.today;
+
+  /** Jump to the mood check-in on this page when Today is open, else to the Mood tracker. */
+  function mood() {
+    const card = moodHere ? document.getElementById("today-mood") : null;
+    if (!card) return router.push("/mood");
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    card.querySelector<HTMLButtonElement>('[role="group"] button, button')?.focus({ preventScroll: true });
+  }
+
+  return (
+    <header className="mb-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="min-w-0">
+          {t ? (
+            <>
+              <p className="text-[12.5px] font-medium text-fg-2">{t.label}</p>
+              <h1 className="font-display mt-0.5 text-[26px] leading-tight font-semibold text-fg md:text-[30px]">
+                {t.greeting}
+                {t.firstName ? `, ${t.firstName}` : ""}
+              </h1>
+              {t.subtitle && <p className="mt-1 text-[13.5px] text-fg-2">{t.subtitle}</p>}
+            </>
+          ) : (
+            <>
+              <h1 className="sr-only">My space</h1>
+              <Skeleton className="h-3.5 w-36" />
+              <Skeleton className="mt-2 h-7 w-64" />
+              <Skeleton className="mt-2 h-3.5 w-52" />
+            </>
+          )}
+        </div>
+        {onCustomize && (
+          <Button variant="outline" size="sm" onClick={onCustomize} disabled={!data}>
+            <LayoutGrid className="h-3.5 w-3.5" /> Customise
+          </Button>
+        )}
+      </div>
+      {onCustomize && (
+        <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Quick actions">
+          <button type="button" className={quickCls} onClick={() => openTaskDialog(t ? { dueDate: t.key } : undefined)}>
+            <ListPlus className="h-4 w-4 text-primary" aria-hidden /> Task
+          </button>
+          <Link href="/journal?new=1" className={quickCls}>
+            <NotebookPen className="h-4 w-4 text-primary" aria-hidden /> Write
+          </Link>
+          <button type="button" className={quickCls} onClick={mood}>
+            <Smile className="h-4 w-4 text-primary" aria-hidden /> Mood
+          </button>
+          {isLive("/finance") && (
+            <button type="button" className={quickCls} onClick={() => openTxDialog({ preset: { type: "expense" } })}>
+              <Wallet className="h-4 w-4 text-primary" aria-hidden /> Expense
+            </button>
+          )}
+          <Link href="/memories?new=1" className={quickCls}>
+            <ImagePlus className="h-4 w-4 text-primary" aria-hidden /> Memory
+          </Link>
+          <button type="button" className={quickCls} onClick={() => openQuickCapture()} aria-keyshortcuts="Meta+K Control+K">
+            <Zap className="h-4 w-4 text-primary" aria-hidden /> Capture
+            <span className="hidden sm:inline-flex">
+              <Kbd>⌘K</Kbd>
+            </span>
+          </button>
+        </div>
+      )}
+    </header>
+  );
+}
+
+function DemoBanner() {
+  const { data } = useMe();
+  if (!data?.hasDemoData) return null;
+  return (
+    <div className="mb-6 flex items-center gap-2.5 rounded-[12px] border border-dashed border-line-strong px-3.5 py-2 text-[12.5px] text-fg-2">
+      <FlaskConical className="h-3.5 w-3.5 shrink-0 text-fg-2" aria-hidden />
+      <span className="flex-1">Showing sample data so you can explore.</span>
+      <Link href="/settings#data" className="shrink-0 font-medium text-primary hover:underline">
+        Remove
+      </Link>
     </div>
   );
 }
