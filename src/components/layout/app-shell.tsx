@@ -20,6 +20,7 @@ import { TaskDialogHost, openTaskDialog } from "@/components/tasks/task-dialog";
 import { EventDialogHost } from "@/components/calendar/event-dialog";
 import { NativeLooks } from "./native-looks";
 import { AppLockOverlay } from "@/components/security/app-lock-overlay";
+import { MySpaceBackLink } from "@/components/my-space/back-link";
 
 function isTyping(e: KeyboardEvent) {
   const el = e.target as HTMLElement | null;
@@ -41,7 +42,7 @@ function useShortcuts() {
       // "g" then a letter jumps to a section, like Linear.
       if (e.key.toLowerCase() === "g") { gPressed = Date.now(); return; }
       if (Date.now() - gPressed < 800) {
-        const map: Record<string, string> = { o: "/overview", t: "/tasks", g: "/goals", c: "/calendar", r: "/reminders", h: "/habits", n: "/notes", a: "/assistant", s: "/settings", i: "/insights", p: "/planner" };
+        const map: Record<string, string> = { o: "/overview", m: "/my-space", t: "/tasks", g: "/goals", c: "/calendar", r: "/reminders", h: "/habits", n: "/notes", a: "/assistant", s: "/settings", i: "/insights", p: "/planner" };
         const to = map[e.key.toLowerCase()];
         if (to) { e.preventDefault(); router.push(to); }
         gPressed = 0;
@@ -158,6 +159,7 @@ export function AppShell({ children, demo = false }: { children: React.ReactNode
                 transition={{ duration: 0.16, ease: "easeOut" }}
                 className="mx-auto w-full max-w-[1280px] px-4 pt-6 pb-28 md:px-8 md:pb-12"
               >
+                <MySpaceBackLink />
                 {children}
               </motion.div>
             </AnimatePresence>

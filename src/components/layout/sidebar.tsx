@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PanelLeftClose, PanelLeftOpen, Plus, LogOut, Settings, ChevronsUpDown, ChevronDown } from "lucide-react";
-import { NAV, type NavItem } from "./nav";
+import { SIDEBAR_NAV, isNavActive, type NavItem } from "./nav";
 import { ui, openQuickCapture } from "@/lib/ui-store";
 import { useMe } from "@/lib/use-me";
 import { cn, initials } from "@/lib/utils";
@@ -40,7 +40,7 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
     );
 
   const renderItem = (item: NavItem) => {
-    const active = !!item.href && (pathname === item.href || pathname.startsWith(item.href + "/"));
+    const active = isNavActive(item, pathname);
     const inner = (
       <>
         <item.icon className={cn("h-[17px] w-[17px] shrink-0", active ? "text-primary" : "text-fg-2")} />
@@ -101,9 +101,9 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 pb-3 scroll-thin" style={collapsed ? { paddingInline: 8 } : undefined}>
-        {NAV.map((group) => {
+        {SIDEBAR_NAV.map((group) => {
           // A group stays open while it holds the current page, whatever was saved.
-          const holdsActive = group.items.some((i) => i.href && (pathname === i.href || pathname.startsWith(i.href + "/")));
+          const holdsActive = group.items.some((i) => isNavActive(i, pathname));
           const open = collapsed || holdsActive || !closedGroups.includes(group.section);
           return (
             <div key={group.section} className="mt-4 first:mt-2">

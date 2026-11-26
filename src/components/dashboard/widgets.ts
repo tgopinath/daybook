@@ -30,7 +30,8 @@ export const DEFAULT_LAYOUT: WidgetPref[] = WIDGETS.map((w) => ({ id: w.id, visi
  * Normalise a stored layout: drop unknown/duplicate ids, keep the user's order,
  * append widgets added since (visible by default).
  */
-export function normalizeLayout(raw: unknown): WidgetPref[] {
+export function normalizeLayout(stored: unknown): WidgetPref[] {
+  const raw = readWidgetStore(stored).overview;
   if (!Array.isArray(raw)) return DEFAULT_LAYOUT.map((w) => ({ ...w }));
   const seen = new Set<string>();
   const out: WidgetPref[] = [];
@@ -51,4 +52,27 @@ export function normalizeLayout(raw: unknown): WidgetPref[] {
     seen.add(w.id);
   });
   return out;
+}
+
+/**
+ * `UserSettings.dashboardWidgets` holds several page layouts: `{ overview: [...], mySpace: [...] }`.
+ * Older rows store the Overview layout as a plain array; both shapes are read.
+ */
+export type WidgetStore = { overview?: unknown; mySpace?: unknown };
+
+export function readWidgetStore(stored: unknown): WidgetStore {
+  if (Array.isArray(stored)) return { overview: stored };
+  if (stored && typeof stored === "object") {
+    const o = stored as Record<string, unknown>;
+    return { overview: o.overview, mySpace: o.mySpace };
+  }
+  return {};
+}
+
+/** Replace one page's layout (`undefined` = back to default) and keep the others. Returns null when nothing is left to store. */
+export function writeWidgetStore(stored: unknown, key: keyof WidgetStore, value: unknown): WidgetStore | null {
+  const next: WidgetStore = { ...readWidgetStore(stored), [key]: value };
+  if (next.overview === undefined) delete next.overview;
+  if (next.mySpace === undefined) delete next.mySpace;
+  return Object.keys(next).length ? next : null;
 }

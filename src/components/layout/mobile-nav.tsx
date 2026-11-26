@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { MoreHorizontal } from "lucide-react";
-import { MOBILE_NAV } from "./nav";
+import { MOBILE_NAV, isNavActive } from "./nav";
 import { Sidebar } from "./sidebar";
 import { ui, openQuickCapture } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
@@ -13,7 +13,7 @@ export function MobileBottomNav() {
   return (
     <nav className="site-tabbar fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden" aria-label="Mobile navigation">
       {MOBILE_NAV.map((item) => {
-        const active = !!item.href && pathname.startsWith(item.href);
+        const active = isNavActive(item, pathname);
         const cls = cn("flex flex-1 flex-col items-center gap-0.5 py-2 text-[10.5px] font-medium", active ? "text-primary" : "text-fg-2");
         if (item.action === "quick-capture")
           return (
@@ -23,7 +23,7 @@ export function MobileBottomNav() {
             </button>
           );
         return (
-          <Link key={item.label} href={item.href!} className={cls}>
+          <Link key={item.label} href={item.href!} aria-current={active ? "page" : undefined} className={cls}>
             <item.icon className="h-5 w-5" />
             {item.label}
           </Link>
