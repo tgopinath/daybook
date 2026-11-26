@@ -29,7 +29,7 @@ describe("oauth", () => {
 describe("workbook", () => {
   it("has header, rows, totals and net; category summary", () => {
     const wb = buildWorkbook(txs, names, "INR", { from: "2026-11-01", to: "2026-11-30" });
-    expect(wb.title).toBe("MyDiary — Transactions 1 Nov – 30 Nov 2026");
+    expect(wb.title).toBe("My Diary — Transactions 1 Nov – 30 Nov 2026");
     expect(wb.transactions[0]![7]).toBe("Income (INR)");
     expect(wb.transactions[1]!.slice(0, 9)).toEqual(["2026-11-02", "Expense", "Groceries", "=cmd", "HDFC", "", "UPI", null, 1250.5]);
     expect(wb.transactions.at(-2)!.slice(7, 10)).toEqual([50000, 1250.5, 0]);
@@ -48,7 +48,7 @@ describe("api", () => {
     });
     const out = await createSpreadsheet("tok", buildWorkbook(txs, names, "INR", {}), f as unknown as typeof fetch);
     expect(out).toEqual({ id: "abc", url: "https://docs.google.com/spreadsheets/d/abc/edit" });
-    expect(calls[0]!.body).toMatchObject({ properties: { title: "MyDiary — Transactions all time" } });
+    expect(calls[0]!.body).toMatchObject({ properties: { title: "My Diary — Transactions all time" } });
     expect(calls[1]!.url).toContain("/abc/values:batchUpdate");
     expect(calls[1]!.body.valueInputOption).toBe("RAW");
     expect(calls[2]!.url).toContain("/abc:batchUpdate");
